@@ -1,0 +1,576 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" id="vp" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
+    <meta name="viewport" id="vp" content="initial-scale=1.0,user-scalable=no,maximum-scale=1" media="(device-height: 568px)" />
+    <meta name="viewport" content="width=device-width,user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <title>
+        <%=title%>
+    </title>
+    <!-- css -->
+    <link href="<%=staticUrl%>/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="<%=staticUrl%>/lib/artDialog/css/ui-dialog.css">
+    <link rel="stylesheet" href="<%=staticUrl%>/lib/css/loading.css">
+    <link href="<%=staticUrl%>/stylesheets/style.css" rel="stylesheet" type="text/css" />
+    <link href="<%=staticUrl%>/stylesheets/codemirror.css" rel="stylesheet" type="text/css" />
+    <link href="<%=staticUrl%>/lib/codemirror/theme/monokai.css" rel="stylesheet" type="text/css" />
+    <!-- ico -->
+    <link rel="shortcut icon" href="<%=staticUrl%>/img/winico.ico" />
+    <script>
+        var staticUrl = '<%=staticUrl%>';
+        var txUrl = '<%=txUrl%>';
+        var teslaVersion = '<%=teslaVersion%>'
+    </script>
+</head>
+
+<body>
+    <!--mask-->
+    <div class="mask"></div>
+
+    <!--设置框-->
+    <div class="setWin">
+        <div class="setTitle">
+            <div class="setWinClose"> <i class="fa fa-times-circle-o" title="关闭"></i>
+            </div>
+            <ul>
+                <li rel="userTx" class="setMenuActive">
+                    <i class="fa fa-twitter"></i> 头像
+                </li>
+                <% if(role_type) {%>
+                    <li rel="project"> <i class="fa fa-group"></i> 项目组
+                    </li>
+
+                    <li rel="userConfig">
+                        <i class="fa fa-twitter"></i> 成员配置
+                    </li>
+                    <%}%>
+            </ul>
+        </div>
+
+        <div class="setContent">
+            <!--头像-->
+            <div>
+                <div class="txUl">
+                    <div>
+                        <div class="myTxDiv">
+                            <img src="<%=userTx%>" width="100%" alt=""></div>
+                        <button id="saveTx" style="">保存</button>
+                    </div>
+                    <div>
+                        <ul>
+                            <% for(var i=23; i<47; i++) {%>
+                                <li>
+                                    <img class="defaultTx" src="<%=staticUrl%>/images/tx/<%=i%>.jpg" width="100%" height="100%"></li>
+                                <% } %>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <% if(role_type) {%>
+
+                <!--项目组-->
+                <div style="display: none;">
+                    <div class="proMenu">
+                        <div class="addStyle addPro">
+                            <i class="fa fa-plus" title="添加项目组"></i> 添加项目组
+                        </div>
+                        <div class="addStyle proReflash">
+                            <i class="fa fa-refresh" title="刷新"></i> 刷新项目组
+                        </div>
+                    </div>
+                    <div class="programmeUl">
+                        <ul></ul>
+                    </div>
+                </div>
+
+
+                <div style="display: none;">
+                    <div class="editUser">
+                        <div>
+                            <select>
+            </select>
+                            <a class="reUser"><i class="fa fa-refresh" title="刷新"></i>刷新成员</a>
+                        </div>
+                        <div>
+                            <div class="groupuser">
+                                <!--         <a>
+            <span>用户名</span>
+            <input type="checkbox" id="mytest">
+            <label for="mytest"><span></span></label>
+        </a> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <%}%>
+
+        </div>
+    </div>
+    <div id="container" class="container">
+        <!-- 左部 -->
+        <div class="flexmodual">
+            <div class="top">
+                <div class="logo">
+                    <img src="<%=staticUrl%>/images/logo.png" width="82"></div>
+            </div>
+            <div class="left">
+                <ul></ul>
+            </div>
+        </div>
+        <!--中部-->
+        <div class="flexmodual">
+            <div class="top" style="border-left:1px solid #5cc8a4;">
+                <!--         <div class="set broadcast">
+            <i class="fa fa-podcast" aria-hidden="true" title="设置"></i>
+        </div> -->
+                <div class="set config">
+                    <i class="fa fa-cog" aria-hidden="true" title="设置"></i>
+                </div>
+            </div>
+            <!--会话-->
+            <div class="chatTab">
+                <div class="userView messageView">
+                    <div class="showArea"></div>
+                    <div class="iconBar">
+                        <div class="move-bar"></div>
+                        <i class="fa fa-smile-o" title="表情"></i>
+                        <div class="emojiDiv" style="display: none;">
+                            <span>😃</span>
+                            <span>🐻</span>
+                            <span>🍔</span>
+                            <span>⚽</span>
+                            <span>🌇</span>
+                            <span>💡</span>
+                            <span>🔣</span>
+                            <span>🎌</span>
+                            <span>🤓</span>
+                            <span>😃</span>
+                            <span>😀</span>
+                            <span>😁</span>
+                            <span>😂</span>
+                            <span>😃</span>
+                            <span>😄</span>
+                            <span>😅</span>
+                            <span>😆</span>
+                            <span>😉</span>
+                            <span>😊</span>
+                            <span>😋</span>
+                            <span>😎</span>
+                            <span>😍</span>
+                            <span>😘</span>
+                            <span>😗</span>
+                            <span>😙</span>
+                            <span>😚</span>
+                            <span>🙂</span>
+                            <span>🤗</span>
+                            <span>🤔</span>
+                            <span>😐</span>
+                            <span>😑</span>
+                            <span>😶</span>
+                            <span>🙄</span>
+                            <span>😏</span>
+                            <span>😣</span>
+                            <span>😥</span>
+                            <span>😮</span>
+                            <span>🤐</span>
+                            <span>😯</span>
+                            <span>😪</span>
+                            <span>😫</span>
+                            <span>😴</span>
+                            <span>😌</span>
+                            <span>🤓</span>
+                            <span>😛</span>
+                            <span>😜</span>
+                            <span>😝</span>
+                            <span>😒</span>
+                            <span>😓</span>
+                            <span>😔</span>
+                            <span>😕</span>
+                            <span>🙃</span>
+                            <span>🤑</span>
+                            <span>😲</span>
+                            <span>☹</span>
+                            <span>🙁</span>
+                            <span>😖</span>
+                            <span>😞</span>
+                            <span>😟</span>
+                            <span>😤</span>
+                            <span>😢</span>
+                            <span>😭</span>
+                            <span>😦</span>
+                            <span>😧</span>
+                            <span>😨</span>
+                            <span>😩</span>
+                            <span>😬</span>
+                            <span>😰</span>
+                            <span>😱</span>
+                            <span>😳</span>
+                            <span>😵</span>
+                            <span>😡</span>
+                            <span>😠</span>
+                            <span>😇</span>
+                            <span>😷</span>
+                            <span>🤒</span>
+                            <span>🤕</span>
+                            <span>😈</span>
+                            <span>👿</span>
+                            <span>👹</span>
+                            <span>👺</span>
+                            <span>💀</span>
+                            <span>👻</span>
+                            <span>👽</span>
+                            <span>🤖</span>
+                            <span>💩</span>
+                            <span>😺</span>
+                            <span>😸</span>
+                            <span>😹</span>
+                            <span>😻</span>
+                            <span>😼</span>
+                            <span>😽</span>
+                            <span>🙀</span>
+                            <span>😿</span>
+                            <span>😾</span>
+                            <span>👦</span>
+                            <span>👧</span>
+                            <span>👨</span>
+                            <span>👩</span>
+                            <span>👴</span>
+                            <span>👵</span>
+                            <span>👶</span>
+                            <span>👼</span>
+                            <span>👮</span>
+                            <span>🕵</span>
+                            <span>💂</span>
+                            <span>👷</span>
+                            <span>👳</span>
+                            <span>👱</span>
+                            <span>🎅</span>
+                            <span>👸</span>
+                            <span>👰</span>
+                            <span>👲</span>
+                            <span>🙍</span>
+                            <span>🙎</span>
+                            <span>🙅</span>
+                            <span>🙆</span>
+                            <span>💁</span>
+                            <span>🙋</span>
+                            <span>🙇</span>
+                            <span>💆</span>
+                            <span>💇</span>
+                            <span>🚶</span>
+                            <span>🏃</span>
+                            <span>💃</span>
+                            <span>👯</span>
+                            <span>🕴</span>
+                            <span>🗣</span>
+                            <span>👤</span>
+                            <span>👥</span>
+                            <span>👫</span>
+                            <span>👬</span>
+                            <span>👭</span>
+                            <span>💏</span>
+                            <span>💑</span>
+                            <span>👪</span>
+                            <span>💪</span>
+                            <span>👈</span>
+                            <span>👉</span>
+                            <span>👆</span>
+                            <span>🖕</span>
+                            <span>👇</span>
+                            <span>🖖</span>
+                            <span>🤘</span>
+                            <span>🖐</span>
+                            <span>✋</span>
+                            <span>👌</span>
+                            <span>👍</span>
+                            <span>👎</span>
+                            <span>✊</span>
+                            <span>👊</span>
+                            <span>👋</span>
+                            <span>👏</span>
+                            <span>👐</span>
+                            <span>🙌</span>
+                            <span>🙏</span>
+                            <span>💅</span>
+                            <span>👂</span>
+                            <span>👃</span>
+                            <span>👣</span>
+                            <span>👀</span>
+                            <span>👁</span>
+                            <span>👅</span>
+                            <span>👄</span>
+                            <span>💋</span>
+                            <span>👓</span>
+                            <span>🕶</span>
+                            <span>👔</span>
+                            <span>👕</span>
+                            <span>👖</span>
+                            <span>👗</span>
+                            <span>👘</span>
+                            <span>👙</span>
+                            <span>👚</span>
+                            <span>👛</span>
+                            <span>👜</span>
+                            <span>👝</span>
+                            <span>🎒</span>
+                            <span>👞</span>
+                            <span>👟</span>
+                            <span>👠</span>
+                            <span>👡</span>
+                            <span>👢</span>
+                            <span>👑</span>
+                            <span>👒</span>
+                            <span>🎩</span>
+                            <span>🎓</span>
+                            <span>⛑</span>
+                            <span>💄</span>
+                            <span>💍</span>
+                            <span>🌂</span>
+                            <span>💼</span>
+                            <span>😃</span>
+                            <span>🐻</span>
+                            <span>🍔</span>
+                            <span>⚽</span>
+                            <span>🌇</span>
+                            <span>💡</span>
+                            <span>🔣</span>
+                            <span>🎌</span>
+                            <span>😂</span>
+                            <span>🎄</span>
+                            <span>❤</span>
+                            <span>😍</span>
+                            <span>🎅</span>
+                            <span>😊</span>
+                            <span>🔥</span>
+                            <span>🍑</span>
+                            <span>📲</span>
+                            <span>👤</span>
+                            <span>🏳</span>
+                            <span>🇨🇺</span>
+                            <span>🦃</span>
+                            <span>🇦🇺</span>
+                            <span>🇫🇷</span>
+                            <span>🎂</span>
+                            <span>🛍</span>
+                            <span>🇨🇦</span>
+                            <span>🇧🇷</span>
+                            <span>🐉</span>
+                            <span>🎅</span>
+                            <span>🇲🇽</span>
+                            <span>🇨🇳</span>
+                            <span>🐰</span>
+                            <span>🎥</span>
+                            <span>🍂</span>
+                            <span>👨</span>
+                            <span>💪</span>
+                            <span>🎓</span>
+                            <span>🔥</span>
+                            <span>🎃</span>
+                            <span>🕎</span>
+                            <span>🕉</span>
+                            <span>🇺🇸</span>
+                            <span>👩</span>
+                            <span>🎊</span>
+                            <span>🏊</span>
+                            <span>👑</span>
+                            <span>🌱</span>
+                            <span>🏈</span>
+                            <span>🦃</span>
+                            <span>💘</span>
+                            <span>👰</span>
+                            <span>⛄</span>
+                            <span>🎿</span>
+                            <span>⚽</span>
+                            <span>🌎</span>
+                        </div>
+
+                        <img src="<%=staticUrl%>/images/f.jpg">
+                        <i class="fa fa-picture-o" id="sendImg" title="上传图片"><input type="file" id="addImg" multiple title="上传图片"></i>
+                        <img src="<%=staticUrl%>/images/f.jpg">
+                        <i class="fa fa-file-o" title="发送文件" id="sendFileIcon"><iframe src="<%=ejsUrl%>/getUploadFile" frameborder="0" id="uploadIframe" style="display: none;">
+                        </iframe></i>
+                        <img src="<%=staticUrl%>/images/f.jpg">
+                        <i class="fa fa-code" title="插入代码"></i>
+                        <div class="codeView" style="display: none;">
+                            <a>html</a>
+                            <a>javascript</a>
+                            <a>java</a>
+                            <a>css</a>
+                        </div>
+                        <img src="<%=staticUrl%>/images/f.jpg">
+                        <i class="fa fa-calendar-check-o daily" aria-hidden="true" title="日报"></i>
+                        <img src="<%=staticUrl%>/images/f.jpg">
+                        <!--上传文件-->
+                        <div style="position:absolute; right:5px;top:10px; color:#aaa;">按回车键发送 按Ctrl+回车换行</div>
+                    </div>
+                    <div class="postArea">
+                        <!--<div id="imgPreview"></div>
+    -->
+                        <!-- <textarea maxlength="800"></textarea> -->
+                        <div id="textArea" style="width:100%;"></div>
+                    </div>
+                </div>
+                <div class="userView fileListView" style="display: none;">
+                    <div class="fileTableDiv">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="fileTable">
+                            <thead>
+                                <tr>
+                                    <th>文件名</th>
+                                    <th width="60">文件类型</th>
+                                    <th width="60">文件大小</th>
+                                    <th width="100">上传者</th>
+                                    <th width="100">上传时间</th>
+                                    <th width="70">发送至对话</th>
+                                    <th width="30">下载</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="filePage">
+                        <%# <span class="pageNum pageHit"></span>
+                        <span class="pageNum"></span>
+                        <span class="pageNum"></span>
+                        <span class="pageNum"></span>
+                        <span class="pageNum"></span>%>
+                    </div>
+                </div>
+
+                <div class="userView updateLog" style="display: none;">
+                    <hr>
+                    <article>
+                        <h1><i class="fa fa-cloud-upload" style="color:rgb(255, 186, 106)" aria-hidden="true"></i>&nbsp;tesla V0.1.3</h1>
+                        <h2>date:2017.06.21</h2>
+                        <p>1、多处登录bug修复</p>
+                        <p>2、断线重连状态显示</p>
+                    </article>
+                    <hr>
+                    <article>
+                        <h1><i class="fa fa-cloud-upload" style="color:rgb(255, 186, 106)" aria-hidden="true"></i>&nbsp;tesla V0.1.2</h1>
+                        <h2>date:2017.06.20</h2>
+                        <p>1、优化通知显示，点击通知后可回到浏览器界面指定分组，增加通知音效，相同项目组的通知采用覆盖显示</p>
+                        <p>2、更改session记录方式，不再自动登录</p>
+                        <p>3、禁止两处同时登陆</p>
+                        <p>4、修复无项目组时无限加载中的bug</p>
+                        <p>5、每次更新均弹出新功能提示</p>
+                    </article>
+                    <hr>
+                    <article>
+                        <h1><i class="fa fa-cloud-upload" style="color:rgb(255, 186, 106)" aria-hidden="true"></i>&nbsp;tesla V0.1.1</h1>
+                        <h2>date:2017.06.10</h2>
+                        <p>1、修复点击成员@后输入框未激活问题</p>
+                        <p>2、优化界面显示。</p>
+                    </article>
+                    <hr>
+                    <article>
+                        <h1><i class="fa fa-cloud-upload" style="color:rgb(255, 186, 106)" aria-hidden="true"></i>&nbsp;tesla V0.1.0</h1>
+                        <h2>date:2017.05.16</h2>
+                        <p>1、优化成员配置功能。</p>
+                        <p>2、优化界面显示。</p>
+                    </article>
+                    <hr>
+                    <article>
+                        <h1><i class="fa fa-cloud-upload" style="color:rgb(255, 186, 106)" aria-hidden="true"></i>&nbsp;tesla V0.0.4</h1>
+                        <h2>date:2017.05.10</h2>
+                        <p>1、修改文件从网盘获取后的排序方式为时间倒序</p>
+                        <p>2、在对话工具栏中加入日报图标，点击能够生成日报默认模板</p>
+                        <p>3、后台储存聊天记录时间方式更改（重大bug）<br><span style="color:red;">这就是为什么5.2号所有聊天记录都变成了同一时间，是我智障，我检讨</span></p>
+                        <p>4、修复从文件tab中点击发送文件到当前项目中链接无效的bug</p>
+                        <p>5、对话框可调整高度</p>
+                        <p>6、修复发送截图时下载后的图片没有后缀名的bug</p>
+                        <p>7、支持图片拖拽上传（文件暂不支持）</p>
+                        <p>8、记录用户当前选择项目组cookie，刷新不丢失</p>
+                    </article>
+                    <hr>
+                    <article>
+                        <h1><i class="fa fa-cloud-upload" style="color:rgb(255, 186, 106)" aria-hidden="true"></i>&nbsp;tesla V0.0.3</h1>
+                        <h2>date:2017.04.30</h2>
+                        <p>1、修复对话发送$'符号时出现的bug</p>
+                        <p>2、修复发送图片时接收一方有时无法出现下载链接的bug</p>
+                        <p>3、新增对话发送成功状态（对话框右下角菊花显示）</p>
+                    </article>
+                    <hr>
+                    <article>
+                        <h1><i class="fa fa-cloud-upload" style="color:rgb(255, 186, 106)" aria-hidden="true"></i>&nbsp;tesla V0.0.2</h1>
+                        <h2>date:2017.04.18</h2>
+                        <p>1、修复无法@成员的bug</p>
+                        <p>2、修复无法发送emoji的bug</p>
+                        <p>3、新增网盘文件列表查看、下载、发送至对话功能</p>
+                        <p><span style="text-decoration:line-through;text-decoration-color:red;">4、新增文件拖拽上传功能</span><span style="color:red;">想多了，网盘太差了</span></p>
+                        <p>5、选择群组成员时默认选择当前群组分组</p>
+                    </article>
+                    <hr>
+                    <article>
+                        <h1><i class="fa fa-cloud-upload" style="color:rgb(255, 186, 106)" aria-hidden="true"></i>&nbsp;tesla V0.0.1</h1>
+                        <h2>date:2017.04.14</h2>
+                        <p>1、更新输入框功能，可以发送代码，目前支持：js、html、css、java</p>
+                        <p>2、图片下载功能</p>
+                        <p>3、图片点击放大功能</p>
+                        <p>4、聊天记录支持向上查看更多</p>
+                        <p>5、支持直接ctrl+v复制qq截图（mac下command+v）</p>
+                        <p>6、tesla性能优化</p>
+                    </article>
+                </div>
+
+            </div>
+
+            <div class="tabArea">
+                <ul>
+
+                    <li class="tabActive chatMenu" rel="messageView">
+                        <i class="fa fa-comment-o"></i> 会 话
+                    </li>
+                    <li class="fileMenu" rel="fileListView">
+                        <i class="fa fa-file-o"></i> 文 件
+                    </li>
+                    <li class="daily" rel="updateLog">
+                        <i class="fa fa-file-o"></i> 更新日志
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!--右部-->
+        <div class="flexmodual">
+            <div class="top" style="border-left:1px solid #5cc8a4;">
+                <div class="faceName">
+                    <span><%=userName%></span>
+                    <div class="signout">
+                        <i class="fa fa-sign-out" title="注销"></i>
+                    </div>
+                </div>
+                <div class="face">
+                    <img class="userTx" src="<%=userTx%>" onerror="imgOnfail(this);" width="60" height="60"></div>
+            </div>
+
+            <div class="right">
+                <ul></ul>
+            </div>
+        </div>
+
+
+    </div>
+</body>
+<script type="text/javascript" src="<%=staticUrl%>/lib/js/jquery-3.1.0.min.js"></script>
+<script type="text/javascript" src="<%=staticUrl%>/lib/artDialog/dist/dialog-plus-min.js"></script>
+<script type="text/javascript" src="<%=staticUrl%>/lib/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="<%=staticUrl%>/lib/js/jQuery.md5.js"></script>
+<script type="text/javascript" src="<%=staticUrl%>/lib/codemirror/lib/codemirror.js"></script>
+<script type="text/javascript" src="<%=staticUrl%>/lib/codemirror/mode/xml/xml.js"></script>
+<script type="text/javascript" src="<%=staticUrl%>/lib/codemirror/mode/javascript/javascript.js"></script>
+<script type="text/javascript" src="<%=staticUrl%>/lib/codemirror/mode/css/css.js"></script>
+<script type="text/javascript" src="<%=staticUrl%>/lib/codemirror/mode/clike/clike.js"></script>
+<script type="text/javascript" src="<%=staticUrl%>/lib/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+<script type="text/javascript" src="<%=staticUrl%>/lib/js/animate.js"></script>
+<script type="text/javascript" src="<%=staticUrl%>/lib/js/loading.js"></script>
+<script type="text/javascript" src='<%=staticUrl%>/lib/js/socket.io.js'></script>
+<script type="text/javascript" src="<%=staticUrl%>/javascripts/func.js"></script>
+<script type="text/javascript" src="<%=staticUrl%>/javascripts/listening.js"></script>
+<script type="text/javascript" src="<%=staticUrl%>/javascripts/index.js"></script>
+<script type="text/javascript" src="<%=staticUrl%>/javascripts/ui.js"></script>
+
+
+</html>
