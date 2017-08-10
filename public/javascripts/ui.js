@@ -288,7 +288,7 @@ $(function() {
         helpMess({
             title: '图片',
             width: '',
-            content: "<img style='max-height:800px;max-width:1024px;' src='" + $(this).attr('src') + "'>"
+            content: "<img style='max-height:90vh;max-width:90vw;' src='" + $(this).attr('src') + "'>"
         })
     });
     /***************
