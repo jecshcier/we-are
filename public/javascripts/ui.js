@@ -283,14 +283,16 @@ $(function() {
         }
     });
     // 图片点击放大
-    $(".showArea").on('click', '.messContent > img', function(event) {
-        event.preventDefault();
-        helpMess({
-            title: '图片',
-            width: '',
-            content: "<img style='max-height:90vh;max-width:90vw;' src='" + $(this).attr('src') + "'>"
-        })
+    $(".showArea").on('click', '.messContent > img', function(e) {
+        e.preventDefault();
+
+        var target = e.target;
+        var imgSrc = target.currentSrc;
+        var w = target.naturalWidth;
+        var h = target.naturalHeight;
+        showPhotoSwipeImgs(imgSrc, w, h);
     });
+
     /***************
      *  上传图片按钮监听事件 *
      ***************/

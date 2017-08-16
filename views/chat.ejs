@@ -15,6 +15,8 @@
     <link href="<%=staticUrl%>/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="<%=staticUrl%>/lib/artDialog/css/ui-dialog.css">
     <link rel="stylesheet" href="<%=staticUrl%>/lib/css/loading.css">
+    <link rel="stylesheet" href="<%=staticUrl%>/lib/photoswipe/default-skin/default-skin.css">
+    <link rel="stylesheet" href="<%=staticUrl%>/lib/photoswipe/photoswipe.css">
     <link href="<%=staticUrl%>/stylesheets/style.css" rel="stylesheet" type="text/css" />
     <link href="<%=staticUrl%>/stylesheets/codemirror.css" rel="stylesheet" type="text/css" />
     <link href="<%=staticUrl%>/lib/codemirror/theme/monokai.css" rel="stylesheet" type="text/css" />
@@ -553,24 +555,59 @@
 
 
     </div>
+
+    <!-- PhotoSwipe容器 -->
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="pswp__bg"></div>
+        <div class="pswp__scroll-wrap">
+            <div class="pswp__container">
+                <div class="pswp__item"></div>
+                <div class="pswp__item"></div>
+                <div class="pswp__item"></div>
+            </div>
+            <div class="pswp__ui pswp__ui--hidden">
+                <div class="pswp__top-bar">
+                    <div class="pswp__counter"></div>
+                    <button class="pswp__button pswp__button--close" title="关闭"></button>
+                    <button class="pswp__button pswp__button--fs" title="全屏"></button>
+                    <button class="pswp__button pswp__button--zoom" title="缩放"></button>
+                    <div class="pswp__preloader">
+                        <div class="pswp__preloader__icn">
+                          <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="pswp__button pswp__button--arrow--left" title="上一个"></button>
+                <button class="pswp__button pswp__button--arrow--right" title="下一个"></button>
+                <div class="pswp__caption">
+                    <div class="pswp__caption__center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
-<script type="text/javascript" src="<%=staticUrl%>/lib/js/jquery-3.1.0.min.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/lib/artDialog/dist/dialog-plus-min.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/lib/js/jquery.cookie.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/lib/js/jQuery.md5.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/lib/codemirror/lib/codemirror.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/lib/codemirror/mode/xml/xml.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/lib/codemirror/mode/javascript/javascript.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/lib/codemirror/mode/css/css.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/lib/codemirror/mode/clike/clike.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/lib/codemirror/mode/htmlmixed/htmlmixed.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/lib/js/animate.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/lib/js/loading.js"></script>
-<script type="text/javascript" src='<%=staticUrl%>/lib/js/socket.io.js'></script>
-<script type="text/javascript" src="<%=staticUrl%>/javascripts/func.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/javascripts/listening.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/javascripts/index.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/javascripts/ui.js"></script>
+<script src="<%=staticUrl%>/lib/js/jquery-3.1.0.min.js"></script>
+<script src="<%=staticUrl%>/lib/artDialog/dist/dialog-plus-min.js"></script>
+<script src="<%=staticUrl%>/lib/js/jquery.cookie.js"></script>
+<script src="<%=staticUrl%>/lib/js/jQuery.md5.js"></script>
+<script src="<%=staticUrl%>/lib/photoswipe/photoswipe.min.js"></script>
+<script src="<%=staticUrl%>/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+<script src="<%=staticUrl%>/lib/photoswipe/initPhotoSwipe.js"></script>
+<script src="<%=staticUrl%>/lib/codemirror/lib/codemirror.js"></script>
+<script src="<%=staticUrl%>/lib/codemirror/mode/xml/xml.js"></script>
+<script src="<%=staticUrl%>/lib/codemirror/mode/javascript/javascript.js"></script>
+<script src="<%=staticUrl%>/lib/codemirror/mode/css/css.js"></script>
+<script src="<%=staticUrl%>/lib/codemirror/mode/clike/clike.js"></script>
+<script src="<%=staticUrl%>/lib/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+<script src="<%=staticUrl%>/lib/js/animate.js"></script>
+<script src="<%=staticUrl%>/lib/js/loading.js"></script>
+<script src='<%=staticUrl%>/lib/js/socket.io.js'></script>
+<script src="<%=staticUrl%>/javascripts/func.js"></script>
+<script src="<%=staticUrl%>/javascripts/listening.js"></script>
+<script src="<%=staticUrl%>/javascripts/index.js"></script>
+<script src="<%=staticUrl%>/javascripts/ui.js"></script>
 
 
 </html>
