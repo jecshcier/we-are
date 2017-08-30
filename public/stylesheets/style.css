@@ -502,12 +502,33 @@ pre {
     justify-content: flex-end;
 }
 
+.img-loading{
+    position: absolute;
+    padding: 0 10px;
+    font-size: 30px;
+    line-height: 50px;
+    color: #383735;
+}
+
 .ico {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
     width: 50px;
     height: 50px;
-    display: inline-flex;
-    background-color: #ccc;
-    vertical-align: top;
+    font: normal bold 16px Helvetica;
+    text-transform: uppercase;
+    color: #008564;
+    white-space: nowrap;
+    background: rgba(0, 185, 141, 0.15);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+.myMess .ico{
+    color: #ff7f74;
+    background: rgba(255, 127, 116, 0.15);
 }
 
 .fileinfo {
@@ -1319,3 +1340,42 @@ pre {
 .notesCollection p{line-height:25px;white-space:nowrap;width:169px;overflow:hidden;font-family:'微软雅黑';}
 .notesCollection p:first-child{font-weight:bold;font-size:14px;}
 .notesCollection time{color:#8F8E8E;font-style:italic;}*/
+
+
+/**************** 全屏弹窗组件 ****************/
+.modal-fullscreen {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 333;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #000;
+}
+.modal-close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+    width: 30px;
+    color: #fff;
+    opacity: .75;
+    font-size: 30px;
+    line-height: 30px;
+    text-align: center;
+    cursor: pointer;
+}
+.modal-close:hover {
+    opacity: 1;
+}
+/* PDF资源预览器 */
+.pdf-reader{
+    width: 80%;
+    height: 100%;
+    border: 0;
+}
+

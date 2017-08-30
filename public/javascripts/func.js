@@ -239,6 +239,7 @@ function sendMessages(type, user, updateTime, dom, addFlag) {
     if (updateTime) {
         upTime = user.updateTime;
     }
+    // console.info(user);
     if (type) {
         var othMess = '<div class="messageBlock" messID="{messID}"><div class="faceImgBlock">' +
             '<img class="userTx" src="' + userImgUrl + '" onerror="imgOnfail(this);"><span class="messName">' + user.userName + '</span></div>' + '<div class="mess">' + '<div class="messArrow messArrowOth"></div>' + '<div class="nameTime"><span class="messTime">' + upTime + '</span></div>' + '<pre class="messContent">' + user.message + '</pre>' + '</div>' + '</div>';
@@ -391,7 +392,7 @@ function getUploadFileInfo(flag, info, fileid, filename, filesize, fileextname, 
         console.log("上传成功！正在生成链接------->");
         var _this = $('.showMess[projectID="' + userData.projectTeam.groupID + '"]');
         filesize = getFileSize(filesize);
-        var text = '<i class="ico ico-' + fileextname + '"></i><div class="fileinfo"><p>' + filename + '</p><p>' + filesize + '<a href="' + fileurl + '"  target="_blank">下载</a></p></div>'
+        var text = '<i class="ico ico-' + fileextname + '">' + fileextname + '</i><div class="fileinfo"><p>' + filename + '</p><p>' + filesize + '<a href="' + fileurl + '"  target="_blank">下载</a></p></div>'
         userData['messageType'] = 'file';
         userData['message'] = text;
         userData['fileCheck'] = true;
