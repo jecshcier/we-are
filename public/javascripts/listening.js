@@ -5,8 +5,9 @@
  ************************/
 //监听用户加入
 socket.on('userIsLogin', function(user, onlineUsers) {
+    console.log(user)
     localOnlineUsers = onlineUsers;
-    // globalNotification(user.userName + '加入了tesla', 'green');
+    globalNotification(user.userName + '加入了tesla', 'green');
     var _this = $("li[userID=" + user.userID + "]");
     if (_this.length) {
         _this.children('i').removeClass('online').removeClass('offline').addClass('online');
@@ -114,7 +115,7 @@ socket.on('userIsLogout', function(data, onlineUsers) {
         })
     }
     localOnlineUsers = onlineUsers;
-    // globalNotification(data.userName + '离开了tesla', 'red');
+    globalNotification(data.userName + '离开了tesla', 'red');
     if ($("li[userID=" + data.userID + "]").length) {
         $("li[userID=" + data.userID + "] i").removeClass('online').removeClass('offline').addClass('offline');
         var temp = _this[0].outerHTML;

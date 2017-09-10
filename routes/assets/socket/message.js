@@ -15,12 +15,13 @@ var onlineUsers = {};
 //当前在线人数
 var onlineCount = 0;
 var reconnectUser = [];
-var socketlisten = function(io) {
-    io.on('connection', function(socket) {
+var socketlisten = function (io) {
+    io.on('connection', function (socket) {
+        console.log('onlineCount:' + onlineCount)
+        console.log(socket.request.session)
         console.log('session测试');
-        console.log(socket.handshake.address);
         // 服务器重启让所有人下线
-        if (!socket.handshake.session.user) {
+        if (!socket.request.session.user) {
             var userTemp = {
                 username: '',
                 userID: ''
@@ -29,52 +30,52 @@ var socketlisten = function(io) {
             userTemp.userName = 'unknow';
             socket.emit('userIsLogout', userTemp, onlineUsers);
         } else {
-            socket.userID = socket.handshake.session.user['userID'];
-            socket.userName = socket.handshake.session.user['nickName'];
+            socket.userID = socket.request.session.user['userID'];
+            socket.userName = socket.request.session.user['nickName'];
             // 定时器，用户无操作时间
             // socket = connectionTimer(socket, io);
             //检查在线列表，如果不在里面就加入
             if (!onlineUsers.hasOwnProperty(socket.userID)) {
                 onlineUsers[socket.userID] = {
-                    sessionID: socket.handshake.sessionID,
-                    userName: socket.userName
+                    sessionID: socket.request.sessionID,
+                    userName: socket.userName,
+                    count: 0
                 };
                 //在线人数+1
                 onlineCount++;
                 console.log(onlineUsers);
                 // console.log(socket.name)
                 console.log("已有session用户");
-                console.log(socket.handshake.session.user['nickName'] + "加入了tesla");
+                console.log(socket.request.session.user['nickName'] + "加入了tesla");
                 var userTemp = {
                     username: '',
                     userID: '',
-                    sessionID:socket.handshake.sessionID
+                    sessionID: socket.request.sessionID
                 }
                 userTemp.userName = socket.userName;
                 userTemp.userID = socket.userID;
                 io.sockets.emit('userIsLogin', userTemp, onlineUsers);
             } else {
-                console.log(socket.handshake.sessionID)
+                console.log(socket.request.sessionID)
                 console.log(onlineUsers[socket.userID].sessionID)
-                if (socket.handshake.sessionID !== onlineUsers[socket.userID].sessionID) {
+                //若登录的客户端与当前客户端的sessionID不一致
+                if (socket.request.sessionID !== onlineUsers[socket.userID].sessionID) {
                     console.log("用户登陆异常");
                     onlineUsers[socket.userID].errorFlag = 1;
-                    io.sockets.emit(onlineUsers[socket.userID].sessionID, 'loginError',socket.userID);
-                    onlineUsers[socket.userID].sessionID = socket.handshake.sessionID;
-                    var userTemp = {
-                        username: '',
-                        userID: '',
-                        sessionID:socket.handshake.sessionID
-                    }
-                    userTemp.userName = socket.userName;
-                    userTemp.userID = socket.userID;
-                    io.sockets.emit('userIsLogin', userTemp, onlineUsers);
-                } else {
-                    // reconnectUser.push({
-                    //     ID: socket.userID
-                    // })
-                    // console.log(reconnectUser)
+                    io.sockets.emit(onlineUsers[socket.userID].sessionID, 'loginError', socket.userID);
+                    onlineUsers[socket.userID].sessionID = socket.request.sessionID;
                 }
+                var userTemp = {
+                    username: '',
+                    userID: '',
+                    sessionID: socket.request.sessionID
+                }
+                userTemp.userName = socket.userName;
+                userTemp.userID = socket.userID;
+                console.log('userTemp:')
+                console.log(userTemp)
+                io.sockets.emit('userIsLogin', userTemp, onlineUsers);
+                onlineUsers[socket.userID].count++;
                 console.log(onlineUsers)
             }
 
@@ -96,21 +97,21 @@ var socketlisten = function(io) {
         // 	}
         // 	io.sockets.emit('userIsLogin', userData, onlineUsers);
         // });
-        socket.on('broadcast', function(data) {
+        socket.on('broadcast', function (data) {
             io.sockets.emit('userBroadcast', data);
         });
 
-        socket.on('inviteUser', function(user) {
+        socket.on('inviteUser', function (user) {
             // 刷新用户操作时间
             console.log("ok");
             io.sockets.emit('startInviteUser', user);
         });
 
-        socket.on('leaveUser', function(user) {
+        socket.on('leaveUser', function (user) {
             // 刷新用户操作时间
             io.sockets.emit('startLeaveUser', user);
         });
-        socket.on('sendMessage', function(userData) {
+        socket.on('sendMessage', function (userData) {
             console.log(userData);
             // 刷新用户操作时间
             // clearTimeout(socket.timer);
@@ -119,7 +120,7 @@ var socketlisten = function(io) {
             saveMessages(userData);
             console.log(userData);
         });
-        socket.on('sendImage', function(data) {
+        socket.on('sendImage', function (data) {
             // clearTimeout(socket.timer);
             // socket = connectionTimer(socket, io);
             if (data.name) {
@@ -137,7 +138,7 @@ var socketlisten = function(io) {
                 console.log(relaPath);
                 // console.log(filePath);
                 // 创建文件
-                fs.ensureFile(filePath, function(err) {
+                fs.ensureFile(filePath, function (err) {
                     if (err) {
                         console.log(err);
                         io.sockets.emit('sendImage', {
@@ -145,7 +146,7 @@ var socketlisten = function(io) {
                         });
                     }
                     // 写入文件
-                    fs.outputFile(filePath, dataBuffer, function(err) {
+                    fs.outputFile(filePath, dataBuffer, function (err) {
                         if (err) {
                             console.log(err);
                             io.sockets.emit('sendImage', {
@@ -169,7 +170,7 @@ var socketlisten = function(io) {
             }
         });
 
-        socket.on('disconnect', function() {
+        socket.on('disconnect', function () {
             console.log('用户失去连接');
             if (onlineUsers.hasOwnProperty(socket.userID) && onlineUsers[socket.userID].errorFlag == 1) {
                 delete onlineUsers[socket.userID].errorFlag;
@@ -183,7 +184,7 @@ var socketlisten = function(io) {
 }
 
 function connectionTimer(socket, io) {
-    socket.timer = setTimeout(function() {
+    socket.timer = setTimeout(function () {
         logOut(socket, io);
     }, 18000000);
     return socket;
@@ -209,20 +210,20 @@ function logOut(socket, io) {
     userTemp.userID = socket.userID;
     saveUserUpdateTime(socket.userID);
     if (onlineUsers.hasOwnProperty(socket.userID)) {
-        delete onlineUsers[socket.userID];
-        //在线人数+1
-        onlineCount--;
+        if (onlineUsers[socket.userID].count) {
+            onlineUsers[socket.userID].count--;
+            userTemp.userName = socket.userName + '的分身'
+        }
+        else {
+            delete onlineUsers[socket.userID];
+            //在线人数-1
+            onlineCount--;
+        }
+        io.sockets.emit('userIsLogout', userTemp, onlineUsers);
         console.log(onlineUsers);
         console.log(onlineCount);
     } else {
         console.log('注销用户出错，该用户已是下线状态！');
-    }
-    if (socket.handshake.session.user) {
-        io.sockets.emit('userIsLogout', userTemp, onlineUsers);
-    } else {
-        userTemp.userID = 'unknow';
-        userTemp.userName = 'unknow';
-        socket.emit('userIsLogout', userTemp, onlineUsers);
     }
 }
 
@@ -252,10 +253,13 @@ function sup(n) {
 function saveMessages(userdata) {
     var currentTime = getCurrentTime(0)
     userdata['updateTime'] = currentTime;
-    sql.saveMessages(userdata, function() {});
+    sql.saveMessages(userdata, function () {
+    });
 }
 
 function saveUserUpdateTime(userID) {
-    sql.saveUserUpdateTime(userID, function() {});
+    sql.saveUserUpdateTime(userID, function () {
+    });
 }
+
 exports.socketlisten = socketlisten;
