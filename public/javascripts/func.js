@@ -27,6 +27,7 @@ function initUserData(result) {
         userData['userID'] = result.userInfo.userID;
         userData['userName'] = result.userInfo.nickName;
         userData['role_type'] = result.userInfo.role_type;
+        userData['sessionID'] = result.userInfo.sessionID;
         // 此处为用户登录后默认进入第一个群组
         if (result.projectTeam) {
             userData['projectTeam'] = result.projectTeam[0];
@@ -34,6 +35,10 @@ function initUserData(result) {
         var proNum = result.projectTeam.length;
         // 将用户的所有群组保存在本地
         userTeam = result.projectTeam;
+        //加载socket监听器
+        addSocketListener();
+        //获取在线用户
+        socket.emit("getOnlineUsers");
         //登陆后，获取用户名成功后，在html页面动态显示用户信息、头像
         //遍历用户群组，初始化界面（群组切换标签、聊天窗口）
         var checkNum = userTeam.length;
@@ -63,8 +68,6 @@ function initUserData(result) {
                 }
             });
         });
-        //向后台发送在线信息
-        // socket.emit("userLogin", userData);
     })
 }
 // 初始化项目组内的聊天记录

@@ -62,7 +62,6 @@ var socketlisten = function (io) {
                 if (socket.request.sessionID !== onlineUsers[socket.userID].sessionID) {
                     console.log("用户登陆异常");
                     onlineUsers[socket.userID].errorFlag = 1;
-                    io.sockets.emit(onlineUsers[socket.userID].sessionID, 'loginError', socket.userID);
                     onlineUsers[socket.userID].sessionID = socket.request.sessionID;
                 }
                 var userTemp = {
@@ -74,8 +73,8 @@ var socketlisten = function (io) {
                 userTemp.userID = socket.userID;
                 console.log('userTemp:')
                 console.log(userTemp)
-                io.sockets.emit('userIsLogin', userTemp, onlineUsers);
                 onlineUsers[socket.userID].count++;
+                io.sockets.emit('userIsLogin', userTemp, onlineUsers);
                 console.log(onlineUsers)
             }
 
@@ -97,6 +96,9 @@ var socketlisten = function (io) {
         // 	}
         // 	io.sockets.emit('userIsLogin', userData, onlineUsers);
         // });
+        socket.on('getOnlineUsers',function () {
+            io.sockets.emit('getOnlineUsers', onlineUsers);
+        })
         socket.on('broadcast', function (data) {
             io.sockets.emit('userBroadcast', data);
         });
@@ -172,10 +174,6 @@ var socketlisten = function (io) {
 
         socket.on('disconnect', function () {
             console.log('用户失去连接');
-            if (onlineUsers.hasOwnProperty(socket.userID) && onlineUsers[socket.userID].errorFlag == 1) {
-                delete onlineUsers[socket.userID].errorFlag;
-                return;
-            }
             if (socket.userName) {
                 logOut(socket, io);
             }
@@ -201,7 +199,6 @@ function logOut(socket, io) {
     //         }
     //     }
     // }
-    console.log(socket.userName + "离开了tesla");
     var userTemp = {
         username: '',
         userID: ''
@@ -212,16 +209,21 @@ function logOut(socket, io) {
     if (onlineUsers.hasOwnProperty(socket.userID)) {
         if (onlineUsers[socket.userID].count) {
             onlineUsers[socket.userID].count--;
+            if(onlineUsers[socket.userID].errorFlag && !onlineUsers[socket.userID].count){
+                delete onlineUsers[socket.userID].errorFlag;
+            }
             userTemp.userName = socket.userName + '的分身'
+            io.sockets.emit('getOnlineUsers', onlineUsers);
+            return;
         }
         else {
             delete onlineUsers[socket.userID];
             //在线人数-1
             onlineCount--;
+            io.sockets.emit('userIsLogout', userTemp, onlineUsers);
+            console.log(onlineUsers);
+            console.log(onlineCount);
         }
-        io.sockets.emit('userIsLogout', userTemp, onlineUsers);
-        console.log(onlineUsers);
-        console.log(onlineCount);
     } else {
         console.log('注销用户出错，该用户已是下线状态！');
     }

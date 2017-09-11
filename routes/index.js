@@ -203,6 +203,7 @@ router.post('/login', function(req, res) {
         if (result) {
             console.log("登录成功");
             req.session.user = result;
+            req.session.user.sessionID = req.sessionID
             sql.updateGroupUserName(result.userID, result.nickName, function(result) {
                 res.send(req.session.user);
             });
