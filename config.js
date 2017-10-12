@@ -27,3 +27,4 @@ exports.newDirApi = 'api/dirNewCreate.html';
 exports.uploadApi = 'api/fileUpload.html';
 exports.getFileListApi = 'api/dirList.html';
 exports.uploadCallbackUrl = 'http://localhost:3000/weare/getUploadFile';
+exports.umsUrl = "http://ums.tes-sys.com/ums-api"
