@@ -11,6 +11,7 @@ let staticUrl = config.static;
 let txUrl = config.Tx;
 let imgUrl = config.img;
 let request = require('request')
+var Busboy = require('busboy');
 /*登录页面*/
 router.get('/', function (req, res, next) {
         if (req.session.user) {
@@ -237,7 +238,7 @@ router.post('/login', function (req, res) {
         }
         else {
             console.log(body)
-            if(!body.code){
+            if (!body.code) {
                 let userInfo = {
                     'userID': body.userInfo.userId,
                     'nickName': body.userInfo.nickName,
@@ -253,7 +254,7 @@ router.post('/login', function (req, res) {
                 info.message = "登录成功"
                 res.send(info)
             }
-            else{
+            else {
                 info.message = body.description;
                 res.send(info)
             }
@@ -265,9 +266,58 @@ router.post('/login', function (req, res) {
 /*注销模块*/
 router.post('/logout', function (req, res) {
     console.log("接收注销请求");
-    var _userID = req.session.destroy();
+    req.session.destroy();
     res.send(true);
 });
+
+
+router.post('/uploadFile', function (req, res) {
+    var busboy = new Busboy({ headers: req.headers });
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+
+        file.on('data', function(data) {
+            // console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
+        });
+        file.on('end', function() {
+            console.log('File [' + fieldname + '] Finished');
+        });
+        // skydiskApi.uploadFiles(file,req.session.user)
+        let key = config.skydiskApi.staticKey
+        let md5Key = md5.hex("" + key +  getCurrentTime(2)).toUpperCase()
+        console.log(md5Key)
+        file.pipe(fs.createWriteStream('/Users/ShayneC/Desktop/' + filename))
+        rUpload = request.post({
+            url: config.skydiskApi.url + config.skydiskApi.uploadUrl,
+            formData: {
+                d: md5Key,
+                data: fs.createReadStream('/Users/ShayneC/Desktop/' + filename),
+                url: '/ebookV3',
+                role_type: '3',
+                createUser: 'B220F7C944ECD1DDD0BF063F4439E961'
+            }
+        }, function optionalCallback(err, httpResponse, body) {
+            if(err)
+            {
+
+            }
+            else {
+                console.log(body)
+            }
+        })
+    });
+    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
+        console.log('Field [' + fieldname + ']: value: ');
+        console.log(val)
+    });
+    busboy.on('finish', function() {
+        console.log('Done parsing form!');
+        // res.writeHead(303, { Connection: 'close', Location: '/' });
+        // res.end();
+    });
+    req.pipe(busboy);
+})
+
+
 /*获取上传文件后的结果*/
 router.get('/getUploadFile', function (req, res) {
     if (req.query.flag) {

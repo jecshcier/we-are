@@ -7,7 +7,7 @@ exports.db_config = {
             timestamps: false // true by default
         },
         timezone: '+08:00',
-        host: 'localhost',
+        host: '192.168.109.150',
         dialect: 'mysql',
         dialectOptions: {
             charset: 'utf8mb4'
@@ -26,5 +26,10 @@ exports.skydiskServer = 'http://pan.tes-sys.com/skydisk-ms/';
 exports.newDirApi = 'api/dirNewCreate.html';
 exports.uploadApi = 'api/fileUpload.html';
 exports.getFileListApi = 'api/dirList.html';
+exports.skydiskApi = {
+    url:'http://192.168.109.229:8080/skydisk-ms/',
+    staticKey:'A91E2F',
+    uploadUrl:'api/fileUploadForJson.html'
+}
 exports.uploadCallbackUrl = 'http://localhost:3000/weare/getUploadFile';
 exports.umsUrl = "http://ums.tes-sys.com/ums-api"

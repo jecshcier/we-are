@@ -39,9 +39,7 @@ $(function() {
     });
     // 文件上传按钮
     $("#sendFileIcon").click(function(event) {
-        $(document.getElementById('uploadIframe').contentWindow.document.body).find('[name=dir_id]').attr('value', userData.projectTeam['groupID']);
-        $(document.getElementById('uploadIframe').contentWindow.document.body).find('[name=user_id]').attr('value', userData.userID);
-        $(document.getElementById('uploadIframe').contentWindow.document.body).find('[name=upload_file]')[0].click();
+        $(this).children('input')[0].click();
     });
     $(".fa.fa-code").click(function(event) {
         if (!$(".codeView").is(':visible')) {
@@ -345,6 +343,43 @@ $(function() {
             });
         }
     });
+
+    //上传文件事件监听
+    $("#addFiles").change(function(event){
+        console.log("ok?")
+        var files = this.files;
+        var form = new FormData(); // FormData 对象
+        $.each(files,function(index,el){
+            console.log(el)
+            form.append("files" + index, el);
+        })
+        // 文件对象
+        console.log(form)
+        var url = "/weare/uploadFile"; // 接收上传文件的后台地址
+        var xhr = new XMLHttpRequest();
+        xhr.open("post", url, true); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
+        //请求完成
+        xhr.onload = function(evt){
+            console.log(evt.target.responseText)
+            console.log("请求完成")
+        };
+        //请求失败
+        xhr.onerror =  function(){
+            console.log("请求失败")
+        };
+        //检测上传进度
+        xhr.upload.onprogress = function(evt){
+            console.log(evt.loaded/evt.total)
+        };
+        //监听上传开始事件
+        xhr.upload.onloadstart = function(){
+            console.log("开始上传")
+        };
+        xhr.send(form);
+    })
+
+
+
     // 文件页码切换
     $(".filePage").delegate('.pageNum', 'click', function(event) {
         $(this).addClass('pageHit').siblings().removeClass('pageHit');
