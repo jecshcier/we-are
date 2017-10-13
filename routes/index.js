@@ -225,7 +225,6 @@ router.post('/login', function (req, res) {
         systemCode: "ebook",
         verifyCode: ""
     }
-    console.log(JSON.stringify(userdata))
     request.post({
         url: config.umsUrl + '/user/login',
         body: userdata,
@@ -257,8 +256,6 @@ router.post('/login', function (req, res) {
                 info.message = body.description;
                 res.send(info)
             }
-
-            // console.log(body)
         }
     });
 });
