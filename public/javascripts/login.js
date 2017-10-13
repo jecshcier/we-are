@@ -42,12 +42,18 @@ function login(username, password) {
 				'password': password
 			},
 		})
-		.done(function() {
-			console.log("success");
-			location.href = "/weare/chat";
+		.done(function(data) {
+			if(data.flag){
+                console.log("success");
+                location.href = "/weare/chat";
+			}
+			else {
+				console.log(data.message)
+                shake($("#loginBtn"));
+			}
 		})
 		.fail(function() {
-			console.log("账号或密码错误");
+			alert('服务器错误！')
 			shake($("#loginBtn"));
 		});
 }
