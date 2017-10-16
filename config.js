@@ -1,35 +1,49 @@
 exports.db_config = {
-    databaseName: 'tesedu',
-    username: 'root',
-    password: 'Admin12345*',
+    databaseName: "tesedu",
+    username: "root",
+    password: "Admin12345*",
     options: {
         define: {
             timestamps: false // true by default
         },
-        timezone: '+08:00',
-        host: 'localhost',
-        dialect: 'mysql',
+        timezone: "+08:00",
+        host: "192.168.109.150",
+        dialect: "mysql",
         dialectOptions: {
-            charset: 'utf8mb4'
+            charset: "utf8mb4"
         }
     }
 };
 exports.teslaVersion = "0.1.3"
-exports.skydiskApiKey = 'A91E2F';
-exports.projectName = '/weare';
-exports.static = '/weare/tesla';
-exports.Tx = '/weare/userTx';
-exports.img = '/weare/img';
-exports.imgDir = '../../../tmp/';
-exports.TxDir = 'userTx/';
-exports.skydiskServer = 'http://pan.tes-sys.com/skydisk-ms/';
-exports.newDirApi = 'api/dirNewCreate.html';
-exports.uploadApi = 'api/fileUpload.html';
-exports.getFileListApi = 'api/dirList.html';
-exports.skydiskApi = {
-    url:'http://math.tes-sys.com/skydisk-ms/',
-    staticKey:'A91E2F',
-    uploadUrl:'api/fileUploadForJson.html'
+exports.skydiskApiKey = "A91E2F";
+exports.projectName = "/weare";
+exports.static = "/weare/tesla";
+exports.img = "/weare/img";
+exports.imgDir = "../../../tmp/";
+exports.TxDir = "userTx/";
+exports.skydiskServer = "http://pan.tes-sys.com/skydisk-ms/";
+exports.newDirApi = "api/dirNewCreate.html";
+exports.uploadApi = "api/fileUpload.html";
+exports.getFileListApi = "api/dirList.html";
+exports.Api = {
+    skydisk:{
+        url:"http://math.tes-sys.com/skydisk-ms/",
+        staticKey:"A91E2F",
+        uploadUrl:"api/fileUploadForJson.html",
+        uploadModel:function(d,data,url,role_type,createUser){
+            this.d = d
+            this.data = data
+            this.url = url
+            this.role_type = role_type
+            this.createUser = createUser
+        }
+    },
+    ums:{
+        url:"http://ums.tes-sys.com/ums-api"
+    }
 }
-exports.uploadCallbackUrl = 'http://localhost:3000/weare/getUploadFile';
-exports.umsUrl = "http://ums.tes-sys.com/ums-api"
+exports.sourceDir = {
+    sourceDir: "sourceDir",
+    userImg:"userTx"
+}
+exports.uploadCallbackUrl = "http://localhost:3000/weare/getUploadFile";

@@ -28,7 +28,7 @@ var socketlisten = function (io) {
             }
             userTemp.userID = 'unknow';
             userTemp.userName = 'unknow';
-            socket.emit('userIsLogout', userTemp, onlineUsers);
+            io.sockets.emit('userIsLogout', userTemp, onlineUsers);
         } else {
             socket.userID = socket.request.session.user['userID'];
             socket.userName = socket.request.session.user['nickName'];
