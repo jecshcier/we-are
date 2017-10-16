@@ -7,7 +7,7 @@ exports.db_config = {
             timestamps: false // true by default
         },
         timezone: '+08:00',
-        host: '192.168.109.150',
+        host: 'localhost',
         dialect: 'mysql',
         dialectOptions: {
             charset: 'utf8mb4'
@@ -27,7 +27,7 @@ exports.newDirApi = 'api/dirNewCreate.html';
 exports.uploadApi = 'api/fileUpload.html';
 exports.getFileListApi = 'api/dirList.html';
 exports.skydiskApi = {
-    url:'http://192.168.109.229:8080/skydisk-ms/',
+    url:'http://math.tes-sys.com/skydisk-ms/',
     staticKey:'A91E2F',
     uploadUrl:'api/fileUploadForJson.html'
 }

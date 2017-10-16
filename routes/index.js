@@ -269,49 +269,73 @@ router.post('/logout', function (req, res) {
 
 
 router.post('/uploadFile', function (req, res) {
-    var busboy = new Busboy({ headers: req.headers });
-    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-
-        file.on('data', function(data) {
+    var busboy = new Busboy({headers: req.headers});
+    busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+        console.log(filename)
+        console.log(encoding)
+        console.log(mimetype)
+        let fileSize = 0;
+        file.pipe(request.post({url:'http://localhost:3001/feplugins/uploadPlugins'}))
+        file.on('data', function (data) {
             // console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
+            fileSize += data.length
         });
-        file.on('end', function() {
-            console.log('File [' + fieldname + '] Finished');
+        file.on('end', function () {
+            console.log('File [' + fieldname + '] Finished' + 'size = ' + fileSize);
+            // let rUpload = request.post({
+            //     url: 'http://localhost:3001/feplugins/uploadPlugins',
+            //     formdata: {
+            //         'file': fs.createReadStream('/Users/jecshcier/Music/' + filename)
+            //     }
+            // }, function optionalCallback(err, httpResponse, body) {
+            //     if (err) {
+            //         console.log(err)
+            //     }
+            //     else {
+            //         console.log(body)
+            //     }
+            // }).on('drain', (data) => {
+            //     let progress = rUpload.req.connection._bytesDispatched / fileSize;
+            //     console.log(progress)
+            // })
         });
         // skydiskApi.uploadFiles(file,req.session.user)
-        let key = config.skydiskApi.staticKey
-        let md5Key = md5.hex("" + key +  getCurrentTime(2)).toUpperCase()
-        console.log(md5Key)
-        file.pipe(fs.createWriteStream('/Users/ShayneC/Desktop/' + filename))
-        rUpload = request.post({
-            url: config.skydiskApi.url + config.skydiskApi.uploadUrl,
-            formData: {
-                d: md5Key,
-                data: fs.createReadStream('/Users/ShayneC/Desktop/' + filename),
-                url: '/ebookV3',
-                role_type: '3',
-                createUser: 'B220F7C944ECD1DDD0BF063F4439E961'
-            }
-        }, function optionalCallback(err, httpResponse, body) {
-            if(err)
-            {
-
-            }
-            else {
-                console.log(body)
-            }
-        })
+        // console.log(fs.createReadStream('/Users/jecshcier/Desktop/e8105fb14dd016e418e07cdc339d_302_302.jpg'))
+        // console.log('-------------区别-------------')
+        // console.log(file)
+        // let key = config.skydiskApi.staticKey
+        // let md5Key = md5.hex("" + key + getCurrentTime(2)).toUpperCase()
+        // console.log(md5Key)
+        // rUpload = request.post({
+        //     url: config.skydiskApi.url + config.skydiskApi.uploadUrl,
+        //     formData: {
+        //         d: md5Key,
+        //         data: file,
+        //         url: '/ebookV3',
+        //         role_type: '3',
+        //         createUser: 'B220F7C944ECD1DDD0BF063F4439E961'
+        //     }
+        // }, function optionalCallback(err, httpResponse, body) {
+        //     if(err)
+        //     {
+        //
+        //     }
+        //     else {
+        //         console.log(body)
+        //     }
+        // })
     });
-    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
+    busboy.on('field', function (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
         console.log('Field [' + fieldname + ']: value: ');
         console.log(val)
     });
-    busboy.on('finish', function() {
+    busboy.on('finish', function () {
         console.log('Done parsing form!');
         // res.writeHead(303, { Connection: 'close', Location: '/' });
         // res.end();
     });
     req.pipe(busboy);
+    // console.log(res.files)
 })
 
 
