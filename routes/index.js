@@ -290,21 +290,25 @@ router.post('/logout', function (req, res) {
 
 router.post('/uploadFile', function (req, res) {
     let info = {
-        flag:false,
-        message:'',
-        data:null
+        flag: false,
+        message: '',
+        data: null
     }
-    console.log(req.app.get('socket'))
     io = req.app.get('socket')
     var busboy = new Busboy({headers: req.headers});
     busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
         let fileSize = 0;
-        file.on('data', function(data) {
+        file.on('data', function (data) {
             // console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
             fileSize += data.length
+
         });
-        file.on('end', function() {
+        file.on('end', function () {
             console.log('File [' + fieldname + '] Finished');
+        });
+
+        file.on('close', function () {
+            console.log('File [' + fieldname + '] closed');
         });
         console.log(filename)
         console.log(mimetype)
@@ -320,7 +324,7 @@ router.post('/uploadFile', function (req, res) {
         let storeFileName = '/' + Date.now() + '-' + filename
         let writerStream = fs.createWriteStream(path.normalize(sourcePath + storeFileName))
         file.pipe(writerStream)
-        writerStream.on('error',(err)=>{
+        writerStream.on('error', (err) => {
             writerStream.end(err);
         })
         writerStream.on('finish', () => {
@@ -341,17 +345,18 @@ router.post('/uploadFile', function (req, res) {
                     res.send(info)
                 }
                 else {
-                    if(body){
+                    if (body) {
                         let obj
-                        try{
+                        try {
                             obj = JSON.parse(body)
                         }
-                        catch (e){
+                        catch (e) {
                             console.log(err)
                             info.message = "上传错误"
                             res.send(info)
+                            return false
                         }
-                        if(obj.ok){
+                        if (obj.ok) {
                             console.log(body)
                             io.sockets.emit('end_store')
                             info.flag = true
@@ -359,7 +364,7 @@ router.post('/uploadFile', function (req, res) {
                             info.data = obj.data
                             res.send(info)
                         }
-                        else{
+                        else {
                             console.log(body)
                             io.sockets.emit('end_store')
                             info.message = obj.message
@@ -367,7 +372,7 @@ router.post('/uploadFile', function (req, res) {
                             res.send(info)
                         }
                     }
-                    else{
+                    else {
                         console.log(err)
                         info.message = "上传错误"
                         res.send(info)
