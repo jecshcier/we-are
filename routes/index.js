@@ -329,7 +329,12 @@ router.post('/uploadFile', function (req, res) {
             let rUpload = request.post({
                 url: config.Api.skydisk.url + config.Api.skydisk.uploadUrl,
                 formData: uploadData
+                // url:"http://127.0.0.1:3001/rm/uploadPlugins/fe_plugins/075012",
+                // formData: {
+                //     'file':fs.createReadStream(path.normalize(sourcePath + storeFileName))
+                // }
             }, function optionalCallback(err, httpResponse, body) {
+                console.log(body)
                 if (err) {
                     console.log(err)
                     info.message = err
