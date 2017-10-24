@@ -301,7 +301,6 @@ router.post('/uploadFile', function (req, res) {
         file.on('data', function (data) {
             // console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
             fileSize += data.length
-
         });
         file.on('end', function () {
             console.log('File [' + fieldname + '] Finished');
@@ -312,37 +311,41 @@ router.post('/uploadFile', function (req, res) {
         });
         console.log(filename)
         console.log(mimetype)
+
         let key = config.Api.skydisk.staticKey
         let md5Key = md5.hex("" + key + getCurrentTime(2)).toUpperCase()
-        console.log(md5Key)
         let uploadData = new config.Api.skydisk.uploadModel()
         uploadData.d = md5Key
         uploadData.url = '/ebookV3'
         uploadData.role_type = req.session.user.role_type
         uploadData.createUser = req.session.user.userID
         io.sockets.emit('start_upload')
+
+        
         let storeFileName = '/' + Date.now() + '-' + filename
         let writerStream = fs.createWriteStream(path.normalize(sourcePath + storeFileName))
         file.pipe(writerStream)
         writerStream.on('error', (err) => {
             writerStream.end(err);
+            info.message = err
+            res.send(info)
         })
         writerStream.on('finish', () => {
+            info.flag = true
+            info.message = "上传成功"
+            res.send(info)
             io.sockets.emit('start_store')
+
+
             uploadData.data = fs.createReadStream(path.normalize(sourcePath + storeFileName))
             let rUpload = request.post({
                 url: config.Api.skydisk.url + config.Api.skydisk.uploadUrl,
                 formData: uploadData
-                // url:"http://127.0.0.1:3001/rm/uploadPlugins/fe_plugins/075012",
-                // formData: {
-                //     'file':fs.createReadStream(path.normalize(sourcePath + storeFileName))
-                // }
             }, function optionalCallback(err, httpResponse, body) {
-                console.log(body)
                 if (err) {
                     console.log(err)
-                    info.message = err
-                    res.send(info)
+                    // info.message = err
+                    // res.send(info)
                 }
                 else {
                     if (body) {
@@ -352,30 +355,30 @@ router.post('/uploadFile', function (req, res) {
                         }
                         catch (e) {
                             console.log(err)
-                            info.message = "上传错误"
-                            res.send(info)
+                            // info.message = "上传错误"
+                            // res.send(info)
                             return false
                         }
                         if (obj.ok) {
                             console.log(body)
                             io.sockets.emit('end_store')
-                            info.flag = true
-                            info.message = obj.message
-                            info.data = obj.data
-                            res.send(info)
+                            // info.flag = true
+                            // info.message = obj.message
+                            // info.data = obj.data
+                            // res.send(info)
                         }
                         else {
                             console.log(body)
                             io.sockets.emit('end_store')
-                            info.message = obj.message
-                            info.data = obj.data
-                            res.send(info)
+                            // info.message = obj.message
+                            // info.data = obj.data
+                            // res.send(info)
                         }
                     }
                     else {
                         console.log(err)
-                        info.message = "上传错误"
-                        res.send(info)
+                        // info.message = "上传错误"
+                        // res.send(info)
                     }
 
                 }

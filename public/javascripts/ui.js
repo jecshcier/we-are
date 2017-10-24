@@ -375,6 +375,7 @@ $(function() {
         xhr.upload.onloadstart = function(){
             console.log("开始上传")
         };
+        console.log("上传")
         xhr.send(form);
     })
 
