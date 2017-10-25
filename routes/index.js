@@ -334,18 +334,21 @@ router.post('/uploadFile', function (req, res) {
             info.flag = true
             info.message = "上传成功"
             res.send(info)
-            io.sockets.emit('start_store')
-
 
             uploadData.data = fs.createReadStream(path.normalize(sourcePath + storeFileName))
             let rUpload = request.post({
                 url: config.Api.skydisk.url + config.Api.skydisk.uploadUrl,
                 formData: uploadData
             }, function optionalCallback(err, httpResponse, body) {
+                let result = {
+                    flag: false,
+                    message: '',
+                    data: null
+                }
                 if (err) {
                     console.log(err)
-                    // info.message = err
-                    // res.send(info)
+                    result.message = err
+                    io.sockets.emit('end_store',result)
                 }
                 else {
                     if (body) {
@@ -355,30 +358,27 @@ router.post('/uploadFile', function (req, res) {
                         }
                         catch (e) {
                             console.log(err)
-                            // info.message = "上传错误"
-                            // res.send(info)
+                            result.message = "上传错误"
+                            io.sockets.emit('end_store',result)
                             return false
                         }
                         if (obj.ok) {
                             console.log(body)
-                            io.sockets.emit('end_store')
-                            // info.flag = true
-                            // info.message = obj.message
-                            // info.data = obj.data
-                            // res.send(info)
+                            result.flag = true
+                            result.message = obj.message
+                            result.data = obj.data
+                            io.sockets.emit('end_store',result)
                         }
                         else {
-                            console.log(body)
-                            io.sockets.emit('end_store')
-                            // info.message = obj.message
-                            // info.data = obj.data
-                            // res.send(info)
+                            result.message = obj.message
+                            result.data = obj.data
+                            io.sockets.emit('end_store',result)
                         }
                     }
                     else {
                         console.log(err)
-                        // info.message = "上传错误"
-                        // res.send(info)
+                        result.message = "上传错误"
+                        io.sockets.emit('end_store',result)
                     }
 
                 }

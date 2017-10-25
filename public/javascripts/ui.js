@@ -9,19 +9,19 @@
 // 		window.scrollTo(0, 1);
 // 	}, 100);
 // }
-$(function() {
+$(function () {
     //头像
-    $(".defaultTx").click(function(event) {
+    $(".defaultTx").click(function (event) {
         var url = $(this).attr('src');
         $(".myTxDiv>img").attr('src', url);
     });
     // 保存头像
-    $("#saveTx").click(function(event) {
+    $("#saveTx").click(function (event) {
         var url = $(".myTxDiv > img").attr('src');
         changeTx(url);
     });
     // emoji表情按钮
-    $(".fa.fa-smile-o").click(function(event) {
+    $(".fa.fa-smile-o").click(function (event) {
         event.stopPropagation();
         if ($(".emojiDiv").is(':visible')) {
             $(".emojiDiv").hide(500);
@@ -29,19 +29,19 @@ $(function() {
             $(".emojiDiv").show(500);
         }
     });
-    $(".emojiDiv > span").click(function(event) {
+    $(".emojiDiv > span").click(function (event) {
         event.stopPropagation();
         editor.replaceSelection($(this).html())
     });
     // 图片上传按钮
-    $("#sendImg").click(function(event) {
+    $("#sendImg").click(function (event) {
         $(this).children('input')[0].click();
     });
     // 文件上传按钮
-    $("#sendFileIcon").click(function(event) {
+    $("#sendFileIcon").click(function (event) {
         $(this).children('input')[0].click();
     });
-    $(".fa.fa-code").click(function(event) {
+    $(".fa.fa-code").click(function (event) {
         if (!$(".codeView").is(':visible')) {
             $(".codeView").show(300);
         } else {
@@ -50,11 +50,11 @@ $(function() {
             }
         }
     });
-    $(".codeView > a").click(function(event) {
+    $(".codeView > a").click(function (event) {
         editor.replaceSelection("##" + $(this).html() + "#\n\n" + "#" + $(this).html() + "##");
     });
     //左侧项目名称切换
-    $('.left>ul').on('click', 'li', function(event) {
+    $('.left>ul').on('click', 'li', function (event) {
         if ($(this).hasClass('leftActive')) {
             return false;
         }
@@ -79,9 +79,9 @@ $(function() {
         }
         var imgArr = $(".showMess[projectID=" + pID + "] .messContent img");
         var imgArrlength = imgArr.length;
-        imgArr.each(function(index, el) {
+        imgArr.each(function (index, el) {
             imgArrlength--;
-            $(this)[0].onload = function() {
+            $(this)[0].onload = function () {
                 this.onload = null;
                 if (!imgArrlength) {
                     $('.showArea').scrollTop(_this.height());
@@ -91,21 +91,21 @@ $(function() {
         $('.showArea').scrollTop(_this.height());
     })
     // 人员配置-项目组切换
-    $(".editUser > div > select").change(function(event) {
+    $(".editUser > div > select").change(function (event) {
         var pID = $(this).children('option:selected').val();
         showProUser(pID);
     });
     // 刷新所有成员
-    $(".reUser").click(function(event) {
+    $(".reUser").click(function (event) {
         var currentPID = $(".editUser > div > select").val();
-        getWholeUser(function() {
+        getWholeUser(function () {
             $(".editUser > div > select").val(currentPID);
             showProUser(currentPID);
         });
         $(".editUser > div > select").get(0).selectedIndex = 0;
     });
     // 增删项目组成员
-    $(".editUser").delegate('.groupuser > a > label', 'click', function(event) {
+    $(".editUser").delegate('.groupuser > a > label', 'click', function (event) {
         if ($(this).attr('loading') === 'true') {
             return false;
         }
@@ -137,7 +137,7 @@ $(function() {
             groupName: groupName
         }
         if (_this.checked) {
-            deleteUserInGroupApi(group, user, function() {
+            deleteUserInGroupApi(group, user, function () {
                 _dom.removeAttr('loading');
                 // if (groupID === currentGroupID) {
                 //     getProjectUsers(currentGroupID);
@@ -146,7 +146,7 @@ $(function() {
                 socket.emit("leaveUser", socketUser)
             });
         } else {
-            addUserToGroupApi(group, user, function() {
+            addUserToGroupApi(group, user, function () {
                 _dom.removeAttr('loading');
                 // if (groupID === currentGroupID) {
                 //     getProjectUsers(currentGroupID);
@@ -156,7 +156,7 @@ $(function() {
         }
     });
     //底部tab切换
-    $('.tabArea>ul>li').click(function() {
+    $('.tabArea>ul>li').click(function () {
         if ($(this).hasClass("tabActive")) {
             return false;
         }
@@ -169,7 +169,7 @@ $(function() {
         }
     })
     //设置窗口tab切换
-    $('.setTitle ul li').click(function() {
+    $('.setTitle ul li').click(function () {
         if ($(this).hasClass('setMenuActive')) {
             return;
         }
@@ -177,7 +177,7 @@ $(function() {
         $('.setContent>div:eq(' + $(this).index() + ')').show().siblings().hide();
         if ($(this).attr('rel') === "userConfig") {
             if (!$(this).hasClass('userLoaded')) {
-                getWholeUser(function() {
+                getWholeUser(function () {
                     var currentPID = userData.projectTeam.groupID;
                     $(".editUser > div > select").val(currentPID);
                     showProUser(currentPID);
@@ -187,12 +187,12 @@ $(function() {
         }
     })
     // 关闭设置窗口
-    $('.setWinClose').click(function() {
+    $('.setWinClose').click(function () {
         $('.setWin').hide();
         $('.mask').hide();
     })
     //项目组选择
-    $('.programmeUl ul').on('click', 'li', function(event) {
+    $('.programmeUl ul').on('click', 'li', function (event) {
         if ($(this).hasClass('preventClick')) {
             return false;
         }
@@ -210,7 +210,7 @@ $(function() {
         }
     });
     //添加项目组
-    $('.addPro').click(function() {
+    $('.addPro').click(function () {
         var newPro = prompt('请输入新项目组名');
         if (newPro) {
             addProject(newPro);
@@ -218,12 +218,12 @@ $(function() {
             alert('请输入正确的项目组名称');
         }
     })
-    $(".proReflash").click(function(event) {
+    $(".proReflash").click(function (event) {
         reflashPro();
         $(".groupuser > a > input:checked").attr('checked', false);
     });
     //弹出设置对话框
-    $('.set.config').click(function() {
+    $('.set.config').click(function () {
         $('.setWin').show();
         $('.mask').show();
         if (!parseInt(userData['role_type'])) {
@@ -241,28 +241,29 @@ $(function() {
         }
     })
     // 注销
-    $(".signout").click(function(event) {
+    $(".signout").click(function (event) {
         helpMess({
             width: '200px',
             content: '您确定要注销吗？',
             okValue: '确 定',
-            ok: function() {
-                logout(userData.userID, function() {
+            ok: function () {
+                logout(userData.userID, function () {
                     $(window).unbind('beforeunload');
                     window.location.href = "/weare";
                 })
             },
             cancelValue: '取消',
-            cancel: function() {}
+            cancel: function () {
+            }
         })
     });
     // @成员
-    $(".right > ul").delegate('li', 'click', function(event) {
+    $(".right > ul").delegate('li', 'click', function (event) {
         editor.replaceSelection('@' + $(this).children('span').html() + ' ')
         editor.focus();
     });
     // 对话列表的滚动监听
-    $(".showArea").scroll(function(event) {
+    $(".showArea").scroll(function (event) {
         var $showArea = $(this)
         if (!$(this).scrollTop()) {
             var $showClass = $(".showClass");
@@ -270,7 +271,7 @@ $(function() {
             currentPage++;
             var groupID = $showClass.attr('projectid');
             var preH = $showClass.height()
-            getGroupMessages(groupID, currentPage, function(len) {
+            getGroupMessages(groupID, currentPage, function (len) {
                 if (len) {
                     enablecodeMirrorMode();
                     $showClass.attr('currentPage', currentPage);
@@ -281,7 +282,7 @@ $(function() {
         }
     });
     // 图片点击放大
-    $(".showArea").on('click', '.messContent > img', function(e) {
+    $(".showArea").on('click', '.messContent > img', function (e) {
         e.preventDefault();
 
         var target = e.target;
@@ -294,24 +295,25 @@ $(function() {
     /***************
      *  上传图片按钮监听事件 *
      ***************/
-    $('#addImg').change(function(event) {
+    $('#addImg').change(function (event) {
         var images = this.files;
         console.log(images);
         var fileCheck = true;
-        $.each(images, function(index, val) {
+        $.each(images, function (index, val) {
             var pos = val.name.replace(/.+\./, "").toLowerCase();
             if ($.inArray(pos, imgArr) == -1) {
                 fileCheck = false;
                 helpMess({
                     content: "<span style='color:red'>" + val.name + "</span><br>不正确的后缀名！请选择正确的图片文件！",
                     okValue: '确 定',
-                    ok: function() {}
+                    ok: function () {
+                    }
                 })
                 return false;
             }
         });
         if (fileCheck) {
-            $.each(images, function(index, val) {
+            $.each(images, function (index, val) {
                 var objUrl = getObjectURL(val);
                 var tempClass = getRandomID(userData.userID);
                 var textAreaVal = '<img class="' + tempClass + '" src="' + objUrl + '"><article class="' + tempClass + 'imgLoading loading" style="width:100%;height:100%;position:absolute;top:0;left:0;background-color:#fff;"></article>';
@@ -320,13 +322,13 @@ $(function() {
                 userData['message'] = textAreaVal;
                 sendMessages(0, userData, 0, _this, 0);
                 $('.' + tempClass + 'imgLoading').mLoading(1);
-                $("." + tempClass)[0].onload = function() {
+                $("." + tempClass)[0].onload = function () {
                     $(this).removeClass(tempClass);
                     $('.showArea').scrollTop(_this.height());
                 }
                 var reader = new FileReader();
                 userData['message'] = '<img src="{imgUrl}" class="messImg" onerror="imgOnfail(this)">';
-                reader.onload = function(evt) {
+                reader.onload = function (evt) {
                     socket.emit('sendImage', {
                         'name': val.name,
                         'segment': evt.target.result,
@@ -345,34 +347,94 @@ $(function() {
     });
 
     //上传文件事件监听
-    $("#addFiles").change(function(event){
-        console.log("ok?")
+    $("#addFiles").change(function (event) {
         var files = this.files;
+        if (files.length > 1) {
+            helpMess({
+                content: "<span style='color:red'>暂不支持多文件上传。。</span>",
+                okValue: '确 定',
+                ok: function () {
+                }
+            })
+            return false
+        }
+        var pos = files[0].name.split('.')
+        var fileextname = pos[pos.length - 1]
+        var filename = files[0].name
+        var filesize = getFileSize(files[0].size)
+        var messageID = userData.userID + new Date().getTime();
+        var text = '<i class="ico ico-' + fileextname + '">' + fileextname + '</i><div class="fileinfo"><p>' + filename + '</p><p>' + filesize + '<a tar="' + messageID + '" href="#"  target="_blank">下载</a></p></div><div class="' + messageID + '" style="position:absolute;width:100%;height:100%;justify-content: center;align-items: center;left: 0;top:0;font-size: 25px;" ><div style="position:absolute;width:100%;height:100%;background-color: rgba(251, 126, 116,.5);left: 0;top: 0;"></div><span style="position: absolute;">0%</span></div>'
+        var _this = $('.showMess[projectID="' + userData.projectTeam.groupID + '"]');
+        userData['messageType'] = 'file';
+        userData['message'] = text;
+        userData['fileCheck'] = true;
+        userData['fileName'] = filename;
+        userData['messageID'] = messageID
+        sendMessages(0, userData, 0, _this, 0);
+        // socket.emit("sendMessage", userData);
+        delete userData['fileCheck'];
+        delete userData['fileName'];
+        autoScroll($(".showClass"));
+
         var form = new FormData(); // FormData 对象
-        $.each(files,function(index,el){
+        $.each(files, function (index, el) {
             console.log(el)
             form.append("files" + index, el);
         })
         // 文件对象
         console.log(form)
+        var $contentDiv = $("#" + messageID)
+        var $mask = $("div." + messageID)
+        var $span = $("div." + messageID + ">span")
+        var $div = $("div." + messageID + ">div")
+
+
         var url = "/weare/uploadFile"; // 接收上传文件的后台地址
         var xhr = new XMLHttpRequest();
         xhr.open("post", url, true); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
         //请求完成
-        xhr.onload = function(evt){
-            console.log(evt.target.responseText)
-            console.log("请求完成")
+        xhr.onload = function (evt) {
+            $mask.empty()
+            $mask.css({
+                'color':'#fb7e74',
+                'font-size':'18px'
+            })
+            $contentDiv.find('.textLoading').remove()
+            var result;
+            try{
+                result = JSON.parse(evt.target.responseText)
+            }
+            catch(e) {
+                $mask.html('上传失败!')
+                return false
+            }
+            if(result){
+                if(result.flag){
+                    $mask.html('<i class="fa fa-refresh fa-spin fa-3x fa-fw"></i>')
+                    $contentDiv.css('opacity','.5')
+                    console.log("请求完成")
+                }
+                else{
+                    $mask.html(result.message)
+                }
+            }else {
+                $mask.html('上传失败!')
+                return false
+            }
         };
         //请求失败
-        xhr.onerror =  function(){
+        xhr.onerror = function () {
             console.log("请求失败")
         };
         //检测上传进度
-        xhr.upload.onprogress = function(evt){
-            console.log(evt.loaded/evt.total)
+        xhr.upload.onprogress = function (evt) {
+
+            var progress = parseInt(evt.loaded / evt.total * 100)
+            $span.html(progress + '%')
+            $div.css('height', (100 - progress) + '%')
         };
         //监听上传开始事件
-        xhr.upload.onloadstart = function(){
+        xhr.upload.onloadstart = function () {
             console.log("开始上传")
         };
         console.log("上传")
@@ -380,15 +442,14 @@ $(function() {
     })
 
 
-
     // 文件页码切换
-    $(".filePage").delegate('.pageNum', 'click', function(event) {
+    $(".filePage").delegate('.pageNum', 'click', function (event) {
         $(this).addClass('pageHit').siblings().removeClass('pageHit');
         var page = parseInt($(this).attr('pagenum'));
         var pID = $(".fileListView").attr('currentpro');
         getYunFile(pID, userData.userID, page, 'create_time', 'desc', 1);
     });
-    $(".fileTableDiv").delegate('.sendFileMessage', 'click', function(event) {
+    $(".fileTableDiv").delegate('.sendFileMessage', 'click', function (event) {
         $(".chatMenu")[0].click();
         var _this = $('.showMess[projectID="' + userData.projectTeam.groupID + '"]');
         var pDom = $(this).parent().parent();
@@ -408,41 +469,39 @@ $(function() {
         autoScroll($(".showClass"));
     });
     // 日报
-    $("i.daily").click(function(event) {
+    $("i.daily").click(function (event) {
         editor.replaceSelection("【项目名称】\n1、进度汇报\n\n2、任务问题讨论\n\n3、明天重点工作安排\n\n4、工作资源需求，或请假需求\n");
     });
     // 更改对话框高度
     var heightResizeCheck = false;
-    $(".move-bar").mousedown(function(event) {
+    $(".move-bar").mousedown(function (event) {
         heightResizeCheck = true;
         var currentY = event.pageY;
         var pH = parseInt($(".postArea").css('height'));
-        $(document).mousemove(function(evt) {
+        $(document).mousemove(function (evt) {
             var realY = currentY - evt.pageY;
             pH += realY;
             $(".postArea").css('height', pH + 'px');
             currentY = evt.pageY;
         });
     });
-    $(document).mouseup(function(event) {
+    $(document).mouseup(function (event) {
         if (heightResizeCheck) {
             $(document).unbind('mousemove');
             heightResizeCheck = false;
         }
     });
 
-    $("#textArea").click(function(event) {
+    $("#textArea").click(function (event) {
         editor.focus();
     });
-
-
 
 
     var canPreviewType = ["png", "jpg", "gif", "bmp", "jpeg", "pdf", "mp4", "webm", "ogg"];
     var previewByPhotoSwipe = ["png", "jpg", "gif", "bmp", "jpeg"];
     var previewByVideo = ["mp4", "webm", "ogg"];
     // 双击对话框中文件的图标，预览资源
-    $(".showArea").on("dblclick",".messageBlock .ico",function(e) {
+    $(".showArea").on("dblclick", ".messageBlock .ico", function (e) {
         var $this = $(e.currentTarget);
         var type = $this.text();
         // 判断文件类型是否存在
@@ -480,14 +539,14 @@ $(function() {
 
         var img = new Image();
 
-        img.addEventListener("load", function() {
+        img.addEventListener("load", function () {
             // 显示图片
             showPhotoSwipeImgs(imgPath, this.width, this.height);
 
             $this.siblings(".img-loading").remove();
         }, false);
         // 图片加载失败
-        img.addEventListener("error", function() {
+        img.addEventListener("error", function () {
             alert("图片加载失败！");
             $this.siblings(".img-loading").remove();
         }, false);
@@ -512,12 +571,12 @@ $(function() {
         // });
 
         // 显示播放器
-        $modal.fadeIn(function() {
+        $modal.fadeIn(function () {
             $modal.css("display", "flex");
         });
 
         // 绑定关闭事件
-        $modal.find(".modal-close").off("click").on("click", function() {
+        $modal.find(".modal-close").off("click").on("click", function () {
             videoPlayer.pause();
             $modal.fadeOut();
         });
@@ -537,16 +596,15 @@ $(function() {
         }
 
         // 显示阅读器
-        $modal.fadeIn(function() {
+        $modal.fadeIn(function () {
             $modal.css("display", "flex");
         });
 
         // 绑定关闭事件
-        $modal.find(".modal-close").off("click").on("click", function() {
+        $modal.find(".modal-close").off("click").on("click", function () {
             $modal.fadeOut();
         });
     }
-
 
 
     // 全局广播消息提示

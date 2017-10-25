@@ -182,6 +182,10 @@ function addSocketListener() {
             });
         }
     })
+    //上传结果监听
+    socket.on('end_store',function(info){
+        console.log(info)
+    })
 
     socket.on('connect', function (data) {
         removeLoader();

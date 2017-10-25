@@ -490,12 +490,12 @@ pre {
 
 .textLoading {
     position: absolute;
-    width: 16px;
-    height: 16px;
-    font-size: 16px;
-    right: 10px;
-    bottom: 5px;
-    color: rgba(249, 197, 79, .75);
+    width: 22px;
+    height: 22px;
+    font-size: 22px;
+    left: -40px;
+    bottom: 30px;
+    color: rgb(251, 126, 116);
 }
 
 .myMess {

@@ -7,7 +7,7 @@ exports.db_config = {
             timestamps: false // true by default
         },
         timezone: "+08:00",
-        host: "localhost",
+        host: "192.168.109.150",
         dialect: "mysql",
         dialectOptions: {
             charset: "utf8mb4"
