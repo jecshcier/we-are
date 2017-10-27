@@ -183,8 +183,23 @@ function addSocketListener() {
         }
     })
     //上传结果监听
-    socket.on('end_store',function(info){
-        console.log(info)
+    socket.on('end_store', function (info) {
+        var user = JSON.parse(info.userData)
+        if(user.userID !== userData.userID){
+            return false
+        }
+        if (info.flag) {
+            var resData = JSON.parse(info.data)
+            var downloadurl = resData.downloadurl
+            user.message = user.message.replace(/{downloadUrl}/,downloadurl)
+            $("[tar=" + user.messageID + "]").attr('href',downloadurl)
+            $("div." + user.messageID).remove()
+            $("#" + user.messageID).css('opacity', '1')
+            socket.emit("sendMessage", user);
+        }
+        else {
+            $("div." + user.messageID).html(info.message)
+        }
     })
 
     socket.on('connect', function (data) {
@@ -194,7 +209,7 @@ function addSocketListener() {
         addLoader('您已断线')
     });
     socket.on('reconnecting', function (data) {
-        changeLoaderString('我勒个槽，断线重连中……');
+        changeLoaderString('断线重连中……小tesla要窒息');
     });
     socket.on('reconnect_failed', function (data) {
         changeLoaderString('重连失败，请检查网络');

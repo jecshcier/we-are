@@ -338,7 +338,7 @@ $(function () {
                     });
                 };
                 reader.readAsDataURL(val);
-                if (index == images.length - 1) {
+                if (index === images.length - 1) {
                     console.log("ok");
                     $('#addImg').val('');
                 }
@@ -363,7 +363,7 @@ $(function () {
         var filename = files[0].name
         var filesize = getFileSize(files[0].size)
         var messageID = userData.userID + new Date().getTime();
-        var text = '<i class="ico ico-' + fileextname + '">' + fileextname + '</i><div class="fileinfo"><p>' + filename + '</p><p>' + filesize + '<a tar="' + messageID + '" href="#"  target="_blank">下载</a></p></div><div class="' + messageID + '" style="position:absolute;width:100%;height:100%;justify-content: center;align-items: center;left: 0;top:0;font-size: 25px;" ><div style="position:absolute;width:100%;height:100%;background-color: rgba(251, 126, 116,.5);left: 0;top: 0;"></div><span style="position: absolute;">0%</span></div>'
+        var text = '<i class="ico ico-' + fileextname + '">' + fileextname + '</i><div class="fileinfo"><p>' + filename + '</p><p>' + filesize + '<a tar="' + messageID + '" href="{downloadUrl}"  target="_blank">下载</a></p></div>'
         var _this = $('.showMess[projectID="' + userData.projectTeam.groupID + '"]');
         userData['messageType'] = 'file';
         userData['message'] = text;
@@ -371,9 +371,12 @@ $(function () {
         userData['fileName'] = filename;
         userData['messageID'] = messageID
         sendMessages(0, userData, 0, _this, 0);
-        // socket.emit("sendMessage", userData);
-        delete userData['fileCheck'];
-        delete userData['fileName'];
+
+        var $contentDiv = $("#" + messageID)
+        $("#" + messageID + " .messContent").append('<div class="' + messageID + '" style="position:absolute;width:100%;height:100%;justify-content: center;align-items: center;left: 0;top:0;font-size: 25px;" ><div style="position:absolute;width:100%;height:100%;background-color: rgba(251, 126, 116,.5);left: 0;top: 0;"></div><span style="position: absolute;">0%</span></div>')
+        var $mask = $("div." + messageID)
+        var $span = $("div." + messageID + ">span")
+        var $div = $("div." + messageID + ">div")
         autoScroll($(".showClass"));
 
         var form = new FormData(); // FormData 对象
@@ -381,12 +384,11 @@ $(function () {
             console.log(el)
             form.append("files" + index, el);
         })
+        form.append("userData", JSON.stringify(userData));
+        delete userData['fileCheck'];
+        delete userData['fileName'];
         // 文件对象
         console.log(form)
-        var $contentDiv = $("#" + messageID)
-        var $mask = $("div." + messageID)
-        var $span = $("div." + messageID + ">span")
-        var $div = $("div." + messageID + ">div")
 
 
         var url = "/weare/uploadFile"; // 接收上传文件的后台地址
@@ -396,28 +398,29 @@ $(function () {
         xhr.onload = function (evt) {
             $mask.empty()
             $mask.css({
-                'color':'#fb7e74',
-                'font-size':'18px'
+                'color': '#fb7e74',
+                'font-size': '18px'
             })
             $contentDiv.find('.textLoading').remove()
             var result;
-            try{
+            try {
                 result = JSON.parse(evt.target.responseText)
             }
-            catch(e) {
+            catch (e) {
                 $mask.html('上传失败!')
                 return false
             }
-            if(result){
-                if(result.flag){
+            if (result) {
+                if (result.flag) {
                     $mask.html('<i class="fa fa-refresh fa-spin fa-3x fa-fw"></i>')
-                    $contentDiv.css('opacity','.5')
+                    $contentDiv.css('opacity', '.5')
                     console.log("请求完成")
                 }
-                else{
+                else {
                     $mask.html(result.message)
+                    return false
                 }
-            }else {
+            } else {
                 $mask.html('上传失败!')
                 return false
             }
@@ -428,7 +431,6 @@ $(function () {
         };
         //检测上传进度
         xhr.upload.onprogress = function (evt) {
-
             var progress = parseInt(evt.loaded / evt.total * 100)
             $span.html(progress + '%')
             $div.css('height', (100 - progress) + '%')
