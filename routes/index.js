@@ -353,15 +353,79 @@ router.post('/uploadFile', function (req, res) {
             }
             console.log('md5Path--->', md5Path)
             md5Path = path.normalize(sourcePath + '/' + md5Path)
+            let newFilePath = path.normalize(md5Path + '/' + filename)
             info.flag = true
             info.message = "上传成功"
             res.send(info)
-            fs.ensureDir(md5Path).then(() => {
-                return fs.rename(filepath, path.normalize(md5Path + '/' + filename))
-            }, (err) => {
-                console.log("err")
-            }).then(() => {
 
+            fs.ensureDir(md5Path).then(() => {
+                return fs.rename(filepath, newFilePath)
+            }, (err) => {
+                console.log(err)
+                io.sockets.emit('end_store', {
+                    flag: false,
+                    message: "上传错误" + err,
+                    data: null,
+                    userData: null
+                })
+                return false
+            }).then(() => {
+                //此处开始向资源管理系统传文件
+                uploadData.data = fs.createReadStream(newFilePath)
+                let rUpload = request.post({
+                    url: config.Api.skydisk.url + config.Api.skydisk.uploadUrl,
+                    formData: uploadData
+                }, function optionalCallback(err, httpResponse, body) {
+                    let result = {
+                        flag: false,
+                        message: '',
+                        data: null,
+                        userData: null
+                    }
+                    if (err) {
+                        console.log(err)
+                        result.message = err
+                        io.sockets.emit('end_store', result)
+                    }
+                    else {
+                        if (body) {
+                            let obj
+                            try {
+                                obj = JSON.parse(body)
+                            }
+                            catch (e) {
+                                console.log(err)
+                                result.message = "上传错误"
+                                result.userData = messData
+                                io.sockets.emit('end_store', result)
+                                return false
+                            }
+                            if (obj.ok) {
+                                result.flag = true
+                                result.message = obj.message
+                                result.data = obj.data
+                                result.userData = messData
+                                io.sockets.emit('end_store', result)
+                            }
+                            else {
+                                result.message = obj.message
+                                result.data = obj.data
+                                result.userData = messData
+                                io.sockets.emit('end_store', result)
+                            }
+                        }
+                        else {
+                            console.log(err)
+                            result.message = "上传错误" + err
+                            result.userData = messData
+                            io.sockets.emit('end_store', result)
+                        }
+
+                    }
+                }).on('drain', (data) => {
+                    let progress = 100 * rUpload.req.connection._bytesDispatched / fileSize;
+                    console.log(progress)
+                })
             }, (err) => {
 
             })
@@ -370,63 +434,7 @@ router.post('/uploadFile', function (req, res) {
             // },()=>{
             //
             // })
-            //此处开始向资源管理系统传文件
-            // uploadData.data = fs.createReadStream(filepath)
-            // let rUpload = request.post({
-            //     url: config.Api.skydisk.url + config.Api.skydisk.uploadUrl,
-            //     formData: uploadData
-            // }, function optionalCallback(err, httpResponse, body) {
-            //     let result = {
-            //         flag: false,
-            //         message: '',
-            //         data: null,
-            //         userData: null
-            //     }
-            //     if (err) {
-            //         console.log(err)
-            //         result.message = err
-            //         io.sockets.emit('end_store', result)
-            //     }
-            //     else {
-            //         if (body) {
-            //             let obj
-            //             try {
-            //                 obj = JSON.parse(body)
-            //             }
-            //             catch (e) {
-            //                 console.log(err)
-            //                 result.message = "上传错误"
-            //                 result.userData = messData
-            //                 io.sockets.emit('end_store', result)
-            //                 return false
-            //             }
-            //             if (obj.ok) {
-            //                 console.log(body)
-            //                 result.flag = true
-            //                 result.message = obj.message
-            //                 result.data = obj.data
-            //                 result.userData = messData
-            //                 io.sockets.emit('end_store', result)
-            //             }
-            //             else {
-            //                 result.message = obj.message
-            //                 result.data = obj.data
-            //                 result.userData = messData
-            //                 io.sockets.emit('end_store', result)
-            //             }
-            //         }
-            //         else {
-            //             console.log(err)
-            //             result.message = "上传错误"
-            //             result.userData = messData
-            //             io.sockets.emit('end_store', result)
-            //         }
-            //
-            //     }
-            // }).on('drain', (data) => {
-            //     let progress = 100 * rUpload.req.connection._bytesDispatched / fileSize;
-            //     console.log(progress)
-            // })
+
         });
     });
     busboy.on('field', function (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
