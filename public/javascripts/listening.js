@@ -198,7 +198,9 @@ function addSocketListener() {
             socket.emit("sendMessage", user);
         }
         else {
+            $("div." + user.messageID).css('color','blue')
             $("div." + user.messageID).html(info.message)
+
         }
     })
 
