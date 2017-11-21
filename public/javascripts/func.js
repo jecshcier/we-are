@@ -22,7 +22,7 @@ addLoader('界面加载中……');
 // 初始化用户数据
 function initUserData(result) {
     changeLoaderString('正在加载用户数据……');
-    initUserDataApi(function(result) {
+    initUserDataApi(function (result) {
         // 获取用户id和用户名称以及当前所在的群组
         userData['userID'] = result.userInfo.userID;
         userData['userName'] = result.userInfo.nickName;
@@ -49,10 +49,10 @@ function initUserData(result) {
         if (!userTeam.length) {
             removeLoader();
         }
-        $(userTeam).each(function(index, el) {
+        $(userTeam).each(function (index, el) {
             $leftMenu.append('<li projectID="' + el.groupID + '"><span>' + el.groupName + '</span></li>');
             $showArea.append('<div class="showMess" projectID="' + el.groupID + '" projectName="' + el.groupName + '">');
-            getGroupMessages(el.groupID, 0, function() {
+            getGroupMessages(el.groupID, 0, function () {
                 checkNum--;
                 if (!checkNum) {
                     var userGourp = getCacheGroupID(userData.userID);
@@ -70,13 +70,14 @@ function initUserData(result) {
         });
     })
 }
+
 // 初始化项目组内的聊天记录
 function getGroupMessages(groupID, page, callback) {
-    getGroupMessagesApi(groupID, page, function(data) {
+    getGroupMessagesApi(groupID, page, function (data) {
         if (data.length) {
             var _this = $('.showMess[projectID="' + groupID + '"]');
             _this.attr('currentPage', '0');
-            $.each(data, function(index, val) {
+            $.each(data, function (index, val) {
                 // 根据用户id判断聊天记录类型（己方发言或对方发言）
                 if (val.userID === userData.userID) {
                     sendMessages(0, val, val.updateTime, _this, 1);
@@ -90,59 +91,66 @@ function getGroupMessages(groupID, page, callback) {
         }
     })
 }
+
 // 成员配置-显示项目组成员情况
 function showProUser(groupID) {
-    getProjectUsersApi(groupID, function(result) {
-        $(".groupuser > a > input").each(function(index, el) {
+    getProjectUsersApi(groupID, function (result) {
+        $(".groupuser > a > input").each(function (index, el) {
             $(this)[0].checked = false;
         });
-        $.each(result, function(index, val) {
+        $.each(result, function (index, val) {
             if ($(".groupuser > a[userID=" + val.userID + "] > input").length) {
                 $(".groupuser > a[userID=" + val.userID + "] > input")[0].checked = true;
             }
         });
     })
 }
+
 // 获取某用户所在的项目组
 function getUserGroups() {
-    getUserGroupsApi(function(result) {})
+    getUserGroupsApi(function (result) {
+    })
 }
+
 // 刷新设置项目组列表
 function reflashPro() {
     console.log("管理员");
-    getProjectTeamApi(function(result) {
+    getProjectTeamApi(function (result) {
         var proArr = [];
         var proArrID = [];
         $('.programmeUl ul').empty();
         $(".groupuser > a > input:checked").attr('checked', false);
-        $(result).each(function(index, el) {
+        $(result).each(function (index, el) {
             proArr[index] = el.groupName;
             $('.programmeUl ul').append('<li projectID="' + el.groupID + '">' + el.groupName + '</li>');
             $(".editUser > div > select").append('<option value="' + el.groupID + '">' + el.groupName + '</option>');
         });
-        $(userTeam).each(function(index, el) {
+        $(userTeam).each(function (index, el) {
             var num = $.inArray(el.groupName, proArr);
             $('.programmeUl ul li:eq(' + num + ')').addClass('choose');
         });
     })
 }
+
 // 添加项目组
 function addProject(newPro) {
-    createGroupApi(newPro, function(data) {
+    createGroupApi(newPro, function (data) {
         if (data.ok) {
+            alert(data.comment);
             reflashPro();
         } else {
             alert(data.comment);
         }
     })
 }
+
 // 获取项目组内成员
 function getProjectUsers(groupID) {
-    getProjectUsersApi(groupID, function(result) {
+    getProjectUsersApi(groupID, function (result) {
         console.log(result);
         $(".right ul").empty();
         var userList = new String();
-        $(result).each(function(index, el) {
+        $(result).each(function (index, el) {
             if (localOnlineUsers.hasOwnProperty(el.userID)) {
                 userList += '<li userID="' + el.userID + '"><img class="userTx" onerror="imgOnfail(this);" src="' + txUrl + '/' + el.userID + '.jpg" width="40" height="40"><span>' + el.userName + '</span><i class="fa fa-circle-o online"></i></li>';
             } else {
@@ -152,10 +160,11 @@ function getProjectUsers(groupID) {
         $(".right ul").prepend(userList);
     })
 }
+
 // 进入某项目组
 function enterGroup(this_dom, group, user) {
     this_dom.addClass('preventClick')
-    addUserToGroupApi(group, user, function() {
+    addUserToGroupApi(group, user, function () {
         this_dom.removeClass('preventClick')
         this_dom.addClass('choose');
         $(".showArea").append('<div class="showMess" projectID="' + group.groupID + '" currentpage="0" projectName="' + group.groupName + '">');
@@ -164,7 +173,7 @@ function enterGroup(this_dom, group, user) {
             'groupName': group.groupName
         });
         $('.left ul').append('<li projectID="' + group.groupID + '"><span>' + group.groupName + '</span></li>');
-        getGroupMessages(this_dom.attr('projectID'), 0, function() {
+        getGroupMessages(this_dom.attr('projectID'), 0, function () {
             if ($(".leftActive").length < 1) {
                 $('.left ul li:first-child').trigger('click');
             }
@@ -172,14 +181,15 @@ function enterGroup(this_dom, group, user) {
         });
     })
 }
+
 // 退出某项目组
 function leaveGroup(this_dom, group, user) {
     this_dom.addClass('preventClick')
-    deleteUserInGroupApi(group, user, function() {
+    deleteUserInGroupApi(group, user, function () {
         this_dom.removeClass('preventClick')
         this_dom.removeClass('choose');
         $('.showMess[projectID="' + group.groupID + '"]').remove();
-        $.each(userTeam, function(index, val) {
+        $.each(userTeam, function (index, val) {
             if (val.groupID === group.groupID) {
                 $(".left > ul > li[projectID='" + userTeam[index].groupID + "']").remove();
                 if ($(".leftActive").length < 1) {
@@ -191,11 +201,12 @@ function leaveGroup(this_dom, group, user) {
         });
     })
 }
+
 // 获取所有用户成员
 function getWholeUser(callback) {
-    getWholeUserApi(function(result) {
+    getWholeUserApi(function (result) {
         $(".groupuser").empty();
-        $.each(result, function(index, val) {
+        $.each(result, function (index, val) {
             if (!val.real_name) {
                 val.real_name = val.login_name;
             }
@@ -206,15 +217,17 @@ function getWholeUser(callback) {
         }
     })
 }
+
 // 获取网盘文件
-function getYunFile(diskid, userID, page, order_name, order_type, flag) {
+function getYunFile(diskUrl, page, order_name, order_type, flag) {
     var $fileListView = $(".fileListView");
+    var pID = $(".showClass").attr('projectid');
     if (!flag) {
-        if ($fileListView.attr('currentPage') && $(".showClass").attr('projectid') === $fileListView.attr('currentPro')) {
+        if ($fileListView.attr('currentPage') && pID === $fileListView.attr('currentPro')) {
             return false;
         }
     }
-    getYunFileApi(diskid, userID, page, order_name, order_type, function(result) {
+    getYunFileApi(diskUrl, page, order_name, order_type, function (result) {
         if (!flag) {
             $(".filePage > span").remove();
             for (var i = 0; i < result.totalPage; i++) {
@@ -222,16 +235,17 @@ function getYunFile(diskid, userID, page, order_name, order_type, flag) {
                 $(".filePage").append('<span class="pageNum" pageNum="' + pageNum + '"></span>');
                 $(".pageNum:first-of-type").addClass('pageHit');
             }
-            $fileListView.attr('currentPro', diskid);
+            $fileListView.attr('currentPro', pID);
         }
         $(".fileTableDiv > table > tbody").empty();
-        $.each(result.data, function(index, el) {
+        $.each(result.data, function (index, el) {
             var fileSize = getFileSize(el.size);
             $(".fileTableDiv > table > tbody").append('<tr><td class="tabFileName" style="text-indent:2em;">' + el.name + '</td><td class="tabFileExtName" style="text-align:center">' + el.fileExtName + '</td><td class="tabFileSize" style="text-align:center">' + fileSize + '</td><td class="tabFileUploadUserName" style="text-align:center">' + el.uploadUserName + '</td><td class="tabFileUploadTime" style="text-align:center">' + el.uploadTime + '</td><td style="text-align:center"><a class="sendFileMessage" style="color:rgb(51, 139, 173);cursor:pointer;">发送</a></td><td class="TabFileUrl" style="text-align:center"><a href="' + el.downloadurl + '" target="_blank" style="color:rgb(51, 139, 173);cursor:pointer;">下载</a></td></tr>')
         });
         $fileListView.attr('currentPage', page);
     })
 }
+
 /*发送消息函数封装*/
 // type-发送类型，0为自己，1为别人
 // addFlag - 加载状态，判断是从1后台获取聊天记录or0当前正在发送的消息。
@@ -266,6 +280,7 @@ function sendMessages(type, user, updateTime, dom, addFlag) {
     }
 
 }
+
 // 群组气泡
 function newMessNotification(_this, groupID, callback) {
     var MessPubble = $('.left ul li[projectID="' + groupID + '"]');
@@ -290,6 +305,7 @@ function newMessNotification(_this, groupID, callback) {
         }
     }
 }
+
 // 判定滚动条是否应该滚到底部
 function autoScroll(_this, imgID) {
     if (!_this.hasClass('showClass')) {
@@ -304,7 +320,7 @@ function autoScroll(_this, imgID) {
         // 若有图片，需等图片加载完成后再进行滚动
         if (imgID) {
             console.log('有图片');
-            $("." + imgID)[0].onload = function() {
+            $("." + imgID)[0].onload = function () {
                 $(this).removeClass(imgID);
                 $('.showArea').scrollTop(_this.height());
             }
@@ -313,10 +329,12 @@ function autoScroll(_this, imgID) {
         }
     }
 }
+
 // 全局通知（聊天窗口）
 function globalNotification(message, color) {
     $('.showClass').append('<div class="notifyView" style="color:' + color + ';">' + message + '</div>');
 }
+
 // 更改头像
 function changeTx(url) {
     $.ajax({
@@ -327,18 +345,19 @@ function changeTx(url) {
             userID: userData.userID,
             url: url
         }
-    }).done(function() {
+    }).done(function () {
         alert("头像修改成功");
-    }).fail(function() {
+    }).fail(function () {
         alert("头像更改错误！");
-    }).always(function() {
+    }).always(function () {
         console.log("complete");
     });
 }
+
 // -webkit-桌面通知
 function notify(userName, message, group, userID) {
     if (window.Notification) {
-        var popNotice = function() {
+        var popNotice = function () {
             var effectAudio = document.createElement("audio");
             effectAudio.src = staticUrl + '/media/notify.wav';
             effectAudio.setAttribute("autoplay", "autoplay");
@@ -351,13 +370,13 @@ function notify(userName, message, group, userID) {
                     icon: txUrl + '/' + userID + '.jpg',
                     silent: true
                 });
-                notification.onclick = function() {
+                notification.onclick = function () {
                     window.focus();
                     $(".left > ul > li[projectID=" + group.groupID + "]").trigger('click');
                     notification.close();
                 };
-                notification.onshow = function() {
-                    setTimeout(function() {
+                notification.onshow = function () {
+                    setTimeout(function () {
                         notification.close();
                     }, 3000);
                 };
@@ -366,7 +385,7 @@ function notify(userName, message, group, userID) {
         if (Notification.permission == "granted") {
             popNotice();
         } else if (Notification.permission != "denied") {
-            Notification.requestPermission(function(permission) {
+            Notification.requestPermission(function (permission) {
                 popNotice();
             });
         }
@@ -374,6 +393,7 @@ function notify(userName, message, group, userID) {
         console.log('浏览器不支持Notification');
     }
 }
+
 // 图片加载失败函数
 function imgOnfail(_this) {
     if ($(_this).hasClass('userTx')) {
@@ -382,6 +402,7 @@ function imgOnfail(_this) {
         $(_this).parent().html('该用户上传了图片，但图片加载失败');
     }
 }
+
 // 获取上传后的文件信息
 function getUploadFileInfo(flag, info, fileid, filename, filesize, fileextname, fileurl) {
     flag = parseInt(flag);
@@ -413,11 +434,13 @@ function getUploadFileInfo(flag, info, fileid, filename, filesize, fileextname, 
         console.log("下载地址：" + fileurl);
     }
 }
+
 // 文件上传
 function uploading() {
     globalNotification("文件上传中……请耐心等候", "#ccc");
     autoScroll($(".showClass"));
 }
+
 //建立一個可存取到該file的url
 function getObjectURL(file) {
     var url = null;
@@ -430,12 +453,14 @@ function getObjectURL(file) {
     }
     return url;
 }
+
 // 随机生成id
 function getRandomID(userID) {
     var myDate = new Date();
     var newId = '' + userID + parseInt(Math.random() * 90000 + 10000) + '' + myDate.getTime();
     return newId;
 }
+
 // 获取当前时间
 function getCurrentTime() {
     var date = new Date();
@@ -461,11 +486,12 @@ function helpMess(option, dom) {
         d.showModal(dom);
     }
 }
+
 // 代码高亮替换
 function replaceCode(type, string) {
     var str = string.split("#" + type + "##")
     if (str.length > 1) {
-        var arr = str.map(function(value, index) {
+        var arr = str.map(function (value, index) {
             var reg = new RegExp("##" + type + "#([\\s\\S]*)+\\s*$")
             var val = value.match(reg)
             if (val) {
@@ -480,10 +506,11 @@ function replaceCode(type, string) {
         return [string, null]
     }
 }
+
 // textarea代码处理
 function initCode(string) {
     var codeString = {};
-    codeType.forEach(function(el, index) {
+    codeType.forEach(function (el, index) {
         var str = replaceCode(el, string)
         string = str[0]
         if (str[1]) {
@@ -491,17 +518,18 @@ function initCode(string) {
         }
     })
     string = string.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
-    $.each(codeString, function(type, el) {
-        el.forEach(function(val, index) {
+    $.each(codeString, function (type, el) {
+        el.forEach(function (val, index) {
             string = string.replace(type + 'Code' + index, '<textarea class="' + type + 'Code">' + val + "</textarea>")
         })
     });
     return string
 }
+
 // 代码高亮显示
 function enablecodeMirrorMode() {
-    $.each(codeMirrorMode, function(type, val) {
-        $("." + type + "Code").each(function(index, el) {
+    $.each(codeMirrorMode, function (type, val) {
+        $("." + type + "Code").each(function (index, el) {
             CodeMirror.fromTextArea($(this)[0], {
                 mode: val,
                 // matchBrackets: true,
@@ -532,17 +560,17 @@ function getFileSize(size) {
 }
 
 // 比较tesla版本
-function checkTeslaVersion(){
+function checkTeslaVersion() {
     var currentVersion = localStorage.getItem('teslaVersion');
     if (currentVersion !== teslaVersion) {
         helpMess({
-            title:'tesla又更新啦！',
+            title: 'tesla又更新啦！',
             content: $(".updateLog article").eq(0).html() + '<br><p style="color:red">更多日志请在 更新日志标签中查看</p>',
             okValue: '确定',
-            ok: function() {
+            ok: function () {
             }
         })
-        localStorage.setItem('teslaVersion',teslaVersion)
+        localStorage.setItem('teslaVersion', teslaVersion)
     }
 }
 
@@ -554,33 +582,115 @@ function getCacheGroupID(userID) {
     return $.cookie(userID + '-groupID')
 }
 
-function addLoader(string){
+function addLoader(string) {
     $(".container").css('opacity', '.5');
     var str = '<div class="loaderB"><div class="loader-inner"><div class="loader-line-wrap"><div class="loader-line"></div></div><div class="loader-line-wrap"><div class="loader-line"></div></div><div class="loader-line-wrap"><div class="loader-line"></div></div><div class="loader-line-wrap"><div class="loader-line"></div></div><div class="loader-line-wrap"><div class="loader-line"></div></div><span>' + string + '</span></div></div>'
     $("body").prepend(str)
 }
 
-function changeLoaderString(string){
+function changeLoaderString(string) {
     $(".loaderB > .loader-inner > span").html(string);
 }
 
-function removeLoader(){
+function removeLoader() {
     $(".loaderB").remove();
     $(".container").css('opacity', '1');
 }
+
+
+// 打开图片前预加载图片，获取图片尺寸
+function preloadImageForPhotoSwipe($this, imgPath) {
+    console.log("preloadImg:" + imgPath);
+    // 加载状态
+    $this.before('<i class="img-loading fa fa-spinner fa-spin"></i>');
+
+    var img = new Image();
+
+    img.addEventListener("load", function () {
+        // 显示图片
+        showPhotoSwipeImgs(imgPath, this.width, this.height);
+
+        $this.siblings(".img-loading").remove();
+    }, false);
+    // 图片加载失败
+    img.addEventListener("error", function () {
+        alert("图片加载失败！");
+        $this.siblings(".img-loading").remove();
+    }, false);
+
+    img.src = imgPath;
+}
+
+/**
+ * 打开视频播放器
+ * @param  {String} videoSrc 视频路径
+ */
+function showVideoReader(videoSrc) {
+    var $modal = $("#videoModal");
+    var videoPlayer = document.getElementById("videoPlayer");
+    videoPlayer.src = videoSrc;
+
+    // var videoPlayer = videojs('videoPlayer');
+
+    // videoPlayer.ready(function() {
+    //     videoPlayer.src(videoSrc);
+    //     videoPlayer.play();
+    // });
+
+    // 显示播放器
+    $modal.fadeIn(function () {
+        $modal.css("display", "flex");
+    });
+
+    // 绑定关闭事件
+    $modal.find(".modal-close").off("click").on("click", function () {
+        videoPlayer.pause();
+        $modal.fadeOut();
+    });
+}
+
+/**
+ * 打开PDF阅读器
+ * @param  {String} pdfSrc PDF路径
+ */
+function showPdfReader(pdfSrc) {
+    var $modal = $("#pdfReaderModal");
+    var $reader = $("#pdfReader");
+
+    // 仅当文件未加载时，执行加载
+    if ($reader.attr("data") !== pdfSrc) {
+        $reader.attr("data", pdfSrc);
+    }
+
+    // 显示阅读器
+    $modal.fadeIn(function () {
+        $modal.css("display", "flex");
+    });
+
+    // 绑定关闭事件
+    $modal.find(".modal-close").off("click").on("click", function () {
+        $modal.fadeOut();
+    });
+}
+
+
 /*api接口部分 --start*/
+
 // 获取所有项目组
 function getProjectTeamApi(callback) {
     $.ajax({
         url: 'getWholeProjectTeam',
         type: 'GET',
         dataType: 'json'
-    }).done(function(result) {
+    }).done(function (result) {
         if (callback) {
             callback(result);
         }
-    }).fail(function() {}).always(function() {});
+    }).fail(function () {
+    }).always(function () {
+    });
 }
+
 // 创建项目组
 function createGroupApi(newPro, callback) {
     $.ajax({
@@ -591,15 +701,16 @@ function createGroupApi(newPro, callback) {
             'groupName': newPro,
             'userID': userData.userID
         }
-    }).done(function(data) {
+    }).done(function (data) {
         if (callback) {
             callback(data);
         }
         console.log("success");
-    }).fail(function() {
+    }).fail(function () {
         console.log("error");
     })
 }
+
 // 将某用户加入至某项目组
 function addUserToGroupApi(group, user, callback) {
     $.ajax({
@@ -610,43 +721,47 @@ function addUserToGroupApi(group, user, callback) {
             'group': group,
             'user': user
         }
-    }).done(function() {
+    }).done(function () {
         if (callback) {
             callback();
         }
-    }).fail(function() {
+    }).fail(function () {
         console.log("error");
     })
 }
+
 // 获取某用户所在项目组
 function getUserGroupsApi(callback) {
     $.ajax({
         url: 'getUserGroups',
         type: 'GET',
         dataType: 'json'
-    }).done(function(result) {
+    }).done(function (result) {
         if (callback) {
             callback(result);
         }
-    }).fail(function() {
+    }).fail(function () {
         console.log("error");
     })
 }
+
 // 初始化用户数据
 function initUserDataApi(callback) {
     $.ajax({
         url: 'init',
         type: 'GET',
         dataType: 'json'
-    }).done(function(result) {
+    }).done(function (result) {
         if (callback) {
             callback(result);
         }
-    }).fail(function() {
+    }).fail(function () {
         alert("链接超时，请重新登录");
         location.href = "/";
-    }).always(function() {});
+    }).always(function () {
+    });
 }
+
 // 获取某项目组内聊天记录
 function getGroupMessagesApi(groupID, page, callback) {
     $.ajax({
@@ -657,14 +772,15 @@ function getGroupMessagesApi(groupID, page, callback) {
             'groupID': groupID,
             'page': page
         }
-    }).done(function(data) {
+    }).done(function (data) {
         if (callback) {
             callback(data);
         }
-    }).fail(function() {
+    }).fail(function () {
         console.log("error");
     })
 }
+
 // 将某用户从项目组中删除
 function deleteUserInGroupApi(group, user, callback) {
     $.ajax({
@@ -675,14 +791,15 @@ function deleteUserInGroupApi(group, user, callback) {
             'group': group,
             'user': user
         }
-    }).done(function() {
+    }).done(function () {
         if (callback) {
             callback();
         }
-    }).fail(function() {
+    }).fail(function () {
         console.log("error");
     })
 }
+
 // 获取某项目组下的所有用户
 function getProjectUsersApi(groupID, callback) {
     $.ajax({
@@ -692,14 +809,17 @@ function getProjectUsersApi(groupID, callback) {
         data: {
             'groupID': groupID
         }
-    }).done(function(result) {
+    }).done(function (result) {
         if (callback) {
             callback(result);
         }
-    }).fail(function() {}).always(function() {});
+    }).fail(function () {
+    }).always(function () {
+    });
 }
+
 // 注销
-function logout(userID,callback) {
+function logout(userID, callback) {
     $.ajax({
         url: 'logout',
         type: 'POST',
@@ -707,13 +827,13 @@ function logout(userID,callback) {
         data: {
             userID: userID
         }
-    }).done(function() {
+    }).done(function () {
         if (callback) {
-                callback();
+            callback();
         }
-    }).fail(function() {
+    }).fail(function () {
         console.log("error");
-    }).always(function() {
+    }).always(function () {
         console.log("complete");
     });
 }
@@ -723,31 +843,33 @@ function getWholeUserApi(callback) {
         url: 'getWholeUser',
         type: 'get',
         dataType: 'json'
-    }).done(function(result) {
+    }).done(function (result) {
         if (callback) {
             callback(result);
         }
-    }).fail(function() {
+    }).fail(function () {
         console.log("error");
-    }).always(function() {
+    }).always(function () {
         console.log("complete");
     });
 }
+
+
 /*api接口部分 --end*/
+
 /*yunDisk接口部分 --start*/
-function getYunFileApi(diskid, userID, page, order_name, order_type, callback) {
+function getYunFileApi(diskUrl, page, order_name, order_type, callback) {
     $.ajax({
         url: 'getYunFile',
         type: 'POST',
         dataType: 'json',
         data: {
-            'diskid': diskid,
-            'userID': userID,
+            'diskUrl': diskUrl,
             'page': page,
             'order_name': order_name,
             'order_type': order_type
         }
-    }).done(function(data) {
+    }).done(function (data) {
         if (data.ok) {
             if (callback) {
                 callback(data);
@@ -758,26 +880,27 @@ function getYunFileApi(diskid, userID, page, order_name, order_type, callback) {
                 width: '200px',
                 content: '文件列表获取失败！',
                 okValue: '重 试',
-                ok: function() {
+                ok: function () {
                     console.log('test');
                 }
             })
         }
-    }).fail(function() {
+    }).fail(function () {
         console.log("error");
         helpMess({
             title: '提示',
             width: '200px',
             content: '文件列表获取超时，请检查网络',
             okValue: '重 试',
-            ok: function() {
+            ok: function () {
                 console.log('test');
             }
         })
-    }).always(function() {
+    }).always(function () {
         console.log("complete");
     });
 }
+
 /*yunDisk接口部分 --end*/
 /************************
  * 用了CodeMirror，该功能暂时废弃 *

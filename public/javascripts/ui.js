@@ -67,7 +67,7 @@ $(function () {
         var pID = $(this).attr('projectID');
         var _this = $(".showMess[projectID=" + pID + "]");
         _this.addClass('showClass').siblings('.showMess').removeClass('showClass');
-        var projectTeam = new Object();
+        var projectTeam = {};
         projectTeam['groupID'] = pID;
         projectTeam['groupName'] = $(this).children('span').html();
         userData.projectTeam = projectTeam;
@@ -75,7 +75,7 @@ $(function () {
         getProjectUsers(pID);
         var $fileListView = $(".fileListView")
         if ($(".showClass").attr('projectid') !== $fileListView.attr('currentPro') && !$fileListView.is(':hidden')) {
-            getYunFile(pID, userData.userID, 1, 'create_time', 'desc');
+            getYunFile(projectTeam['groupName'], 1, 'create_time', 'desc');
         }
         var imgArr = $(".showMess[projectID=" + pID + "] .messContent img");
         var imgArrlength = imgArr.length;
@@ -165,7 +165,7 @@ $(function () {
         $('.' + taskName).show().css('display', 'inline-flex').siblings('.userView').hide();
         if (taskName === "fileListView") {
             var folderName = $(".showClass").attr('projectid');
-            getYunFile(folderName, userData.userID, 1, 'create_time', 'desc');
+            getYunFile(userData.projectTeam['groupName'],  1, 'create_time', 'desc');
         }
     })
     //设置窗口tab切换
@@ -449,7 +449,7 @@ $(function () {
         $(this).addClass('pageHit').siblings().removeClass('pageHit');
         var page = parseInt($(this).attr('pagenum'));
         var pID = $(".fileListView").attr('currentpro');
-        getYunFile(pID, userData.userID, page, 'create_time', 'desc', 1);
+        getYunFile(userData.projectTeam['groupName'], page, 'create_time', 'desc', 1);
     });
     $(".fileTableDiv").delegate('.sendFileMessage', 'click', function (event) {
         $(".chatMenu")[0].click();
@@ -532,82 +532,6 @@ $(function () {
             showPdfReader(dldUrl + "." + type);
         }
     });
-
-    // 打开图片前预加载图片，获取图片尺寸
-    function preloadImageForPhotoSwipe($this, imgPath) {
-        console.log("preloadImg:" + imgPath);
-        // 加载状态
-        $this.before('<i class="img-loading fa fa-spinner fa-spin"></i>');
-
-        var img = new Image();
-
-        img.addEventListener("load", function () {
-            // 显示图片
-            showPhotoSwipeImgs(imgPath, this.width, this.height);
-
-            $this.siblings(".img-loading").remove();
-        }, false);
-        // 图片加载失败
-        img.addEventListener("error", function () {
-            alert("图片加载失败！");
-            $this.siblings(".img-loading").remove();
-        }, false);
-
-        img.src = imgPath;
-    }
-
-    /**
-     * 打开视频播放器
-     * @param  {String} videoSrc 视频路径
-     */
-    function showVideoReader(videoSrc) {
-        var $modal = $("#videoModal");
-        var videoPlayer = document.getElementById("videoPlayer");
-        videoPlayer.src = videoSrc;
-
-        // var videoPlayer = videojs('videoPlayer');
-
-        // videoPlayer.ready(function() {
-        //     videoPlayer.src(videoSrc);
-        //     videoPlayer.play();
-        // });
-
-        // 显示播放器
-        $modal.fadeIn(function () {
-            $modal.css("display", "flex");
-        });
-
-        // 绑定关闭事件
-        $modal.find(".modal-close").off("click").on("click", function () {
-            videoPlayer.pause();
-            $modal.fadeOut();
-        });
-    }
-
-    /**
-     * 打开PDF阅读器
-     * @param  {String} pdfSrc PDF路径
-     */
-    function showPdfReader(pdfSrc) {
-        var $modal = $("#pdfReaderModal");
-        var $reader = $("#pdfReader");
-
-        // 仅当文件未加载时，执行加载
-        if ($reader.attr("data") !== pdfSrc) {
-            $reader.attr("data", pdfSrc);
-        }
-
-        // 显示阅读器
-        $modal.fadeIn(function () {
-            $modal.css("display", "flex");
-        });
-
-        // 绑定关闭事件
-        $modal.find(".modal-close").off("click").on("click", function () {
-            $modal.fadeOut();
-        });
-    }
-
 
     // 全局广播消息提示
     // $('.set.broadcast').click(function(event) {

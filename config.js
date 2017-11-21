@@ -38,6 +38,27 @@ module.exports = {
                 this.url = url
                 this.role_type = role_type
                 this.createUser = createUser
+            },
+            newDirUrl: "api/dirNewCreate.html",
+            newDirModel: function (d, url, diskName, role_type, createUser, pubFlag) {
+                this.d = d
+                this.url = url
+                this.diskName = diskName
+                this.role_type = role_type
+                this.createUser = createUser
+                this.pubFlag = pubFlag
+            },
+            fileListUrl: "api/dirList.html",
+            fileListModel: function (d, url, role_type, user_id, order_name, order_type, disk_type, singlePage_fileNum, no) {
+                this.d = d
+                this.url = url
+                this.role_type = role_type
+                this.user_id = user_id
+                this.order_name = order_name
+                this.order_type = order_type
+                this.disk_type = disk_type
+                this.singlePage_fileNum = singlePage_fileNum
+                this.no = no
             }
         },
         ums: {

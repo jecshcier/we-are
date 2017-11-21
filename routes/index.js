@@ -145,16 +145,18 @@ router.post('/createGroupWithUser', function (req, res, next) {
 //创建某个项目组
 router.post('/createGroup', function (req, res, next) {
         if (req.session.user) {
+            let user = req.session.user
             var groupID = md5.hex(req.body.groupName + '' + getCurrentTime(0));
-            skydiskApi.newDir(req.body.userID, groupID, req.body.groupName, function (data) {
+            skydiskApi.newDir(user,req.body.groupName, function (data) {
                 if (data.ok) {
                     sql.createProject(groupID, req.body.groupName, req.body.userID, function (result) {
                         if (result) {
                             result.ok = true;
+                            result.comment = '创建成功';
                             res.send(result);
                         } else {
                             result.ok = false;
-                            result.commont = 'sorry，项目组创建失败，请前往网盘删除文件夹';
+                            result.comment = 'sorry，项目组创建失败，请前往网盘删除文件夹';
                             res.send(result)
                         }
                     });
@@ -294,7 +296,7 @@ router.post('/uploadFile', function (req, res) {
     }
     console.log('ok')
     // console.log(skydiskApi.uploadFiles(res,req))
-    skydiskApi.uploadFiles(res, req,sourcePath).then((data) => {
+    skydiskApi.uploadFiles(res, req, sourcePath).then((data) => {
         console.log(data)
     }, (err) => {
         console.log(err)
@@ -335,13 +337,17 @@ router.get('/getWholeUser', function (req, res) {
 })
 /*获取网盘文件夹内文件*/
 router.post('/getYunFile', function (req, res) {
-    var diskid = req.body.diskid;
-    var userID = req.body.userID;
-    var order_name = req.body.order_name;
-    var order_type = req.body.order_type;
-    var page = req.body.page;
-    console.log(diskid);
-    skydiskApi.getFileList(diskid, userID, page, order_name, order_type, function (data) {
+    if (!req.session.user) {
+        res.redirect('/weare');
+        return false
+    }
+    let user = req.session.user
+    let diskUrl = req.body.diskUrl;
+    let page = req.body.page;
+    let order_name = req.body.order_name;
+    let order_type = req.body.order_type;
+    console.log(diskUrl);
+    skydiskApi.getFileList(user,diskUrl, page, order_name, order_type, function (data) {
         res.send(data);
     })
 });

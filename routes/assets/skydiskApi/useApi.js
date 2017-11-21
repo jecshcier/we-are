@@ -7,70 +7,82 @@ const config = require('../../../config');
 const fs = require('fs-extra')
 const crypto = require('crypto');
 const Busboy = require('busboy');
+const diskRoot = 'tesla'
 
 
 module.exports = {
-    newDir: (userID, dirID, dirName, callback) => {
+    newDir: (user, dirName, callback) => {
         console.log("开始新建文件夹...");
         let key = config.skydiskApiKey;
         let currentDate = getDate();
         let md5Key = md5.hex("" + key + currentDate).toUpperCase();
         console.log(md5Key);
-        let data = {
-            'd': md5Key,
-            'parentId': 'A24C1C1353744AB17E8A271BDD1AC772',
-            'fileId': dirID,
-            'fileName': dirName,
-            'pubFlag': '2',
-            'userId': userID
-        }
+        console.log('/' + diskRoot + '/' + dirName)
+        let data = new config.Api.skydisk.newDirModel()
+        data.d = md5Key
+        data.url = '/' + diskRoot
+        data.diskName = dirName
+        data.role_type = user.role_type
+        data.createUser = user.userID
+        data.pubFlag = '2'
+        console.log(data)
         let stringify = querystring.stringify(data);
+        console.log(config.Api.skydisk.url + config.Api.skydisk.newDirUrl + '?' + stringify)
         request.get({
-            url: config.skydiskServer + config.newDirApi + '?' + stringify
+            url: config.Api.skydisk.url + config.Api.skydisk.newDirUrl + '?' + stringify
         }, function optionalCallback(err, httpResponse, body) {
             if (err) {
+                console.error('upload failed:', err);
                 callback(false);
-                return console.error('upload failed:', err);
             } else {
-                let testJson = eval("(" + body + ")");
                 try {
                     testJson = JSON.parse(body)
                 } catch (e) {
                     console.log(e)
                     testJson = null
+                    console.log(testJson)
+                    callback(false);
+                    return false
                 }
+                console.log(testJson)
                 callback(testJson);
             }
         });
     },
-    getFileList: (diskid, userID, page, order_name, order_type, callback) => {
+    getFileList: (user,diskUrl, page, order_name, order_type, callback) => {
         console.log("获取网盘文件夹内文件..");
         let key = config.skydiskApiKey;
         let currentDate = getDate();
         let md5Key = md5.hex("" + key + currentDate).toUpperCase();
-        let data = {
-            'd': md5Key,
-            'id': diskid,
-            'user_id': userID,
-            'order_name': order_name,
-            'order_type': order_type,
-            'disk_type': '2',
-            'no': page
-        }
+        let data = new config.Api.skydisk.fileListModel()
+        data.d = md5Key
+        data.url = '/' + diskRoot + '/' + diskUrl
+        data.role_type = user.role_type
+        data.user_id = user.userID
+        data.order_name = order_name
+        data.order_type = order_type
+        data.disk_type = 1
+        data.singlePage_fileNum = 10
+        data.no = page
+        console.log(data)
         let stringify = querystring.stringify(data);
         request.get({
-            url: config.skydiskServer + config.getFileListApi + '?' + stringify
+            url: config.Api.skydisk.url + config.Api.skydisk.fileListUrl + '?' + stringify
         }, function optionalCallback(err, httpResponse, body) {
             if (err) {
+                console.error('upload failed:', err);
                 callback(false);
-                return console.error('upload failed:', err);
             } else {
-                let testJson = null;
+                // console.log(httpResponse)
+                // console.log(body)
+                // let testJson;
                 try {
                     testJson = JSON.parse(body)
                 } catch (e) {
                     console.log(e)
                     testJson = null
+                    callback(false);
+                    return false
                 }
                 callback(testJson)
             }
@@ -94,7 +106,9 @@ module.exports = {
                 file.on('data', function (data) {
                     // console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
                     fileSize += data.length
-                    hash.update.bind(data)
+                    console.log(data)
+                    console.log(hash.update.bind(data))
+                    hash.update(data)
                 });
                 file.on('end', function () {
                     console.log('File [' + fieldname + '] Finished');
