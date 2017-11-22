@@ -29,7 +29,7 @@ module.exports = {
     getFileListApi: "api/dirList.html",
     Api: {
         skydisk: {
-            url: "http://math.tes-sys.com/skydisk-ms/",
+            url: "http://192.168.109.229:8080/skydisk-ms/",
             staticKey: "A91E2F",
             uploadUrl: "api/fileUploadForJson.html",
             uploadModel: function (d, data, url, role_type, createUser) {

@@ -22,34 +22,58 @@ module.exports = {
         data.d = md5Key
         data.url = diskRoot
         data.diskName = dirName
-        data.role_type = user.role_type
+        data.role_type = user.role_type + ''
         data.createUser = user.userID
         data.pubFlag = '2'
         console.log(data)
         let stringify = querystring.stringify(data);
         console.log(config.Api.skydisk.url + config.Api.skydisk.newDirUrl + '?' + stringify)
-        request.get({
-            url: config.Api.skydisk.url + config.Api.skydisk.newDirUrl + '?' + stringify
+        request.post({
+            url: config.Api.skydisk.url + config.Api.skydisk.newDirUrl,
+            body: data,
+            json: true
         }, function optionalCallback(err, httpResponse, body) {
             if (err) {
                 console.error('upload failed:', err);
                 callback(false);
             } else {
-                try {
-                    testJson = JSON.parse(body)
-                } catch (e) {
-                    console.log(e)
-                    testJson = null
-                    console.log(testJson)
-                    callback(false);
-                    return false
+                console.log(body)
+                if(body){
+                    if(body.ok && body.stateCode === '100')
+                    {
+                        callback(body)
+                    }
+                    else {
+                        callback(false);
+                    }
                 }
-                console.log(testJson)
-                callback(testJson);
+                else {
+                    callback(false);
+                }
             }
         });
+        // request.get({
+        //     url: config.Api.skydisk.url + config.Api.skydisk.newDirUrl + '?' + stringify
+        // }, function optionalCallback(err, httpResponse, body) {
+        //     if (err) {
+        //         console.error('upload failed:', err);
+        //         callback(false);
+        //     } else {
+        //         try {
+        //             testJson = JSON.parse(body)
+        //         } catch (e) {
+        //             console.log(e)
+        //             testJson = null
+        //             console.log(testJson)
+        //             callback(false);
+        //             return false
+        //         }
+        //         console.log(testJson)
+        //         callback(testJson);
+        //     }
+        // });
     },
-    getFileList: (user,diskUrl, page, order_name, order_type, callback) => {
+    getFileList: (user, diskUrl, page, order_name, order_type, callback) => {
         console.log("获取网盘文件夹内文件..");
         let key = config.skydiskApiKey;
         let currentDate = getDate();
@@ -57,34 +81,37 @@ module.exports = {
         let data = new config.Api.skydisk.fileListModel()
         data.d = md5Key
         data.url = diskRoot + '/' + diskUrl
-        data.role_type = user.role_type
+        data.role_type = user.role_type + ''
         data.user_id = user.userID
         data.order_name = order_name
         data.order_type = order_type
-        data.disk_type = 1
-        data.singlePage_fileNum = 10
-        data.no = page
+        data.disk_type = '1'
+        data.singlePage_fileNum = '10'
+        data.no = page + ''
         console.log(data)
-        let stringify = querystring.stringify(data);
-        request.get({
-            url: config.Api.skydisk.url + config.Api.skydisk.fileListUrl + '?' + stringify
+        request.post({
+            url: config.Api.skydisk.url + config.Api.skydisk.fileListUrl,
+            body: data,
+            json: true
         }, function optionalCallback(err, httpResponse, body) {
             if (err) {
                 console.error('upload failed:', err);
                 callback(false);
             } else {
-                // console.log(httpResponse)
-                // console.log(body)
-                // let testJson;
-                try {
-                    testJson = JSON.parse(body)
-                } catch (e) {
-                    console.log(e)
-                    testJson = null
-                    callback(false);
-                    return false
+                console.log(body)
+                console.log(body)
+                if(body){
+                    if(body.ok && body.stateCode === '100')
+                    {
+                        callback(body)
+                    }
+                    else {
+                        callback(false);
+                    }
                 }
-                callback(testJson)
+                else {
+                    callback(false);
+                }
             }
         });
     },
@@ -105,7 +132,7 @@ module.exports = {
                 if (fieldname === 'userData') {
                     messData = val
                 }
-                if (fieldname === "dirUrl"){
+                if (fieldname === "dirUrl") {
                     dirUrl = val
                 }
             });
