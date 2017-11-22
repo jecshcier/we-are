@@ -26,7 +26,6 @@ function addSocketListener() {
                 content: '您的账号在别处登陆，请留意您的密码是否泄漏！',
                 okValue: '确 定',
                 ok: function () {
-                    // socket.emit("logOutError", userData);
                     window.location.href = "/weare"
                 }
             })

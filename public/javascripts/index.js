@@ -30,6 +30,22 @@ $(function() {
                 var textAreaVal = initCode(textAreaVal)
                 var _this = $('.showMess[projectID="' + userData.projectTeam.groupID + '"]');
                 userData['messageType'] = 'text';
+                var re=new RegExp(/(https?|ftp|file):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g);
+                var re1 = new RegExp('(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]')
+                var domainUrl = textAreaVal.match(re);
+                var urlArr = []
+                console.log(domainUrl)
+                if(domainUrl){
+                    for(var i=0;i<domainUrl.length;i++)
+                    {
+                        urlArr.push('<a target="_blank" href="' + domainUrl[i] + '">' + domainUrl[i] + '</a>')
+                        textAreaVal = textAreaVal.replace(re1,'####')
+                    }
+                }
+                for(var i=0;i<urlArr.length;i++)
+                {
+                    textAreaVal = textAreaVal.replace('####',urlArr[i])
+                }
                 userData['message'] = textAreaVal;
                 userData['messageID'] = userData.userID + new Date().getTime();
                 sendMessages(0, userData, 0, _this, 0);

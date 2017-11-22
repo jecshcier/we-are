@@ -162,7 +162,7 @@ $(function () {
         }
         var taskName = $(this).attr('rel');
         $(this).addClass('tabActive').siblings().removeClass('tabActive');
-        $('.' + taskName).show().css('display', 'inline-flex').siblings('.userView').hide();
+        $('.' + taskName).show().css('display', 'flex').siblings('.userView').hide();
         if (taskName === "fileListView") {
             var folderName = $(".showClass").attr('projectid');
             getYunFile(userData.projectTeam['groupName'],  1, 'create_time', 'desc');

@@ -37,7 +37,7 @@ pre {
 }
 
 .showClass {
-    display: inline-flex !important;
+    display: flex !important;
 }
 
 @font-face {

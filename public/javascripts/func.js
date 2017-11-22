@@ -256,7 +256,6 @@ function sendMessages(type, user, updateTime, dom, addFlag) {
     if (updateTime) {
         upTime = user.updateTime;
     }
-    // console.info(user);
     if (type) {
         var othMess = '<div class="messageBlock" messID="{messID}"><div class="faceImgBlock">' +
             '<img class="userTx" src="' + userImgUrl + '" onerror="imgOnfail(this);"><span class="messName">' + user.userName + '</span></div>' + '<div class="mess">' + '<div class="messArrow messArrowOth"></div>' + '<div class="nameTime"><span class="messTime">' + upTime + '</span></div>' + '<pre class="messContent">' + user.message + '</pre>' + '</div>' + '</div>';
