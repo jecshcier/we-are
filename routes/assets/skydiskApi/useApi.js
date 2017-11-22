@@ -7,7 +7,7 @@ const config = require('../../../config');
 const fs = require('fs-extra')
 const crypto = require('crypto');
 const Busboy = require('busboy');
-const diskRoot = 'tesla'
+const diskRoot = '/tesla'
 
 
 module.exports = {
@@ -17,10 +17,10 @@ module.exports = {
         let currentDate = getDate();
         let md5Key = md5.hex("" + key + currentDate).toUpperCase();
         console.log(md5Key);
-        console.log('/' + diskRoot + '/' + dirName)
+        console.log(diskRoot + '/' + dirName)
         let data = new config.Api.skydisk.newDirModel()
         data.d = md5Key
-        data.url = '/' + diskRoot
+        data.url = diskRoot
         data.diskName = dirName
         data.role_type = user.role_type
         data.createUser = user.userID
@@ -56,7 +56,7 @@ module.exports = {
         let md5Key = md5.hex("" + key + currentDate).toUpperCase();
         let data = new config.Api.skydisk.fileListModel()
         data.d = md5Key
-        data.url = '/' + diskRoot + '/' + diskUrl
+        data.url = diskRoot + '/' + diskUrl
         data.role_type = user.role_type
         data.user_id = user.userID
         data.order_name = order_name
@@ -99,6 +99,16 @@ module.exports = {
             io = req.app.get('socket')
             let busboy = new Busboy({headers: req.headers});
             let messData = null
+            let dirUrl;
+            busboy.on('field', function (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
+                console.log('Field [' + fieldname + ']: value: ');
+                if (fieldname === 'userData') {
+                    messData = val
+                }
+                if (fieldname === "dirUrl"){
+                    dirUrl = val
+                }
+            });
 
             busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
                 let fileSize = 0;
@@ -106,8 +116,6 @@ module.exports = {
                 file.on('data', function (data) {
                     // console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
                     fileSize += data.length
-                    console.log(data)
-                    console.log(hash.update.bind(data))
                     hash.update(data)
                 });
                 file.on('end', function () {
@@ -120,25 +128,25 @@ module.exports = {
                 console.log(filename)
                 console.log(mimetype)
 
-                let key = config.Api.skydisk.staticKey
-                let md5Key = md5.hex("" + key + getCurrentTime(2)).toUpperCase()
-                let uploadData = new config.Api.skydisk.uploadModel()
-                uploadData.d = md5Key
-                uploadData.url = '/ebookV3'
-                uploadData.role_type = req.session.user.role_type
-                uploadData.createUser = req.session.user.userID
-
                 let fileNamePrefix = '/' + Date.now() + '-'
                 let storeFileName = fileNamePrefix + filename
                 let filepath = path.normalize(sourcePath + storeFileName)
                 let writerStream = fs.createWriteStream(filepath)
-                file.pipe(writerStream)
+
                 writerStream.on('error', (err) => {
                     info.message = err
                     writerStream.end(err);
                     res.send(info)
                 })
+
                 writerStream.on('finish', () => {
+                    let key = config.Api.skydisk.staticKey
+                    let md5Key = md5.hex("" + key + getCurrentTime(2)).toUpperCase()
+                    let uploadData = new config.Api.skydisk.uploadModel()
+                    uploadData.d = md5Key
+                    uploadData.url = diskRoot + '/' + dirUrl
+                    uploadData.role_type = req.session.user.role_type
+                    uploadData.createUser = req.session.user.userID
                     let fileMD5 = hash.digest('hex')
                     console.log('fileMD5 --->', fileMD5)
                     let md5Path = ''
@@ -228,13 +236,11 @@ module.exports = {
 
                     })
                 });
+
+                file.pipe(writerStream)
+
             });
-            busboy.on('field', function (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
-                console.log('Field [' + fieldname + ']: value: ');
-                if (fieldname === 'userData') {
-                    messData = val
-                }
-            });
+
             busboy.on('finish', function () {
                 console.log('Done parsing form!');
             });

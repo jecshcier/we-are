@@ -69,7 +69,7 @@ router.get('/chat', function (req, res, next) {
 router.get('/init', function (req, res, next) {
         if (req.session.user) {
             console.log(req.session.user);
-            var user = new Object();
+            var user = {};
             user['userInfo'] = req.session.user;
             sql.getProjectTeamByUser(user.userInfo.userID, function (result) {
                 user['projectTeam'] = result;

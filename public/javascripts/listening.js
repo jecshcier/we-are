@@ -200,7 +200,6 @@ function addSocketListener() {
         else {
             $("div." + user.messageID).css('color','blue')
             $("div." + user.messageID).html(info.message)
-
         }
     })
 

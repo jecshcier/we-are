@@ -385,6 +385,7 @@ $(function () {
             form.append("files" + index, el);
         })
         form.append("userData", JSON.stringify(userData));
+        form.append("dirUrl",userData.projectTeam.groupName)
         delete userData['fileCheck'];
         delete userData['fileName'];
         // 文件对象
