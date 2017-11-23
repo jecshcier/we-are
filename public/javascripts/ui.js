@@ -167,6 +167,9 @@ $(function () {
             var folderName = $(".showClass").attr('projectid');
             getYunFile(userData.projectTeam['groupName'],  1, 'create_time', 'desc');
         }
+        else if(taskName === "statistics"){
+            getUserDaily();
+        }
     })
     //设置窗口tab切换
     $('.setTitle ul li').click(function () {

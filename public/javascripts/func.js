@@ -672,6 +672,13 @@ function showPdfReader(pdfSrc) {
     });
 }
 
+//获取用户日报时间等信息
+function getUserDaily(){
+    getUserDailyApi('latest',function(){
+
+    });
+}
+
 
 /*api接口部分 --start*/
 
@@ -852,7 +859,24 @@ function getWholeUserApi(callback) {
         console.log("complete");
     });
 }
-
+function getUserDailyApi(type){
+    $.ajax({
+        url: 'getUserDaily',
+        type: 'post',
+        dataType: 'json',
+        data: {
+            type: type
+        }
+    }).done(function (result) {
+        if (callback) {
+            callback(result);
+        }
+    }).fail(function () {
+        console.log("error");
+    }).always(function () {
+        console.log("complete");
+    });
+}
 
 /*api接口部分 --end*/
 

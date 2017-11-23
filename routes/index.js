@@ -351,6 +351,13 @@ router.post('/getYunFile', function (req, res) {
         res.send(data);
     })
 });
+//获取用户日报
+router.post('/getUserDaily',function(req,res){
+    if (!req.session.user) {
+        res.redirect('/weare');
+        return false
+    }
+})
 //登录模块-tesla 私有 暂不使用
 // router.post('/login', function(req, res) {
 // 	console.log("接收登录请求");
