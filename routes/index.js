@@ -262,7 +262,7 @@ router.post('/login', function (req, res) {
                 let userInfo = {
                     'userID': body.userInfo.userId,
                     'nickName': body.userInfo.nickName,
-                    'role_type': body.userInfo.roleType
+                    'role_type': body.userInfo.powerId
                 }
                 req.session.user = userInfo;
                 req.session.user.sessionID = req.sessionID

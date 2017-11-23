@@ -16,7 +16,7 @@ module.exports = {
             }
         }
     },
-    teslaVersion: "0.2.0",
+    teslaVersion: "0.2.1",
     skydiskApiKey: "A91E2F",
     projectName: "/weare",
     static: "/weare/tesla",
