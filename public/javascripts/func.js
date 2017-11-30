@@ -672,12 +672,6 @@ function showPdfReader(pdfSrc) {
     });
 }
 
-//获取用户日报时间等信息
-function getUserDaily(){
-    getUserDailyApi('latest',function(){
-
-    });
-}
 
 
 /*api接口部分 --start*/
@@ -859,7 +853,7 @@ function getWholeUserApi(callback) {
         console.log("complete");
     });
 }
-function getUserDailyApi(type){
+function getUserDailyApi(type,callback){
     $.ajax({
         url: 'getUserDaily',
         type: 'post',

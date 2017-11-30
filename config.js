@@ -8,15 +8,14 @@ module.exports = {
                 timestamps: false // true by default
             },
             timezone: "+08:00",
-            host: "192.168.109.150",
-            // host:"localhost",
+            host:"localhost",
             dialect: "mysql",
             dialectOptions: {
                 charset: "utf8mb4"
             }
         }
     },
-    teslaVersion: "0.2.1",
+    teslaVersion: "0.2.2",
     skydiskApiKey: "A91E2F",
     projectName: "/weare",
     static: "/weare/tesla",
@@ -27,6 +26,13 @@ module.exports = {
     newDirApi: "api/dirNewCreate.html",
     uploadApi: "api/fileUpload.html",
     getFileListApi: "api/dirList.html",
+    callbackModel:function(flag,message,data){
+        return {
+            flag:false,
+            message:'',
+            data:null
+        }
+    },
     Api: {
         skydisk: {
             url: "http://pan.tes-sys.com/skydisk-ms/",

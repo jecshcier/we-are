@@ -357,6 +357,18 @@ router.post('/getUserDaily',function(req,res){
         res.redirect('/weare');
         return false
     }
+    let type = req.body.type
+    console.log(type)
+    let info = new config.callbackModel()
+    sql.getUserDaily(type).then((data)=>{
+        info.flag = true
+        info.message = data.message
+        info.data = data.data
+        info.latestTime = data.latestTime
+        res.send(info)
+    },(info)=>{
+        res.send(info)
+    })
 })
 //登录模块-tesla 私有 暂不使用
 // router.post('/login', function(req, res) {

@@ -1218,7 +1218,7 @@ pre {
     position: absolute;
     right: 0;
     top: 0;
-    width: 200px;
+    width: 220px;
     text-align: center;
     line-height: 240px;
     font-size: 16px;
@@ -1233,7 +1233,7 @@ pre {
     position: absolute;
     top: 0;
     transform-origin: 50% 100%;
-    width: 200px;
+    width: 220px;
 }
 
 .loader-line {
@@ -1375,5 +1375,11 @@ pre {
     width: 80%;
     height: 100%;
     border: 0;
+}
+
+/*统计视图*/
+.statistics{
+    align-items: center;
+    padding: 10px;
 }
 

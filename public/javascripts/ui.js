@@ -165,10 +165,161 @@ $(function () {
         $('.' + taskName).show().css('display', 'flex').siblings('.userView').hide();
         if (taskName === "fileListView") {
             var folderName = $(".showClass").attr('projectid');
-            getYunFile(userData.projectTeam['groupName'],  1, 'create_time', 'desc');
+            getYunFile(userData.projectTeam['groupName'], 1, 'create_time', 'desc');
         }
-        else if(taskName === "statistics"){
-            getUserDaily();
+        else if (taskName === "statistics") {
+            var $statistics = $(".statistics")
+            if ($statistics.attr('loaded')) {
+                return false
+            }
+            getUserDailyApi('latest', function (result) {
+                if (result.flag == false) {
+                    helpMess({
+                        content: "<span style='color:red'>" + result.message + "</span>",
+                        okValue: '确 定',
+                        ok: function () {
+                        }
+                    })
+                    return false
+                }
+                console.log(result)
+                var resultData = result.data
+                var latestTime = result.latestTime
+                var weekCharts = $("#week-charts")[0]
+                var userNameArr = []
+                var timeArr = {}
+                var dateArr = []
+                $.each(resultData, function (index, el) {
+                    //获取日期数组
+                    dateArr.push(index)
+                    $.each(el, function (index, el) {
+                        //获取用户名数组（含重复数据）
+                        userNameArr.push(index)
+                    })
+                })
+                //用户名数组去重
+                userNameArr = Array.from(new Set(userNameArr))
+                for (var i = 0; i < userNameArr.length; i++) {
+                    //初始化用户的日报时间数组
+                    timeArr[userNameArr[i]] = []
+                }
+                console.log(userNameArr)
+                console.log(dateArr)
+                $.each(resultData, function (index, el) {
+                    //这里重新进行一次遍历，为的是补上那些忘记发日报的人的日报时间
+                    for (var i = 0; i < userNameArr.length; i++) {
+                        //如果用户没有发日报，在该日期队列里加上该用户，且日报时间为'-'
+                        if (!el.hasOwnProperty(userNameArr[i])) {
+                            el[userNameArr[i]] = {
+                                time: null,
+                                message: ''
+                            }
+                        }
+                        //如果用户发了日报，就将它的日报时间加入到日报队列中
+                        timeArr[userNameArr[i]].push([el[userNameArr[i]].time, el[userNameArr[i]].mess])
+                    }
+                })
+                console.log(timeArr)
+                console.log(resultData)
+                var config_series = []
+                $.each(timeArr, function (index, el) {
+                    console.log(el)
+                    var userTimeDataArr = []
+                    var userMessArr = []
+                    $.each(el, function (index2, el2) {
+                        userTimeDataArr.push({y: el2[0], description: el2[1]})
+                    })
+                    console.log(userTimeDataArr)
+                    config_series.push({
+                        name: index,                        // 数据列名
+                        data: userTimeDataArr
+                    })
+                })
+                var options = {
+                    chart: {
+                        type: 'line'                          //指定图表的类型，默认是折线图（line）
+                    },
+                    title: {
+                        text: '周日报统计'                 // 标题
+                    },
+                    subtitle: {
+                        text: '数据截止于 - ' + latestTime,
+                        align: 'right',
+                        style: {"color": "#4e00ff"}
+                    },
+                    credits: {
+                        text: 'tesla',
+                        href: 'http://es.tes-sys.com/weare'
+                    },
+                    tooltip: {
+                        pointFormatter: function () {
+                            var vdata = this.y
+                            var hours = parseInt(vdata / 3600)
+                            var minutes = parseInt((vdata - hours * 3600) / 60)
+                            var seconds = vdata - hours * 3600 - minutes * 60
+                            hours = hours < 10 ? '0' + hours : hours + ''
+                            minutes = minutes < 10 ? '0' + minutes : minutes + ''
+                            seconds = seconds < 10 ? '0' + seconds : seconds + ''
+                            console.log(this)
+                            var val = hours + ':' + minutes + ':' + seconds + '<br>-' + this.series.name + '<br>' + this.description
+                            return val
+                        }
+                    },
+                    xAxis: {
+                        categories: dateArr   // x 轴分类
+                    },
+                    yAxis: {
+                        title: {
+                            text: '日报时间'                // y 轴标题
+                        },
+                        min: 61200,
+                        type: 'datetime',
+                        labels: {
+                            formatter: function () {
+                                if (this.value === '-') {
+                                    return this.value
+                                }
+                                var hours = parseInt(this.value / 3600)
+                                var minutes = parseInt((this.value - hours * 3600) / 60)
+                                var seconds = this.value - hours * 3600 - minutes * 60
+                                hours = hours < 10 ? '0' + hours : hours + ''
+                                minutes = minutes < 10 ? '0' + minutes : minutes + ''
+                                seconds = seconds < 10 ? '0' + seconds : seconds + ''
+                                var val = hours + ':' + minutes + ':' + seconds
+                                return val
+                            }
+                        },
+                    },
+                    colors: ['#7cb5ec',
+                        '#434348',
+                        '#90ed7d',
+                        '#f7a35c',
+                        '#8085e9',
+                        '#f15c80',
+                        '#e4d354',
+                        '#2b908f',
+                        '#f45b5b',
+                        '#91e8e1',
+                        '#663366',
+                        '#CCFF00',
+                        '#FFCCFF',
+                        '#99CC33',
+                        '#CCCC33',
+                        '#CC9900',
+                        '#FFCC33',
+                        '#FF66CC',
+                        '#330066',
+                        '#00CCFF',
+                        '#33FF66',
+                        '#CC3300'
+                    ],
+                    series: config_series
+                };
+                // 图表初始化函数
+                var chart = Highcharts.chart('week-charts', options);
+                console.log(chart)
+                $statistics.attr('loaded', true)
+            });
         }
     })
     //设置窗口tab切换
@@ -388,7 +539,7 @@ $(function () {
             form.append("files" + index, el);
         })
         form.append("userData", JSON.stringify(userData));
-        form.append("dirUrl",userData.projectTeam.groupName)
+        form.append("dirUrl", userData.projectTeam.groupName)
         delete userData['fileCheck'];
         delete userData['fileName'];
         // 文件对象

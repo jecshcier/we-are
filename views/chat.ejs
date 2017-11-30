@@ -444,6 +444,12 @@
                 <div class="userView updateLog" style="display: none;">
                     <hr>
                     <article>
+                        <h1><i class="fa fa-cloud-upload" style="color:rgb(255, 186, 106)" aria-hidden="true"></i>&nbsp;tesla V0.2.2</h1>
+                        <h2>date:2017.11.30</h2>
+                        <p>1、新增日报信息统计</p>
+                    </article>
+                    <hr>
+                    <article>
                         <h1><i class="fa fa-cloud-upload" style="color:rgb(255, 186, 106)" aria-hidden="true"></i>&nbsp;tesla V0.2.1</h1>
                         <h2>date:2017.11.23</h2>
                         <p>1、适配网盘接口</p>
@@ -543,8 +549,8 @@
                         <p>6、tesla性能优化</p>
                     </article>
                 </div>
-                <div class="userView statistics">
-
+                <div class="userView statistics" style="display: none">
+                    <div id="week-charts" style="width: 100%;height: 400px;"></div>
                 </div>
             </div>
 
@@ -649,10 +655,9 @@
 <script src="<%=staticUrl%>/lib/js/animate.js"></script>
 <script src="<%=staticUrl%>/lib/js/loading.js"></script>
 <script src='<%=staticUrl%>/lib/js/socket.io.js'></script>
+<script src='http://cdn.hcharts.cn/highcharts/highcharts.js'></script>
 <script src="<%=staticUrl%>/javascripts/func.js"></script>
 <script src="<%=staticUrl%>/javascripts/listening.js"></script>
 <script src="<%=staticUrl%>/javascripts/index.js"></script>
 <script src="<%=staticUrl%>/javascripts/ui.js"></script>
-
-
 </html>
