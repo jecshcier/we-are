@@ -60,6 +60,11 @@ typings/
 #Mac
 .DS_store
 
+#配置文件
 .idea/
+#缓存
 tmp/
+#用户头像文件
 userTx/
+#文件目录
+sourceDir/
