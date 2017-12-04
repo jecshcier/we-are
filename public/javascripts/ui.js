@@ -223,12 +223,12 @@ $(function () {
                 console.log(resultData)
                 var config_series = []
                 $.each(timeArr, function (index, el) {
-                    console.log(el)
                     var userTimeDataArr = []
                     var userMessArr = []
                     $.each(el, function (index2, el2) {
                         userTimeDataArr.push({y: el2[0], description: el2[1]})
                     })
+                    console.log(index + ':')
                     console.log(userTimeDataArr)
                     config_series.push({
                         name: index,                        // 数据列名
