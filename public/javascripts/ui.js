@@ -10,6 +10,35 @@
 // 	}, 100);
 // }
 $(function () {
+    // 图片裁切-获取头像
+    var cropperOptions = {
+      imageBox: '.image-box',
+      thumbBox: '.image-view-box',
+      imgSrc: ''
+    };
+    var cropper;
+    $('#addPhotoBtn').on('click',function() {
+        $("#uploadFileBtn").trigger('click');
+    });
+    document.querySelector('#uploadFileBtn').addEventListener('change', function() {
+        $('#cropContainer').fadeIn()
+            .find('.crop-close')
+            .off('click').on('click',function() {
+                $('#cropContainer').fadeOut();
+            });
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        cropperOptions.imgSrc = e.target.result;
+        cropper = new cropbox(cropperOptions);
+      };
+      reader.readAsDataURL(this.files[0]);
+      this.files.length = 0;
+    });
+    document.querySelector('#cropBtn').addEventListener('click', function() {
+      var img = cropper.getDataURL();
+      $('.myTxDiv').find('img').attr('src', img);
+    });
+
     //头像
     $(".defaultTx").click(function (event) {
         var url = $(this).attr('src');
