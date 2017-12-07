@@ -4,74 +4,74 @@
  * updateTime: 2017.4.1 *
  ************************/
 
-$(function() {
-	$('#loginBtn').hover(function() {
-		$('#loginBtn').css('background-color', '#1ECD97');
-		$(".loginBtn svg path").css('stroke', '#fff');
-	}, function() {
-		$('#loginBtn').css('background-color', '#202020');
-		$(".loginBtn svg path").css('stroke', '#171717');
-	}).click(function() {
-		if (!$(this).is(':animated') && !$(".cross").is(':animated') && !$(".tick").is(':animated')) {
-			if ($(".loginBg input").eq(0).val() && $(".loginBg input").eq(1).val().length > 5) {
-				var username = $(".loginBg input").eq(0).val();
-				var password = $(".loginBg input").eq(1).val();
-				login(username, password);
-			} else {
-				event.preventDefault();
-				shake($("#loginBtn"));
-			}
-		}
-	});
+$(function () {
+  $('#loginBtn').hover(function () {
+    $('#loginBtn').css('background-color', '#1ECD97');
+    $(".loginBtn svg path").css('stroke', '#fff');
+  }, function () {
+    $('#loginBtn').css('background-color', '#202020');
+    $(".loginBtn svg path").css('stroke', '#171717');
+  }).click(function () {
+    if (!$(this).is(':animated') && !$(".cross").is(':animated') && !$(".tick").is(':animated')) {
+      if ($(".loginBg input").eq(0).val() && $(".loginBg input").eq(1).val().length > 5) {
+        var username = $(".loginBg input").eq(0).val();
+        var password = $(".loginBg input").eq(1).val();
+        login(username, password);
+      } else {
+        event.preventDefault();
+        shake($("#loginBtn"));
+      }
+    }
+  });
 })
 
-$(document).keydown(function(event) {
-	if (event.keyCode == 13) {
-		$('#loginBtn').trigger('click');
-	}
+$(document).keydown(function (event) {
+  if (event.keyCode == 13) {
+    $('#loginBtn').trigger('click');
+  }
 });
 
 // 登录 skydisk
 function login(username, password) {
-	$.ajax({
-			url: '/weare/login',
-			type: 'post',
-			dataType: 'json',
-			data: {
-				'username': username,
-				'password': password
-			},
-		})
-		.done(function(data) {
-			if(data.flag){
-                console.log("success");
-                location.href = "/weare/chat";
-			}
-			else {
-				console.log(data.message)
-                shake($("#loginBtn"));
-			}
-		})
-		.fail(function() {
-			alert('服务器错误！')
-			shake($("#loginBtn"));
-		});
+  $.ajax({
+    url: '/weare/login',
+    type: 'post',
+    dataType: 'json',
+    data: {
+      'username': username,
+      'password': password
+    },
+  })
+    .done(function (data) {
+      if (data.flag) {
+        console.log("success");
+        location.href = "/weare/chat";
+      }
+      else {
+        console.log(data.message)
+        shake($("#loginBtn"));
+      }
+    })
+    .fail(function () {
+      alert('服务器错误！')
+      shake($("#loginBtn"));
+    });
 }
 
 function shake(_this) {
-	$(".loginBtn svg path").css('stroke', '#fff');
-	$('#loginBtn').css('background-color', '#FB797E');
-	$(".tick").hide();
-	$('.cross').show();
-	$('#loginBtn').addClass('shake animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
-		$(this).removeClass('shake animated');
-		$('#loginBtn').css('background-color', '#202020');
-		$(".loginBtn svg path").css('stroke', '#171717');
-		$('.cross').fadeOut('500', function() {
-			$(".tick").fadeIn(500,function(){
-			});
-		});
-	});
+  $(".loginBtn svg path").css('stroke', '#fff');
+  $('#loginBtn').css('background-color', '#FB797E');
+  $(".tick").hide();
+  $('.cross').show();
+  $('#loginBtn').addClass('shake animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+    $(this).removeClass('shake animated');
+    $('#loginBtn').css('background-color', '#202020');
+    $(".loginBtn svg path").css('stroke', '#171717');
+    $('.cross').fadeOut('500', function () {
+      $(".tick").fadeIn(500, function () {
+      });
+    });
+  });
 }
 
 
