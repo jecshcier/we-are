@@ -301,7 +301,7 @@ $(function () {
             title: {
               text: '日报时间'                // y 轴标题
             },
-            min: 61200,
+            // min: 61200,
             type: 'datetime',
             labels: {
               formatter: function () {

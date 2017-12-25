@@ -8,7 +8,8 @@ module.exports = {
                 timestamps: false // true by default
             },
             timezone: "+08:00",
-            host:"192.168.109.236",
+            // host:"192.168.109.236",
+            host:"127.0.0.1",
             dialect: "mysql",
             dialectOptions: {
                 charset: "utf8mb4"
@@ -73,7 +74,7 @@ module.exports = {
     },
     sourceDir: {
         sourceDir: "sourceDir",
-        sourceUrl: process.cwd() + '/',
+        sourceUrl: __dirname + '/',
         userImg: "userTx"
     },
     uploadCallbackUrl: "http://localhost:3000/weare/getUploadFile"

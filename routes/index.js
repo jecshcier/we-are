@@ -10,8 +10,11 @@ const ejsUrl = config.projectName;
 const staticUrl = config.static;
 const txUrl = ejsUrl + '/' + config.sourceDir.userImg;
 const request = require('request')
+const amqp = require('./amqp')
 const sourcePath = path.resolve(__dirname, '../' + config.sourceDir.sourceDir)
 const userImg = path.resolve(__dirname, '../' + config.sourceDir.userImg)
+
+
 //创建文件缓存目录
 fs.ensureDir(sourcePath, (err) => {
   if (err) {
@@ -31,6 +34,10 @@ fs.ensureDir(userImg, (err) => {
   }
 })
 
+/*
+web页面部分
+ */
+
 /*登录页面*/
 router.get('/', function (req, res, next) {
     if (req.session.user) {
@@ -45,6 +52,7 @@ router.get('/', function (req, res, next) {
       });
   }
 );
+
 /*聊天界面*/
 router.get('/chat', function (req, res, next) {
     if (req.session.user) {
@@ -63,7 +71,10 @@ router.get('/chat', function (req, res, next) {
       res.redirect('/weare');
   }
 );
-/*以下为接口*/
+
+/*
+接口部分
+ */
 
 //初始化用户数据（传出用户id、姓名、group等信息）
 router.get('/init', function (req, res, next) {
@@ -233,8 +244,8 @@ router.post('/login', function (req, res) {
   let userdata = {
     mobile: "",
     passWord: _password,
-    studentId: _username,
-    systemCode: "ebook",
+    loginName: _username,
+    systemCode: "tesla",
     verifyCode: ""
   }
   request.post({
@@ -248,24 +259,30 @@ router.post('/login', function (req, res) {
     }
     else {
       console.log(body)
-      if (!body.code) {
-        let userInfo = {
-          'userID': body.userInfo.userId,
-          'nickName': body.userInfo.nickName,
-          'role_type': body.userInfo.powerId
+      if (body) {
+        if (!body.code) {
+          let userInfo = {
+            'userID': body.userInfo.userId,
+            'nickName': body.userInfo.nickName,
+            'role_type': body.userInfo.powerId
+          }
+          req.session.user = userInfo;
+          req.session.user.sessionID = req.sessionID
+          //更新本地项目组中的用户名数据
+          //         sql.updateGroupUserName(result.userID, result.nickName, function(result) {
+          //             res.send(req.session.user);
+          //         });
+          info.flag = true
+          info.message = "登录成功"
+          res.send(info)
         }
-        req.session.user = userInfo;
-        req.session.user.sessionID = req.sessionID
-        //更新本地项目组中的用户名数据
-        //         sql.updateGroupUserName(result.userID, result.nickName, function(result) {
-        //             res.send(req.session.user);
-        //         });
-        info.flag = true
-        info.message = "登录成功"
-        res.send(info)
+        else {
+          info.message = "来自用户管理系统的消息：\n --->" + body.description;
+          res.send(info)
+        }
       }
       else {
-        info.message = body.description;
+        info.message = "用户管理系统出错！";
         res.send(info)
       }
     }
@@ -284,7 +301,6 @@ router.post('/uploadFile', function (req, res) {
     return false
   }
   console.log('ok')
-  // console.log(skydiskApi.uploadFiles(res,req))
   skydiskApi.uploadFiles(res, req, sourcePath).then((data) => {
     console.log(data)
   }, (err) => {
@@ -322,17 +338,17 @@ router.post('/getUserDaily', function (req, res) {
   let type = req.body.type
   console.log(type)
   let info = new config.callbackModel()
-  sql.getUserDaily(type).then(() => {
-  })
-  // sql.getUserDaily(type).then((data)=>{
-  //     info.flag = true
-  //     info.message = data.message
-  //     info.data = data.data
-  //     info.latestTime = data.latestTime
-  //     res.send(info)
-  // },(info)=>{
-  //     res.send(info)
+  // sql.getUserDaily(type).then(() => {
   // })
+  sql.getUserDaily(type).then((data)=>{
+      info.flag = true
+      info.message = data.message
+      info.data = data.data
+      info.latestTime = data.latestTime
+      res.send(info)
+  },(info)=>{
+      res.send(info)
+  })
 })
 
 function getCurrentTime(type) {
@@ -359,69 +375,3 @@ function sup(n) {
 }
 
 module.exports = router;
-
-//弃用
-/*获取上传文件后的结果*/
-// router.get('/getUploadFile', function (req, res) {
-//     if (req.query.flag) {
-//         console.log(req.query);
-//         res.render('uploadtest', {
-//             title: '文件上传结果',
-//             result: req.query,
-//             uploadUrl: config.skydiskServer + config.uploadApi,
-//             uploadCallbackUrl: config.uploadCallbackUrl,
-//             ejsUrl: ejsUrl,
-//             staticUrl: staticUrl,
-//             txUrl: txUrl
-//         });
-//     } else {
-//         res.render('uploadtest', {
-//             title: '上传文件',
-//             result: null,
-//             uploadUrl: config.skydiskServer + config.uploadApi,
-//             uploadCallbackUrl: config.uploadCallbackUrl,
-//             ejsUrl: ejsUrl,
-//             staticUrl: staticUrl,
-//             txUrl: txUrl
-//         });
-//     }
-// });
-//登录模块-tesla 私有 暂不使用
-// router.post('/login', function(req, res) {
-// 	console.log("接收登录请求");
-// 	var _username = req.body.username;
-// 	var _password = md5.encry(req.body.password);
-// 	var user = {
-// 		username: _username,
-// 		password: _password
-// 	};
-// 	sql.logincheck(user, function(result) {
-// 		if (result) {
-// 			console.log(result);
-// 			if (result.password.match(_password)) {
-// 				console.log("登录成功");
-// 				delete result.password;
-// 				console.log(result);
-// 				req.session.user = result;
-// 				res.send(result);
-// 			} else {
-// 				console.log("登录失败");
-// 				res.send(null);
-// 			}
-// 		} else {
-// 			console.log("登录失败");
-// 			res.send(null);
-// 		}
-// 	});
-// });
-//获取用户头像
-// router.get('/getUserTx', function(req, res, next) {
-// 	if (req.session.user) {
-// 		var userID = req.query.userID;
-// 		sql.getUserTx(userID, function(result) {
-// 			res.send(result);
-// 		});
-// 	} else
-// 		res.redirect('/weare');
-// });
-//删除某个项目组(暂不使用)

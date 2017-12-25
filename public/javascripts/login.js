@@ -48,12 +48,12 @@ function login(username, password) {
         location.href = "/weare/chat";
       }
       else {
-        console.log(data.message)
+        alert(data.message)
         shake($("#loginBtn"));
       }
     })
     .fail(function () {
-      alert('服务器错误！')
+      alert('用户管理系统未响应 或 用户管理系统坏了！')
       shake($("#loginBtn"));
     });
 }

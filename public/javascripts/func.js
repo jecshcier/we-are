@@ -757,7 +757,6 @@ function initUserDataApi(callback) {
   }).fail(function () {
     alert("链接超时，请重新登录");
     location.href = "/";
-  }).always(function () {
   });
 }
 
