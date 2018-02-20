@@ -70,6 +70,9 @@ module.exports = {
         },
         ums: {
             url: "http://ums.tes-sys.com/ums-api"
+        },
+        tesla_api:{
+            host:'http://127.0.0.1:3030'
         }
     },
     sourceDir: {
@@ -77,5 +80,6 @@ module.exports = {
         sourceUrl: __dirname + '/',
         userImg: "userTx"
     },
-    uploadCallbackUrl: "http://localhost:3000/weare/getUploadFile"
+    uploadCallbackUrl: "http://localhost:3000/weare/getUploadFile",
+    system_key:"tesla_key"
 }
