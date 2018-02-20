@@ -89,7 +89,7 @@ function drawCircle(x, y, radius, color) {
 }
 
 function randomColor(){
-  return ['#6ae5ab','#88e3b2','#36b89b','#7bd7ec','#66cbe1'][Math.floor(Math.random() * 5)];
+  return ['#6ae5ab','#ea9999','#36b89b','#00ffff','#ff00ff'][Math.floor(Math.random() * 5)];
 }
 
 function Walker(options){
