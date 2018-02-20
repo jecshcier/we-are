@@ -5,6 +5,14 @@
  ************************/
 
 $(function () {
+
+  setTimeout(function () {
+    console.log('ok');
+    $(".activity").css('opacity', '0');
+    $(".loginBg").css('opacity', '1');
+  }, 5000);
+
+
   $('#loginBtn').hover(function () {
     $('#loginBtn').css('background-color', '#1ECD97');
     $(".loginBtn svg path").css('stroke', '#fff');
@@ -72,6 +80,8 @@ function shake(_this) {
       });
     });
   });
+
+
 }
 
 

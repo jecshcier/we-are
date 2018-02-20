@@ -1,48 +1,64 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<!-- 	<meta name="viewport" id="vp" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
-	<meta name="viewport" id="vp" content="initial-scale=1.0,user-scalable=no,maximum-scale=1" media="(device-height: 568px)" />
-	<meta name="viewport" content="width=device-width,user-scalable=0" /> -->
-	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
-	<title><%=title%></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!-- 	<meta name="viewport" id="vp" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
+        <meta name="viewport" id="vp" content="initial-scale=1.0,user-scalable=no,maximum-scale=1" media="(device-height: 568px)" />
+        <meta name="viewport" content="width=device-width,user-scalable=0" /> -->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <title><%= title %></title>
 
-	<link href="<%=staticUrl%>/lib/css/animate.css" rel="stylesheet" type="text/css" />
-	<link href="<%=staticUrl%>/stylesheets/style.css" rel="stylesheet" type="text/css" />
-	<link href="<%=staticUrl%>/stylesheets/login.css" rel="stylesheet" type="text/css" />
-	    <link rel="shortcut icon" href="<%=staticUrl%>/img/winico.ico" />
+    <link href="<%= staticUrl %>/lib/css/animate.css" rel="stylesheet" type="text/css"/>
+    <link href="<%= staticUrl %>/stylesheets/style.css" rel="stylesheet" type="text/css"/>
+    <link href="<%= staticUrl %>/stylesheets/login.css" rel="stylesheet" type="text/css"/>
+    <link rel="shortcut icon" href="<%= staticUrl %>/img/winico.ico"/>
 
-	<script>var staticUrl = '<%=staticUrl%>';</script>
-	<script type="text/javascript" src="<%=staticUrl%>/lib/js/jquery-3.1.0.min.js"></script>
-	<script type="text/javascript" src="<%=staticUrl%>/lib/js/jQuery.md5.js"></script>
+    <script>var staticUrl = '<%= staticUrl %>';</script>
+    <script type="text/javascript" src="<%= staticUrl %>/lib/js/jquery-3.1.0.min.js"></script>
+    <script type="text/javascript" src="<%= staticUrl %>/lib/js/jQuery.md5.js"></script>
 </head>
-
 <body>
-	<div class="login">
-		<canvas class="canvasAct" id="demo-canvas"></canvas>
-		<div class="loginBg">
-			<div>
-				<input type="text" autofocus="auto" autocomplete="false"></div>
-			<div>
-				<input type="password" autocomplete="false"></div>
-			<!-- 			<div id="loginBtn"></div>
-		-->
-		<div id="loginBtn" class="loginBtn" style="">
-			<svg width="100%" height="100%">
-				<path class="tick" transform="rotate(-2.8605189323425293 30.63063049316396,30.081081390380923) "  stroke-width="5.5"  d="m29.62541,22.04963l10.19021,10.1077"/>
-				<path class="tick"  stroke-width="5.5" d="m37.46716,30.61475l20.00071,-20.37109"/>
+<div class="login">
+    <canvas class="canvasAct" id="demo-canvas"></canvas>
+    <div class="loginBg" style="opacity: 0;">
+        <div>
+            <input type="text" autofocus="auto" autocomplete="false"></div>
+        <div>
+            <input type="password" autocomplete="false"></div>
+        <!-- 			<div id="loginBtn"></div>
+    -->
+        <div id="loginBtn" class="loginBtn" style="">
+            <svg width="100%" height="100%">
+                <path class="tick" transform="rotate(-2.8605189323425293 30.63063049316396,30.081081390380923) "
+                      stroke-width="5.5" d="m29.62541,22.04963l10.19021,10.1077"/>
+                <path class="tick" stroke-width="5.5" d="m37.46716,30.61475l20.00071,-20.37109"/>
 
-				<path class="cross hide" d="m43.2627,7.54236l0,25.6022" transform="rotate(135 43.26270294189453,20.34346199035645) " stroke-width="5.5" stroke="#FFF"/>
-				<path class="cross hide" d="m43.26273,7.54238l0,25.6022" transform="rotate(225 43.26272964477539,20.343481063842777) " stroke-width="5.5" stroke="#fff"/>
-			</svg>
-		</div>
+                <path class="cross hide" d="m43.2627,7.54236l0,25.6022"
+                      transform="rotate(135 43.26270294189453,20.34346199035645) " stroke-width="5.5" stroke="#FFF"/>
+                <path class="cross hide" d="m43.26273,7.54238l0,25.6022"
+                      transform="rotate(225 43.26272964477539,20.343481063842777) " stroke-width="5.5" stroke="#fff"/>
+            </svg>
+        </div>
 
-	</div>
+    </div>
+    <div class="activity" style="position: absolute;
+    left: 50%;
+    top: 40%;
+    width: 80%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-size: 10vw;
+    font-family: 'Concert One', cursive;
+    color: white;
+    z-index: 1;
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px orangered, 0 0 70px orangered, 0 0 80px #FFDD1B, 0 0 100px orangered, 0 0 150px orangered;
+"><span style="font-size: 5vw;">Tesla祝您</span><br>新年快乐
+    </div>
 </div>
 
 </body>
-<script type="text/javascript" src="<%=staticUrl%>/lib/js/demo-2.js"></script>
-<script type="text/javascript" src="<%=staticUrl%>/javascripts/login.js"></script>
+<script type="text/javascript" src="<%= staticUrl %>/lib/js/yanhua.js"></script>
+<script type="text/javascript" src="<%= staticUrl %>/javascripts/login.js"></script>
 </html>

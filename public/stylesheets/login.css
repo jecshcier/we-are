@@ -1,11 +1,77 @@
-*{margin:0;padding:0;}
-body{overflow: hidden;}
-.login{background-image:-webkit-radial-gradient(#181818,#000);width:100%;}
-.loginBg{width:460px;height:319px;background:url(../images/loginBg.png) no-repeat;position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;}
-.loginBg div:nth-child(1){position:absolute;left:63px;top:118px;}
-.loginBg div:nth-child(2){position:absolute;left:63px;top:190px;}
-.loginBg div input{width:360px;border:0;background:transparent;color:#fff;outline:none;}
-.loginBtn{position:absolute;bottom:32px;width:85px;height:40px;background-color:#202020;border-radius:25px;transition:background-color 0.5s;cursor:pointer;left:0;right:0;margin:auto;}
-.loginBtn svg path{stroke:#171717;transition:stroke 0.5s;}
-.hide{display:none;}
-.loginBg input{font-size:18px;}
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    overflow: hidden;
+}
+
+.login {
+    background-image: -webkit-radial-gradient(#181818, #000);
+    width: 100%;
+}
+
+.loginBg {
+    width: 460px;
+    height: 319px;
+    background: url(../images/loginBg.png) no-repeat;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    z-index: 9;
+}
+
+.loginBg div:nth-child(1) {
+    position: absolute;
+    left: 63px;
+    top: 118px;
+}
+
+.loginBg div:nth-child(2) {
+    position: absolute;
+    left: 63px;
+    top: 190px;
+}
+
+.loginBg div input {
+    width: 360px;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    outline: none;
+}
+
+.loginBtn {
+    position: absolute;
+    bottom: 32px;
+    width: 85px;
+    height: 40px;
+    background-color: #202020;
+    border-radius: 25px;
+    transition: background-color 0.5s;
+    cursor: pointer;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.loginBtn svg path {
+    stroke: #171717;
+    transition: stroke 0.5s;
+}
+
+.hide {
+    display: none;
+}
+
+.loginBg input {
+    font-size: 18px;
+}
+
+.activity,.loginBg{
+    transition: opacity 2s;
+}
