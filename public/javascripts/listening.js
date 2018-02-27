@@ -8,7 +8,6 @@ function addSocketListener() {
   socket.on('userIsLogin', function (user, onlineUsers) {
     console.log(user)
     localOnlineUsers = onlineUsers;
-    globalNotification(user.userName + '加入了tesla', 'green');
     var _this = $("li[userID=" + user.userID + "]");
     if (_this.length) {
       _this.children('i').removeClass('online').removeClass('offline').addClass('online');
@@ -53,6 +52,7 @@ function addSocketListener() {
       autoScroll(_this);
     } else {
       if (_this.length) {
+        socket.emit("receiveMessage", userData);
         if (fileCheck) {
           notify(userName, '文件' + result.fileName, result.projectTeam, userID);
         } else {
@@ -109,7 +109,6 @@ function addSocketListener() {
       })
     }
     localOnlineUsers = onlineUsers;
-    globalNotification(data.userName + '离开了tesla', 'red');
     if ($("li[userID=" + data.userID + "]").length) {
       $("li[userID=" + data.userID + "] i").removeClass('online').removeClass('offline').addClass('offline');
       var temp = _this[0].outerHTML;

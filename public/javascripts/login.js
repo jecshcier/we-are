@@ -8,9 +8,9 @@ $(function () {
 
   setTimeout(function () {
     console.log('ok');
-    $(".activity").css('opacity', '0');
+    // $(".activity").css('opacity', '0');
     $(".loginBg").css('opacity', '1');
-  }, 5000);
+  }, 0);
 
 
   $('#loginBtn').hover(function () {

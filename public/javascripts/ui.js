@@ -10,6 +10,11 @@
 // 	}, 100);
 // }
 $(function () {
+  if (typeof app !== "undefined") {
+    $(".topBar").prepend('<div class="set bookShelf">'
+      + '<i class="fa fa-book" aria-hidden="true" title="返回书架"></i>'
+      + '</div>')
+  }
   // 图片裁切-获取头像
   var cropperOptions = {
     imageBox: '.image-box',
@@ -731,4 +736,11 @@ $(function () {
   // 			$(".broadcastContent").val('');
   // 		});
   // });
+  $(".set.bookShelf").click(function (e) {
+    app.send('webviewEvent', {
+      event: "toggleView",
+      showView: webview.shelfView,
+      hideView: webview.bookView
+    })
+  })
 })

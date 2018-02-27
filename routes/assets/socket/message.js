@@ -1,21 +1,16 @@
-var sql = require('../sql/sql');
-var fs = require('fs-extra');
-var path = require('path');
-var config = require('../../../config');
-var md5 = require('../lib/md5');
+const sql = require('../sql/sql');
+const fs = require('fs-extra');
+const path = require('path');
+const config = require('../../../config');
+const md5 = require('../lib/md5');
 //在线用户
-var onlineUsers = {};
-// var userContentList = new Array();
-// var userContentListBuffers = new Array();
-// var userContent = {
-// 	userContentList,
-// 	userContentListBuffers
-// };
-// var currentWritten = "userContentList";
+let onlineUsers = {};
+
 //当前在线人数
-var onlineCount = 0;
-var reconnectUser = [];
-var socketlisten = function (io) {
+let onlineCount = 0;
+let reconnectUser = [];
+let unreadMessage = {}
+let socketlisten = function (io) {
   io.on('connection', function (socket) {
     console.log('onlineCount:' + onlineCount)
     console.log(socket.request.session)
@@ -56,6 +51,7 @@ var socketlisten = function (io) {
         userTemp.userID = socket.userID;
         io.sockets.emit('userIsLogin', userTemp, onlineUsers);
       } else {
+        delete unreadMessage[socket.userID]
         console.log(socket.request.sessionID)
         console.log(onlineUsers[socket.userID].sessionID)
         //若登录的客户端与当前客户端的sessionID不一致
@@ -79,23 +75,6 @@ var socketlisten = function (io) {
       }
 
     }
-    // socket.on('userLogin', function(userData) {
-    // 	console.log(userData.userName + "加入了tesla");
-    // 	console.log(userData);
-    // 	socket.userID = userData.userID;
-    // 	socket.userName = userData.userName;
-    // 	// 定时器，用户无操作时间
-    // 	socket = connectionTimer(socket, io);
-    // 	//检查在线列表，如果不在里面就加入
-    // 	if (!onlineUsers.hasOwnProperty(userData.userID)) {
-    // 		onlineUsers[userData.userID] = userData.userName;
-    // 		//在线人数+1
-    // 		onlineCount++;
-    // 		console.log(onlineUsers);
-    // 		// console.log(socket.name)
-    // 	}
-    // 	io.sockets.emit('userIsLogin', userData, onlineUsers);
-    // });
     socket.on('getOnlineUsers', function () {
       io.sockets.emit('getOnlineUsers', onlineUsers);
     })
@@ -177,6 +156,7 @@ var socketlisten = function (io) {
       if (socket.userName) {
         logOut(socket, io);
       }
+      unreadMessage[socket.userID] = []
     });
   });
 }

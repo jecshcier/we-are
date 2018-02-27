@@ -7,6 +7,13 @@ $(function () {
   /***********
    * 用户数据初始化 *
    ***********/
+  if(typeof app !== 'undefined'){
+    app.send('webviewEvent', {
+      shelfView: webview.shelfView,
+      bookView: webview.bookView,
+      event: "bookLoaded"
+    });
+  }
   changeLoaderString('界面加载完成……');
   checkTeslaVersion();
   initUserData();
