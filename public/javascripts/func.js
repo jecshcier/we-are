@@ -210,7 +210,7 @@ function getWholeUser(callback) {
       if (!val.nick_name) {
         val.nick_name = val.login_name;
       }
-      $(".groupuser").append('<a userID=' + val.id + ' title=' + val.login_name + '>' + '<input type="checkbox" id="userID' + val.id + '">' + '<label for="userID' + val.id + '"><span></span></label>' + '<span>' + val.nick_name + '</span>' + '</div>' + '</a>');
+      $(".groupuser").append('<a userID=' + val.user_id + ' title=' + val.login_name + '>' + '<input type="checkbox" id="userID' + val.user_id + '">' + '<label for="userID' + val.id + '"><span></span></label>' + '<span>' + val.nick_name + '</span>' + '</div>' + '</a>');
     });
     if (callback) {
       callback();
