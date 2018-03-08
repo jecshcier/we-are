@@ -43,7 +43,7 @@
             <li rel="userTx" class="setMenuActive">
                 <i class="fa fa-twitter"></i> 头像
             </li>
-            <% if(role_type) { %>
+            <% if(role_type === 3) { %>
             <li rel="project"><i class="fa fa-group"></i> 项目组
             </li>
 
@@ -87,7 +87,7 @@
                 </div>
             </div>
         </div>
-        <% if(role_type) { %>
+        <% if(role_type === 3) { %>
 
         <!--项目组-->
         <div style="display: none;">
