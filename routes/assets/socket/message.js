@@ -3,6 +3,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const config = require('../../../config');
 const md5 = require('../lib/md5');
+const postReq = require('../lib/request_fun').postReq
+
 //在线用户
 let onlineUsers = {};
 
@@ -17,7 +19,7 @@ let socketlisten = function (io) {
     console.log('session测试');
     // 服务器重启让所有人下线
     if (!socket.request.session.user) {
-      var userTemp = {
+      let userTemp = {
         username: '',
         userID: ''
       }
@@ -42,7 +44,7 @@ let socketlisten = function (io) {
         // console.log(socket.name)
         console.log("已有session用户");
         console.log(socket.request.session.user['nickName'] + "加入了tesla");
-        var userTemp = {
+        let userTemp = {
           username: '',
           userID: '',
           sessionID: socket.request.sessionID
@@ -60,7 +62,7 @@ let socketlisten = function (io) {
           onlineUsers[socket.userID].errorFlag = 1;
           onlineUsers[socket.userID].sessionID = socket.request.sessionID;
         }
-        var userTemp = {
+        let userTemp = {
           username: '',
           userID: '',
           sessionID: socket.request.sessionID
@@ -105,17 +107,17 @@ let socketlisten = function (io) {
       // clearTimeout(socket.timer);
       // socket = connectionTimer(socket, io);
       if (data.name) {
-        var pos = "." + data.name.replace(/.+\./, "");
-        var user = data.user;
-        var groupID = user['projectTeam'].groupID;
-        var userID = user['userID'];
-        var time1 = md5.hex(getCurrentTime(1) + data.name);
-        var time2 = getCurrentTime(2);
-        var relaPath = '/' + userID + '/' + time2 + '/' + time1 + pos;
-        var filePath = path.resolve(__dirname, config.imgDir + '/' + userID + '/' + time2 + '/' + time1 + pos);
+        let pos = "." + data.name.replace(/.+\./, "");
+        let user = data.user;
+        let groupID = user['projectTeam'].groupID;
+        let userID = user['userID'];
+        let time1 = md5.hex(getCurrentTime(1) + data.name);
+        let time2 = getCurrentTime(2);
+        let relaPath = '/' + userID + '/' + time2 + '/' + time1 + pos;
+        let filePath = path.resolve(__dirname, config.imgDir + '/' + userID + '/' + time2 + '/' + time1 + pos);
         // 解码
-        var base64Data = data.segment.replace(/^data:image\/\w+;base64,/, "");
-        var dataBuffer = new Buffer(base64Data, 'base64');
+        let base64Data = data.segment.replace(/^data:image\/\w+;base64,/, "");
+        let dataBuffer = new Buffer(base64Data, 'base64');
         console.log(relaPath);
         // console.log(filePath);
         // 创建文件
@@ -134,7 +136,7 @@ let socketlisten = function (io) {
                 isOK: false
               });
             } else {
-              var truePath = config.img + relaPath
+              let truePath = config.img + relaPath
               user['message'] = user['message'].replace(/{imgUrl}/, truePath).replace(/"/g, "'");
               user['message'] += '<br><a href="' + truePath + '" target="_blank" download="' + time1 + pos + '">下载图片</a>'
               saveMessages(user);
@@ -171,7 +173,7 @@ function connectionTimer(socket, io) {
 function logOut(socket, io) {
   // 处理异常登陆
   // if (reconnectUser.length) {
-  //     for (var i = 0; i < reconnectUser.length; i++) {
+  //     for (let i = 0; i < reconnectUser.length; i++) {
   //         if (reconnectUser[i].ID = socket.ID) {
   //             reconnectUser.splice(i, 1);
   //             console.log(reconnectUser)
@@ -179,7 +181,7 @@ function logOut(socket, io) {
   //         }
   //     }
   // }
-  var userTemp = {
+  let userTemp = {
     username: '',
     userID: ''
   }
@@ -210,9 +212,9 @@ function logOut(socket, io) {
 }
 
 function getCurrentTime(type) {
-  var myDate = new Date();
-  var date = myDate.getFullYear() + "-" + sup(parseInt(myDate.getMonth() + 1)) + "-" + sup(myDate.getDate());
-  var time = sup(myDate.getHours()) + ":" + sup(myDate.getMinutes()) + ":" + sup(myDate.getSeconds());
+  let myDate = new Date();
+  let date = myDate.getFullYear() + "-" + sup(parseInt(myDate.getMonth() + 1)) + "-" + sup(myDate.getDate());
+  let time = sup(myDate.getHours()) + ":" + sup(myDate.getMinutes()) + ":" + sup(myDate.getSeconds());
   switch (type) {
     case 0:
       return date + " " + time;
@@ -233,15 +235,26 @@ function sup(n) {
 }
 
 function saveMessages(userdata) {
-  var currentTime = getCurrentTime(0)
-  userdata['updateTime'] = currentTime;
-  sql.saveMessages(userdata, function () {
-  });
+  let currentTime = getCurrentTime(0)
+  postReq(config.Api.tesla_api.host + '/weare/api/saveMessages', {
+    userData:JSON.stringify(userdata)
+  }).then((result) => {
+    // res.send(result)
+  }).catch((info) => {
+    console.log(info)
+    // res.send(info)
+  })
 }
 
 function saveUserUpdateTime(userID) {
-  sql.saveUserUpdateTime(userID, function () {
-  });
+  postReq(config.Api.tesla_api.host + '/weare/api/saveUserUpdateTime', {
+    userID:userID
+  }).then((result) => {
+    // res.send(result)
+  }).catch((info) => {
+    console.log(info)
+    // res.send(info)
+  })
 }
 
 exports.socketlisten = socketlisten;
