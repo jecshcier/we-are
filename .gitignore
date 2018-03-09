@@ -68,3 +68,5 @@ tmp/
 userTx/
 #文件目录
 sourceDir/
+#编译后的目录
+dist/

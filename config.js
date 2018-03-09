@@ -1,3 +1,5 @@
+const gulp = require('./gulpfile')
+
 module.exports = {
   db_config: {
     databaseName: "tesla",

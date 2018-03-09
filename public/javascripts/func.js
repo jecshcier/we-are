@@ -135,11 +135,11 @@ function reflashPro() {
 // 添加项目组
 function addProject(newPro) {
   createGroupApi(newPro, function (data) {
-    if (data.ok) {
-      alert(data.comment);
+    if (data.flag) {
+      alert(data.message);
       reflashPro();
     } else {
-      alert(data.comment);
+      alert(data.message);
     }
   })
 }
@@ -704,9 +704,9 @@ function createGroupApi(newPro, callback) {
       'groupName': newPro,
       'userID': userData.userID
     }
-  }).done(function (data) {
+  }).done(function (result) {
     if (callback) {
-      callback(data);
+      callback(result);
     }
     console.log("success");
   }).fail(function () {
@@ -724,10 +724,16 @@ function addUserToGroupApi(group, user, callback) {
       'group': group,
       'user': user
     }
-  }).done(function () {
-    if (callback) {
-      callback();
+  }).done(function (result) {
+    if(result.flag){
+      if (callback) {
+        callback();
+      }
     }
+    else {
+      alert(result.message)
+    }
+
   }).fail(function () {
     console.log("error");
   })
@@ -737,11 +743,16 @@ function addUserToGroupApi(group, user, callback) {
 function getUserGroupsApi(callback) {
   $.ajax({
     url: 'getUserGroups',
-    type: 'GET',
+    type: 'POST',
     dataType: 'json'
   }).done(function (result) {
     if (callback) {
-      callback(result);
+      if (result.flag) {
+        callback(result.data);
+      }
+      else {
+        alert(result.message);
+      }
     }
   }).fail(function () {
     console.log("error");
@@ -752,11 +763,16 @@ function getUserGroupsApi(callback) {
 function initUserDataApi(callback) {
   $.ajax({
     url: 'init',
-    type: 'GET',
+    type: 'post',
     dataType: 'json'
   }).done(function (result) {
     if (callback) {
-      callback(result);
+      if (result.flag) {
+        callback(result.data);
+      }
+      else {
+        alert(result.message)
+      }
     }
   }).fail(function () {
     alert("链接超时，请重新登录");
@@ -793,9 +809,14 @@ function deleteUserInGroupApi(group, user, callback) {
       'group': group,
       'user': user
     }
-  }).done(function () {
-    if (callback) {
-      callback();
+  }).done(function (result) {
+    if(result.flag){
+      if (callback) {
+        callback();
+      }
+    }
+    else{
+      alert(result.message)
     }
   }).fail(function () {
     console.log("error");
@@ -812,10 +833,16 @@ function getProjectUsersApi(groupID, callback) {
       'groupID': groupID
     }
   }).done(function (result) {
-    if (callback) {
-      callback(result);
+    if (result.flag) {
+      if (callback) {
+        callback(result.data);
+      }
+    }
+    else {
+      alert(result.message)
     }
   }).fail(function () {
+  
   }).always(function () {
   });
 }

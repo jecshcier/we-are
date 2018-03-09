@@ -148,12 +148,26 @@ router.get('/login/:userId/:token/:systemCode', function (req, res, next) {
                 }
                 let userInfo = {
                   'userID': body.userInfo.userId,
+                  'loginName': body.userInfo.loginName,
                   'nickName': body.userInfo.nickName,
-                  'role_type': body.userInfo.powerId
+                  'role_type': body.userInfo.powerId,
+                  'identity': body.userInfo.roleType
                 }
                 req.session.user = userInfo
                 req.session.user.sessionID = req.sessionID
-                res.redirect('/weare/chat')
+                postReq(config.Api.tesla_api.host + '/weare/api/updateUser', {
+                  userID: userInfo.userID,
+                  loginName: userInfo.loginName,
+                  nickName: userInfo.nickName,
+                  identity: userInfo.identity,
+                  powerID: userInfo.role_type
+                }).then((result) => {
+                  console.log(result)
+                  res.redirect('/weare/chat')
+                }).catch((info) => {
+                  console.log(info)
+                  res.redirect('/weare/chat')
+                })
               } else {
                 res.send("服务器错误！\n" + body)
               }
@@ -170,17 +184,20 @@ router.get('/login/:userId/:token/:systemCode', function (req, res, next) {
 })
 
 //初始化用户数据（传出用户id、姓名、group等信息）
-router.get('/init', function (req, res, next) {
-  if (req.session.user) {
-    console.log(req.session.user)
-    var user = {}
-    user['userInfo'] = req.session.user
-    sql.getProjectTeamByUser(user.userInfo.userID, function (result) {
-      user['projectTeam'] = result
-      res.send(user)
-    })
-  } else
-    res.redirect('/weare')
+router.post('/init', function (req, res, next) {
+  console.log(req.session.user)
+  var user = {}
+  user['userInfo'] = req.session.user
+  postReq(config.Api.tesla_api.host + '/weare/api/getUserGroups', {
+    userID: user.userInfo.userID
+  }).then((result) => {
+    user['projectTeam'] = result.data
+    result.data = user
+    res.send(result)
+  }).catch((info) => {
+    console.log(info)
+    res.send(info)
+  })
 })
 //传出所有项目组list
 router.get('/getWholeProjectTeam', function (req, res, next) {
@@ -194,102 +211,88 @@ router.get('/getWholeProjectTeam', function (req, res, next) {
 })
 
 //传出所给用户的所在项目组
-router.get('/getUserGroups', function (req, res, next) {
-  if (req.session.user) {
-    sql.getProjectTeamByUser(req.session.user.userID, function (result) {
-      res.send(result)
-    })
-  } else
-    res.redirect('/weare')
+router.post('/getUserGroups', function (req, res, next) {
+  // sql.getProjectTeamByUser(req.session.user.userID, function (result) {
+  //   res.send(result)
+  // })
 })
 //传出项目组内所有用户
 router.post('/getProjectUsers', function (req, res, next) {
-  if (req.session.user) {
-    sql.getProjectUsers(req.body.groupID, function (result) {
-      console.log(result)
-      res.send(result)
-    })
-  } else
-    res.redirect('/weare')
+  postReq(config.Api.tesla_api.host + '/weare/api/getUsersInGroup', {
+    groupID: req.body.groupID
+  }).then((result) => {
+    res.send(result)
+  }).catch((info) => {
+    console.log(info)
+    res.send(info)
+  })
 })
 //将用户移除某个项目组
 router.post('/deleteUserInGroup', function (req, res, next) {
-  var group = new Object()
-  var user = new Object()
-  group['groupID'] = req.body['group[groupID]']
-  group['groupName'] = req.body['group[groupName]']
-  user['userID'] = req.body['user[userID]']
-  user['userName'] = req.body['user[userName]']
-  if (req.session.user) {
-    sql.deleteProjectTeamWithUser(user.userID, group.groupID, function (result) {
-      res.send(result)
-    })
-  } else
-    res.redirect('/weare')
+  postReq(config.Api.tesla_api.host + '/weare/api/deleteUserInGroup', {
+    userID: req.body['user[userID]'],
+    groupID: req.body['group[groupID]']
+  }).then((result) => {
+    res.send(result)
+  }).catch((info) => {
+    console.log(info)
+    res.send(info)
+  })
 })
 //将用户加入某个项目组
 router.post('/createGroupWithUser', function (req, res, next) {
-  var group = new Object()
-  var user = new Object()
-  group['groupID'] = req.body['group[groupID]']
-  group['groupName'] = req.body['group[groupName]']
-  user['userID'] = req.body['user[userID]']
-  user['userName'] = req.body['user[userName]']
-  if (req.session.user) {
-    sql.createProjectTeamWithUser(user, group, function (result) {
-      res.send(result)
+  postReq(config.Api.tesla_api.host + '/weare/api/addUserInGroup', {
+    data: JSON.stringify({
+      userID: req.body['user[userID]'],
+      userName: req.body['user[userName]'],
+      groupID: req.body['group[groupID]'],
+      groupName: req.body['group[groupName]']
     })
-  } else
-    res.redirect('/weare')
+  }).then((result) => {
+    res.send(result)
+  }).catch((info) => {
+    console.log(info)
+    res.send(info)
+  })
 })
 //创建某个项目组
 router.post('/createGroup', function (req, res, next) {
-  if (req.session.user) {
-    let user = req.session.user
-    var groupID = md5.hex(req.body.groupName + '' + getCurrentTime(0))
-    skydiskApi.newDir(user, req.body.groupName, function (data) {
-      if (data.ok) {
-        sql.createProject(groupID, req.body.groupName, req.body.userID, function (result) {
-          if (result) {
-            result.ok = true
-            result.comment = '创建成功'
-            res.send(result)
-          } else {
-            result.ok = false
-            result.comment = 'sorry，项目组创建失败，请前往网盘删除文件夹'
-            res.send(result)
-          }
-        })
-      } else {
-        data.ok = false
-        data.comment += '\n*由于网盘文件夹创建失败，项目组创建失败！*'
-        res.send(data)
-      }
-    })
-  } else
-    res.redirect('/weare')
+  let user = req.session.user
+  var groupID = md5.hex(req.body.groupName + '' + getCurrentTime(0))
+  skydiskApi.newDir(user, req.body.groupName, function (data) {
+    if (data.ok) {
+      postReq(config.Api.tesla_api.host + '/weare/api/createGroup', {
+        userID: req.body.userID,
+        groupID: groupID,
+        groupName: req.body.groupName
+      }).then((result) => {
+        res.send(result)
+      }).catch((info) => {
+        console.log(info)
+        info.message = "sorry，项目组创建失败，请前往网盘删除文件夹"
+        res.send(info)
+      })
+    } else {
+      data.ok = false
+      data.comment += '\n*由于网盘文件夹创建失败，项目组创建失败！*'
+      res.send(data)
+    }
+  })
 })
 /*更改用户头像*/
 router.post('/saveUserTx', function (req, res, next) {
-  if (req.session.user) {
-    var userID = req.body.userID
-    var url = req.body.url
-    console.log(userID)
-    console.log(url)
-    url = url.replace(staticUrl, '')
-    fs.copy('public/' + url, config.TxDir + userID + '.jpg', {
-      replace: false
-    }, function (err) {
-      if (err) {
-        // i.e. file already exists or can't write to directory
-        throw err
-        res.send(null)
-      }
-      console.log("复制头像成功")
-      res.send(true)
-    })
-  } else
-    res.redirect('/weare')
+  var userID = req.body.userID
+  var url = req.body.url
+  console.log(userID)
+  console.log(url)
+  url = url.replace(staticUrl, '')
+  fs.copy('public/' + url, config.TxDir + userID + '.jpg').then(() => {
+    console.log("复制头像成功")
+    res.send(true)
+  }).catch((err) => {
+    console.log(err)
+    res.send(null)
+  })
 })
 
 //获取某项目组聊天记录(50条)
@@ -332,19 +335,19 @@ router.post('/login', function (req, res) {
         if (!body.code) {
           let userInfo = {
             'userID': body.userInfo.userId,
-            'loginName':body.userInfo.loginName,
+            'loginName': body.userInfo.loginName,
             'nickName': body.userInfo.nickName,
             'role_type': body.userInfo.powerId,
-            'identity':body.userInfo.roleType
+            'identity': body.userInfo.roleType
           }
           req.session.user = userInfo
           req.session.user.sessionID = req.sessionID
           postReq(config.Api.tesla_api.host + '/weare/api/updateUser', {
-            userID:userInfo.userID,
-            loginName:userInfo.loginName,
-            nickName:userInfo.nickName,
-            identity:userInfo.identity,
-            powerID:userInfo.role_type
+            userID: userInfo.userID,
+            loginName: userInfo.loginName,
+            nickName: userInfo.nickName,
+            identity: userInfo.identity,
+            powerID: userInfo.role_type
           }).then((result) => {
             console.log(result)
             result.message = "登录成功"
@@ -432,7 +435,6 @@ router.post('/getUserDaily', function (req, res) {
     res.send(info)
   })
 })
-
 
 
 function getCurrentTime(type) {

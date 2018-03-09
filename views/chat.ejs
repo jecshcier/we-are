@@ -60,9 +60,13 @@
             <div class="txUl">
                 <div>
                     <div class="myTxDiv">
-                        <img src="<%= userTx %>" width="100%" alt=""></div>
-                    <button id="saveTx" style="">保存</button>
-                    <button class="btn-add-photo" type="button" id="addPhotoBtn">上传头像</button>
+                        <img src="<%= userTx %>" width="100%" alt="">
+                    </div>
+                    <div>
+                        <button class="btn-add-photo" type="button" id="addPhotoBtn">上传头像</button>
+                        <input class="addTx" type="file" style="display: none;">
+                        <button id="saveTx" style="">保存</button>
+                    </div>
                 </div>
                 <div>
                     <ul>
@@ -74,18 +78,7 @@
                     </ul>
                 </div>
             </div>
-            <!-- 图片裁切-获取头像 -->
-            <div class="crop-container" id="cropContainer">
-                <div class="crop-close">&times;</div>
-                <div class="crop-tips">使用滚轮缩放大小，拖动改变位置。</div>
-                <div class="image-box">
-                    <div class="image-view-box"></div>
-                </div>
-                <div class="control-panel">
-                    <input type="file" id="uploadFileBtn" style="display: none;">
-                    <button class="btn-do-crop" type="button" id="cropBtn">裁切</button>
-                </div>
-            </div>
+
         </div>
         <% if(role_type === 3) { %>
 
@@ -684,7 +677,6 @@
 <script src="<%= staticUrl %>/lib/js/animate.js"></script>
 <script src="<%= staticUrl %>/lib/js/loading.js"></script>
 <script src='<%= staticUrl %>/lib/js/socket.io.js'></script>
-<script src='<%= staticUrl %>/lib/js/cropbox.min.js'></script>
 <script src='http://cdn.hcharts.cn/highcharts/highcharts.js'></script>
 <script src="<%= staticUrl %>/javascripts/func.js"></script>
 <script src="<%= staticUrl %>/javascripts/listening.js"></script>

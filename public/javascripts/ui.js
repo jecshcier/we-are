@@ -15,35 +15,35 @@ $(function () {
       + '<i class="fa fa-book" aria-hidden="true" title="返回书架"></i>'
       + '</div>')
   }
-  // 图片裁切-获取头像
-  var cropperOptions = {
-    imageBox: '.image-box',
-    thumbBox: '.image-view-box',
-    imgSrc: ''
-  };
-  var cropper;
-  $('#addPhotoBtn').on('click', function () {
-    $("#uploadFileBtn").trigger('click');
-  });
-  document.querySelector('#uploadFileBtn').addEventListener('change', function () {
-    $('#cropContainer').fadeIn()
-      .find('.crop-close')
-      .off('click').on('click', function () {
-      $('#cropContainer').fadeOut();
-    });
+  //上传头像
+  $("#addPhotoBtn").click(function (event) {
+    if (typeof FileReader === 'undefined') {
+      alert("你的浏览器不支持FileReader接口！");
+      return;
+    }
+    $("input.addTx").trigger('click');
+  })
+  //头像文件检测
+  $("input.addTx").change(function (event) {
+    var posArr = this.files[0].name.split('.')
+    var pos = posArr[posArr.length - 1]
+    if (pos !== 'png' && pos !== 'PNG' && pos !== 'jpg' && pos !== 'JPG') {
+      alert(pos + "不是正确的图片文件！")
+      return;
+    }
     var reader = new FileReader();
-    reader.onload = function (e) {
-      cropperOptions.imgSrc = e.target.result;
-      cropper = new cropbox(cropperOptions);
-    };
+    //将文件以Data URL形式读入页面
     reader.readAsDataURL(this.files[0]);
-    this.files.length = 0;
-  });
-  document.querySelector('#cropBtn').addEventListener('click', function () {
-    var img = cropper.getDataURL();
-    $('.myTxDiv').find('img').attr('src', img);
-  });
-
+    reader.onload = function (e) {
+      //显示文件
+      if (e.total / 1000000 > 5) {
+        alert("请不要上传大于5mb的图片")
+        return;
+      }
+      $(".myTxDiv > img")[0].src = e.target.result
+    }
+    
+  })
   //头像
   $(".defaultTx").click(function (event) {
     var url = $(this).attr('src');
@@ -51,8 +51,15 @@ $(function () {
   });
   // 保存头像
   $("#saveTx").click(function (event) {
+    var reg = new RegExp(/data:image/);
     var url = $(".myTxDiv > img").attr('src');
-    changeTx(url);
+    if (!reg.test(url)){
+      changeTx(url);
+    }
+    else{
+      alert("暂不支持自定义头像");
+      console.log("base64");
+    }
   });
   // emoji表情按钮
   $(".fa.fa-smile-o").click(function (event) {
@@ -176,7 +183,7 @@ $(function () {
         // if (groupID === currentGroupID) {
         //     getProjectUsers(currentGroupID);
         // }
-
+        
         socket.emit("leaveUser", socketUser)
       });
     } else {
@@ -472,14 +479,14 @@ $(function () {
   // 图片点击放大
   $(".showArea").on('click', '.messContent > img', function (e) {
     e.preventDefault();
-
+    
     var target = e.target;
     var imgSrc = target.currentSrc;
     var w = target.naturalWidth;
     var h = target.naturalHeight;
     showPhotoSwipeImgs(imgSrc, w, h);
   });
-
+  
   /***************
    *  上传图片按钮监听事件 *
    ***************/
@@ -533,7 +540,7 @@ $(function () {
       });
     }
   });
-
+  
   //上传文件事件监听
   $("#addFiles").change(function (event) {
     var files = this.files;
@@ -559,14 +566,14 @@ $(function () {
     userData['fileName'] = filename;
     userData['messageID'] = messageID
     sendMessages(0, userData, 0, _this, 0);
-
+    
     var $contentDiv = $("#" + messageID)
     $("#" + messageID + " .messContent").append('<div class="' + messageID + '" style="position:absolute;width:100%;height:100%;justify-content: center;align-items: center;left: 0;top:0;font-size: 25px;" ><div style="position:absolute;width:100%;height:100%;background-color: rgba(251, 126, 116,.5);left: 0;top: 0;"></div><span style="position: absolute;">0%</span></div>')
     var $mask = $("div." + messageID)
     var $span = $("div." + messageID + ">span")
     var $div = $("div." + messageID + ">div")
     autoScroll($(".showClass"));
-
+    
     var form = new FormData(); // FormData 对象
     $.each(files, function (index, el) {
       console.log(el)
@@ -578,8 +585,8 @@ $(function () {
     delete userData['fileName'];
     // 文件对象
     console.log(form)
-
-
+    
+    
     var url = "/weare/uploadFile"; // 接收上传文件的后台地址
     var xhr = new XMLHttpRequest();
     xhr.open("post", url, true); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
@@ -631,8 +638,8 @@ $(function () {
     console.log("上传")
     xhr.send(form);
   })
-
-
+  
+  
   // 文件页码切换
   $(".filePage").delegate('.pageNum', 'click', function (event) {
     $(this).addClass('pageHit').siblings().removeClass('pageHit');
@@ -682,12 +689,12 @@ $(function () {
       heightResizeCheck = false;
     }
   });
-
+  
   $("#textArea").click(function (event) {
     editor.focus();
   });
-
-
+  
+  
   var canPreviewType = ["png", "jpg", "gif", "bmp", "jpeg", "pdf", "mp4", "webm", "ogg"];
   var previewByPhotoSwipe = ["png", "jpg", "gif", "bmp", "jpeg"];
   var previewByVideo = ["mp4", "webm", "ogg"];
@@ -710,18 +717,18 @@ $(function () {
     if ($.inArray(type, previewByPhotoSwipe) >= 0) {
       preloadImageForPhotoSwipe($this, dldUrl);
     }
-
+    
     // 预览视频
     if ($.inArray(type, previewByVideo) >= 0) {
       showVideoReader(dldUrl);
     }
-
+    
     // 预览PDF
     if (type === "pdf") {
       showPdfReader(dldUrl + "." + type);
     }
   });
-
+  
   // 全局广播消息提示
   // $('.set.broadcast').click(function(event) {
   // 	helpMess(false,

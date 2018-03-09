@@ -16,7 +16,7 @@ const session = require('express-session')({
 const routes = require('./routes/index');
 const users = require('./routes/users');
 const app = express();
-
+const gulp = require('./gulpfile')
 const message = require('./routes/assets/socket/message')
 const http = require('http');
 const server = http.createServer(app);
@@ -41,8 +41,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 app.use(session);
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/weare/tesla', express.static('public'));
+app.use('/weare/tesla', express.static('dist'));
 app.use('/weare/userTx', express.static('userTx'));
 app.use('/weare/img', express.static('tmp'));
 app.use('/weare', routes);
