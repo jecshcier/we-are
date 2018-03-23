@@ -210,7 +210,7 @@ function getWholeUser(callback) {
       if (!val.nick_name) {
         val.nick_name = val.login_name;
       }
-      $(".groupuser").append('<a userID=' + val.user_id + ' title=' + val.login_name + '>' + '<input type="checkbox" id="userID' + val.user_id + '">' + '<label for="userID' + val.id + '"><span></span></label>' + '<span>' + val.nick_name + '</span>' + '</div>' + '</a>');
+      $(".groupuser").append('<a userID=' + val.user_id + ' title=' + val.login_name + '>' + '<input type="checkbox" id="userID' + val.user_id + '">' + '<label for="userID' + val.user_id + '"><span></span></label>' + '<span>' + val.nick_name + '</span>' + '</div>' + '</a>');
     });
     if (callback) {
       callback();
@@ -788,14 +788,20 @@ function getGroupMessagesApi(groupID, page, callback) {
     dataType: 'json',
     data: {
       'groupID': groupID,
-      'page': page
+      'page': page,
+      'messNum': 20
     }
-  }).done(function (data) {
-    if (callback) {
-      callback(data);
+  }).done(function (result) {
+    if(result.flag){
+      if (callback) {
+        callback(result.data);
+      }
+    }
+    else{
+      alert(result.message)
     }
   }).fail(function () {
-    console.log("error");
+    alert("服务器连接失败")
   })
 }
 
@@ -819,7 +825,7 @@ function deleteUserInGroupApi(group, user, callback) {
       alert(result.message)
     }
   }).fail(function () {
-    console.log("error");
+    alert("服务器连接失败")
   })
 }
 
@@ -842,6 +848,7 @@ function getProjectUsersApi(groupID, callback) {
       alert(result.message)
     }
   }).fail(function () {
+    alert("服务器连接失败")
   
   }).always(function () {
   });
@@ -861,7 +868,7 @@ function logout(userID, callback) {
       callback();
     }
   }).fail(function () {
-    console.log("error");
+    alert("服务器连接失败")
   }).always(function () {
     console.log("complete");
   });
@@ -901,7 +908,7 @@ function getUserDailyApi(type, callback) {
       callback(result);
     }
   }).fail(function () {
-    console.log("error");
+    alert("服务器连接失败")
   }).always(function () {
     console.log("complete");
   });
@@ -948,6 +955,29 @@ function getYunFileApi(diskUrl, page, order_name, order_type, callback) {
         console.log('test');
       }
     })
+  }).always(function () {
+    console.log("complete");
+  });
+}
+
+function uploadTx(base64){
+  $.ajax({
+    url: 'uploadTx',
+    type: 'post',
+    dataType: 'json',
+    data: {
+      userID: userData.userID,
+      data:base64
+    }
+  }).done(function (result) {
+    if (result.flag) {
+      alert('头像上传成功！')
+    }
+    else{
+      alert("头像上传失败 ---->" + result.message)
+    }
+  }).fail(function () {
+    alert("服务器连接失败")
   }).always(function () {
     console.log("complete");
   });

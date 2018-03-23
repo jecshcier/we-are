@@ -6,6 +6,8 @@ const path = require('path')
 const config = require('../config')
 const skydiskApi = require('./assets/skydiskApi/useApi')
 const fs = require('fs-extra')
+const gm = require('gm')
+const moment = require('moment');
 const ejsUrl = config.projectName
 const staticUrl = config.static
 const txUrl = ejsUrl + '/' + config.sourceDir.userImg
@@ -295,14 +297,19 @@ router.post('/saveUserTx', function (req, res, next) {
   })
 })
 
-//获取某项目组聊天记录(50条)
+//获取某项目组聊天记录
 router.post('/getGroupMessages', function (req, res, next) {
-  if (req.session.user) {
-    sql.getGroupMessages(req.body.groupID, req.body.page, function (result) {
-      res.send(result)
-    })
-  } else
-    res.redirect('/weare')
+  postReq(config.Api.tesla_api.host + '/weare/api/getGroupMessages', {
+    groupID: req.body.groupID,
+    page: req.body.page,
+    messNum: req.body.messNum
+  }).then((result) => {
+    res.send(result)
+  }).catch((info) => {
+    console.log(info)
+    info.message = "获取消息超时！"
+    res.send(info)
+  })
 })
 //用户管理系统登录模块
 router.post('/login', function (req, res) {
@@ -432,6 +439,38 @@ router.post('/getUserDaily', function (req, res) {
     info.latestTime = data.latestTime
     res.send(info)
   }, (info) => {
+    res.send(info)
+  })
+})
+/*
+上传头像功能
+ */
+router.post('/uploadTx', function (req, res) {
+  let info = new config.callbackModel()
+  let userID = req.body.userID
+  let base64data = req.body.data
+  let content = new Buffer(base64data, 'base64')
+  let txPath = path.normalize(userImg + '/' + userID + '.jpg')
+  let txTempPath = path.normalize(sourcePath + '/imageTemp/' + userID + moment().format('x') +  '.jpg')
+  fs.outputFile(txTempPath, content).then(() => {
+    gm(txTempPath)
+      .resize(null, 240, '!')
+      .write(txPath, function (err) {
+        if (!err) {
+          console.log('done')
+          info.flag = true
+          info.message = "头像储存并生成缩略图成功"
+          res.send(info)
+        }
+        else {
+          console.log(err)
+          info.message = "头像储存似乎出现了问题2。。"
+          res.send(info)
+        }
+      })
+  }).catch((e) => {
+    console.log(e)
+    info.message = "头像储存似乎出现了问题。。"
     res.send(info)
   })
 })

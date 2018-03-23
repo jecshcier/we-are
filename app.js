@@ -5,12 +5,12 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session')({
-    // genid: function(req) {
-    //   return genuuid() // use UUIDs for session IDs
-    // },
-    secret: 'tesla',
-    resave: true,
-    saveUninitialized: true
+  // genid: function(req) {
+  //   return genuuid() // use UUIDs for session IDs
+  // },
+  secret: 'tesla',
+  resave: true,
+  saveUninitialized: true
 });
 
 const routes = require('./routes/index');
@@ -22,7 +22,7 @@ const http = require('http');
 const server = http.createServer(app);
 const io = require('socket.io').listen(server);
 io.use(function (socket, next) {
-    session(socket.request, socket.request.res, next);
+  session(socket.request, socket.request.res, next);
 });
 message.socketlisten(io);
 
@@ -30,14 +30,15 @@ message.socketlisten(io);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.set('socket',io)
+app.set('socket', io)
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
-    extended: false
+  extended: false,
+  limit: '10mb'
 }));
 app.use(cookieParser());
 app.use(session);
@@ -49,32 +50,32 @@ app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    let err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+  let err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 // error handlers
 
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-    app.use(function (err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
+  app.use(function (err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
     });
+  });
 }
 
 // production error handler
 // no stacktraces leaked to user
 app.use(function (err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
 });
 
 

@@ -57,8 +57,8 @@ $(function () {
       changeTx(url);
     }
     else{
-      alert("暂不支持自定义头像");
-      console.log("base64");
+      var base64Buffer = $(".myTxDiv > img")[0].src.replace(/^data:image\/\w+;base64,/, "");
+      uploadTx(base64Buffer)
     }
   });
   // emoji表情按钮
