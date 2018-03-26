@@ -595,13 +595,14 @@
                 <li class="fileMenu" rel="fileListView">
                     <i class="fa fa-file-o"></i> 文 件
                 </li>
+                <% if(role_type === 3) { %>
                 <li class="daily-charts" rel="statistics">
                     <i class="fa fa-file-o"></i> 统计
                 </li>
                 <li class="daily" rel="updateLog">
                     <i class="fa fa-file-o"></i> 更新日志
                 </li>
-
+                <% } %>
             </ul>
         </div>
     </div>
@@ -615,7 +616,8 @@
                 </div>
             </div>
             <div class="face">
-                <img class="userTx" userid="<%= userID %>" src="<%= userTx %>" onerror="imgOnfail(this);" width="60" height="60"></div>
+                <img class="userTx" userid="<%= userID %>" src="<%= userTx %>" onerror="imgOnfail(this);" width="60"
+                     height="60"></div>
         </div>
 
         <div class="right">

@@ -142,9 +142,6 @@ function addSocketListener() {
     var currentGroupID = user.groupID;
     var currentGroupName = user.groupName;
     console.log(user)
-    // if (currentGroupID === userData.projectTeam.groupID) {
-    //   getProjectUsers(currentGroupID);
-    // }
     if (user.userID === userData['userID']) {
       var $leftMenu = $('.left ul');
       $(".showArea").append('<div class="showMess" projectID="' + currentGroupID + '" currentpage="0" projectName="' + currentGroupName + '">');
@@ -156,6 +153,8 @@ function addSocketListener() {
         }
         enablecodeMirrorMode()
       });
+    }
+    else if(currentGroupID === userData.projectTeam.groupID){
       getProjectUsers(currentGroupID);
     }
   })
@@ -165,8 +164,8 @@ function addSocketListener() {
     var currentGroupID = user.groupID;
     var currentGroupName = user.groupName;
     if (user.userID === userData['userID']) {
-      $(".right ul").empty();
       var $leftMenu = $('.left ul');
+      $(".right ul").empty();
       $('.showMess[projectID="' + currentGroupID + '"]').remove();
       $.each(userTeam, function (index, val) {
         if (val.groupID === currentGroupID) {
@@ -178,6 +177,9 @@ function addSocketListener() {
           return false;
         }
       });
+    }
+    else if(currentGroupID === userData.projectTeam.groupID){
+      getProjectUsers(currentGroupID);
     }
   })
   //上传结果监听
@@ -203,7 +205,7 @@ function addSocketListener() {
   
   socket.on('reloadTx', function (userData) {
     var _this = $(".userTx[userid=" + userData.userID + "]");
-    _this.attr('src', userData.TxUrl +  '?' + new Date().getTime());
+    _this.attr('src', userData.TxUrl + '?' + new Date().getTime());
   });
   
   socket.on('connect', function (data) {
