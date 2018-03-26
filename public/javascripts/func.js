@@ -152,9 +152,9 @@ function getProjectUsers(groupID) {
     var userList = new String();
     $(result).each(function (index, el) {
       if (localOnlineUsers.hasOwnProperty(el.userID)) {
-        userList += '<li userID="' + el.userID + '"><img class="userTx" onerror="imgOnfail(this);" src="' + txUrl + '/' + el.userID + '.jpg" width="40" height="40"><span>' + el.userName + '</span><i class="fa fa-circle-o online"></i></li>';
+        userList += '<li userID="' + el.userID + '"><img class="userTx" userid=' + el.userID + ' onerror="imgOnfail(this);" src="' + txUrl + '/' + el.userID + '.jpg" width="40" height="40"><span>' + el.userName + '</span><i class="fa fa-circle-o online"></i></li>';
       } else {
-        $(".right ul").append('<li userID="' + el.userID + '"><img class="userTx" onerror="imgOnfail(this);" src="' + txUrl + '/' + el.userID + '.jpg" width="40" height="40"><span>' + el.userName + '</span><i class="fa fa-circle-o offline"></i></li>');
+        $(".right ul").append('<li userID="' + el.userID + '"><img class="userTx" userid=' + el.userID + ' onerror="imgOnfail(this);" src="' + txUrl + '/' + el.userID + '.jpg" width="40" height="40"><span>' + el.userName + '</span><i class="fa fa-circle-o offline"></i></li>');
       }
     });
     $(".right ul").prepend(userList);
@@ -258,7 +258,7 @@ function sendMessages(type, user, updateTime, dom, addFlag) {
   }
   if (type) {
     var othMess = '<div class="messageBlock" messID="{messID}"><div class="faceImgBlock">' +
-      '<img class="userTx" src="' + userImgUrl + '" onerror="imgOnfail(this);"><span class="messName">' + user.userName + '</span></div>' + '<div class="mess">' + '<div class="messArrow messArrowOth"></div>' + '<div class="nameTime"><span class="messTime">' + upTime + '</span></div>' + '<pre class="messContent">' + user.message + '</pre>' + '</div>' + '</div>';
+      '<img userid=' + user.userID + ' class="userTx" src="' + userImgUrl + '" onerror="imgOnfail(this);"><span class="messName">' + user.userName + '</span></div>' + '<div class="mess">' + '<div class="messArrow messArrowOth"></div>' + '<div class="nameTime"><span class="messTime">' + upTime + '</span></div>' + '<pre class="messContent">' + user.message + '</pre>' + '</div>' + '</div>';
     if (addFlag) {
       dom.prepend(othMess);
     } else {
@@ -268,7 +268,7 @@ function sendMessages(type, user, updateTime, dom, addFlag) {
     var myMess = '<div class="messageBlock myMess" id="{messageID}">' +
       '<div class="mess messMyself">{loading}' +
       '<div class="messArrow messArrowMyself"></div>' +
-      '<div class="nameTime"><span class="messTime">' + upTime + '</span></div>' + '<pre class="messContent">' + user.message + '</pre>' + '</div>' + '<div class="faceImgBlockMyself"><img class="userTx" src="' + userImgUrl + '" onerror="imgOnfail(this);"></div>' + '</div>';
+      '<div class="nameTime"><span class="messTime">' + upTime + '</span></div>' + '<pre class="messContent">' + user.message + '</pre>' + '</div>' + '<div class="faceImgBlockMyself"><img class="userTx" userid=' + user.userID + ' src="' + userImgUrl + '" onerror="imgOnfail(this);"></div>' + '</div>';
     if (addFlag) {
       myMess = myMess.replace(/{loading}/g, '').replace(/{messageID}/g, '');
       dom.prepend(myMess);
@@ -971,6 +971,7 @@ function uploadTx(base64){
     }
   }).done(function (result) {
     if (result.flag) {
+      socket.emit("reloadTx",userData);
       alert('头像上传成功！')
     }
     else{

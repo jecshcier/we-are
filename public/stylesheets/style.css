@@ -835,12 +835,14 @@ pre {
     min-height: 20px;
     position: relative;
     display: flex;
+    flex-wrap: wrap;
 }
 
 .messContent > img {
     max-width: 400px;
     width: 100%;
     cursor: pointer;
+    align-self: baseline;
 }
 
 .messContent a {
@@ -860,8 +862,9 @@ pre {
     text-align: center;
 }
 
-.faceImgBlock img, .faceImgBlockMyself img {
+.faceImgBlock > img, .faceImgBlockMyself > img {
     width: 50px;
+    height: 50px;
     padding: 5px;
     border: 1px solid #ccc;
 }
@@ -1159,10 +1162,12 @@ pre {
     overflow: hidden;
     display: inline-block;
 }
-.myTxDiv > img{
+
+.myTxDiv > img {
     width: 100%;
     height: 100%;
 }
+
 .mask {
     position: absolute;
     left: 0;

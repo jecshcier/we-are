@@ -4,6 +4,8 @@ const path = require('path');
 const config = require('../../../config');
 const md5 = require('../lib/md5');
 const postReq = require('../lib/request_fun').postReq
+const ejsUrl = config.projectName
+const txUrl = ejsUrl + '/' + config.sourceDir.userImg
 
 //在线用户
 let onlineUsers = {};
@@ -88,6 +90,13 @@ let socketlisten = function (io) {
       // 刷新用户操作时间
       console.log("ok");
       io.sockets.emit('startInviteUser', user);
+    });
+  
+    socket.on('reloadTx', function (user) {
+      user.TxUrl = txUrl + '/' + user.userID + '.jpg'
+      // 刷新用户操作时间
+      console.log("ok");
+      io.sockets.emit('reloadTx', user);
     });
 
     socket.on('leaveUser', function (user) {

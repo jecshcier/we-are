@@ -200,7 +200,12 @@ function addSocketListener() {
       $("div." + user.messageID).html(info.message)
     }
   })
-
+  
+  socket.on('reloadTx', function (userData) {
+    var _this = $(".userTx[userid=" + userData.userID + "]");
+    _this.attr('src', userData.TxUrl +  '?' + new Date().getTime());
+  });
+  
   socket.on('connect', function (data) {
     removeLoader();
   });

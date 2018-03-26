@@ -87,6 +87,7 @@ router.get('/chat', function (req, res, next) {
     res.render('chat', {
       title: 'We\'re chatting~',
       userTx: txUrl + '/' + req.session.user['userID'] + '.jpg',
+      userID: req.session.user['userID'],
       userName: req.session.user['nickName'],
       ejsUrl: ejsUrl,
       staticUrl: staticUrl,
