@@ -411,8 +411,10 @@
                         <a>css</a>
                     </div>
                     <img src="<%= staticUrl %>/images/f.jpg">
+                    <% if(role_type === 3) { %>
                     <i class="fa fa-calendar-check-o daily" aria-hidden="true" title="日报"></i>
                     <img src="<%= staticUrl %>/images/f.jpg">
+                    <% } %>
                     <!--上传文件-->
                     <div style="position:absolute; right:5px;top:10px; color:#aaa;">按回车键发送 按Ctrl+回车换行</div>
                 </div>
