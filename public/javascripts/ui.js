@@ -183,7 +183,6 @@ $(function () {
         // if (groupID === currentGroupID) {
         //     getProjectUsers(currentGroupID);
         // }
-        
         socket.emit("leaveUser", socketUser)
       });
     } else {

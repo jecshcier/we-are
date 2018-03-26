@@ -141,9 +141,10 @@ function addSocketListener() {
   socket.on('startInviteUser', function (user) {
     var currentGroupID = user.groupID;
     var currentGroupName = user.groupName;
-    if (currentGroupID === userData.projectTeam.groupID) {
-      getProjectUsers(currentGroupID);
-    }
+    console.log(user)
+    // if (currentGroupID === userData.projectTeam.groupID) {
+    //   getProjectUsers(currentGroupID);
+    // }
     if (user.userID === userData['userID']) {
       var $leftMenu = $('.left ul');
       $(".showArea").append('<div class="showMess" projectID="' + currentGroupID + '" currentpage="0" projectName="' + currentGroupName + '">');
@@ -155,6 +156,7 @@ function addSocketListener() {
         }
         enablecodeMirrorMode()
       });
+      getProjectUsers(currentGroupID);
     }
   })
 
@@ -162,9 +164,7 @@ function addSocketListener() {
   socket.on('startLeaveUser', function (user) {
     var currentGroupID = user.groupID;
     var currentGroupName = user.groupName;
-    if (currentGroupID === userData.projectTeam.groupID) {
-      getProjectUsers(currentGroupID);
-    }
+    $(".right ul").empty();
     if (user.userID === userData['userID']) {
       var $leftMenu = $('.left ul');
       $('.showMess[projectID="' + currentGroupID + '"]').remove();
