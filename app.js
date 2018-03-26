@@ -16,7 +16,6 @@ const session = require('express-session')({
 const routes = require('./routes/index');
 const users = require('./routes/users');
 const app = express();
-const gulp = require('./gulpfile')
 const message = require('./routes/assets/socket/message')
 const http = require('http');
 const server = http.createServer(app);
