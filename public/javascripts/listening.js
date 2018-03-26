@@ -164,8 +164,8 @@ function addSocketListener() {
   socket.on('startLeaveUser', function (user) {
     var currentGroupID = user.groupID;
     var currentGroupName = user.groupName;
-    $(".right ul").empty();
     if (user.userID === userData['userID']) {
+      $(".right ul").empty();
       var $leftMenu = $('.left ul');
       $('.showMess[projectID="' + currentGroupID + '"]').remove();
       $.each(userTeam, function (index, val) {
