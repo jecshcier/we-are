@@ -289,7 +289,7 @@ router.post('/saveUserTx', function (req, res, next) {
   console.log(userID)
   console.log(url)
   url = url.replace(staticUrl, '')
-  fs.copy('public/' + url, config.TxDir + userID + '.jpg').then(() => {
+  fs.copy('dist/' + url, config.TxDir + userID + '.jpg').then(() => {
     console.log("复制头像成功")
     res.send(true)
   }).catch((err) => {

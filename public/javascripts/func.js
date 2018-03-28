@@ -345,6 +345,7 @@ function changeTx(url) {
       url: url
     }
   }).done(function () {
+    socket.emit("reloadTx",userData);
     alert("头像修改成功");
   }).fail(function () {
     alert("头像更改错误！");
