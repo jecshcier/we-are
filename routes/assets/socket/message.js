@@ -5,7 +5,7 @@ const config = require('../../../config');
 const md5 = require('../lib/md5');
 const postReq = require('../lib/request_fun').postReq
 const ejsUrl = config.projectName
-const txUrl = ejsUrl + '/' + config.sourceDir.userImg
+const txUrl = ejsUrl + '/' + config.sourceDir.userTxUrl
 
 //在线用户
 let onlineUsers = {};
@@ -123,7 +123,7 @@ let socketlisten = function (io) {
         let time1 = md5.hex(getCurrentTime(1) + data.name);
         let time2 = getCurrentTime(2);
         let relaPath = '/' + userID + '/' + time2 + '/' + time1 + pos;
-        let filePath = path.resolve(__dirname, config.imgDir + '/' + userID + '/' + time2 + '/' + time1 + pos);
+        let filePath = path.resolve(__dirname, config.sourceDir.imgDir + '/' + userID + '/' + time2 + '/' + time1 + pos);
         // 解码
         let base64Data = data.segment.replace(/^data:image\/\w+;base64,/, "");
         let dataBuffer = new Buffer(base64Data, 'base64');
@@ -145,7 +145,7 @@ let socketlisten = function (io) {
                 isOK: false
               });
             } else {
-              let truePath = config.img + relaPath
+              let truePath = config.sourceDir.imgUrl + relaPath
               user['message'] = user['message'].replace(/{imgUrl}/, truePath).replace(/"/g, "'");
               user['message'] += '<br><a href="' + truePath + '" target="_blank" download="' + time1 + pos + '">下载图片</a>'
               saveMessages(user);

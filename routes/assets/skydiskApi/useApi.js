@@ -13,7 +13,7 @@ const diskRoot = '/tesla'
 module.exports = {
   newDir: (user, dirName, callback) => {
     console.log("开始新建文件夹...");
-    let key = config.skydiskApiKey;
+    let key = config.Api.skydisk.staticKey;
     let currentDate = getDate();
     let md5Key = md5.hex("" + key + currentDate).toUpperCase();
     console.log(md5Key);
@@ -74,7 +74,7 @@ module.exports = {
   },
   getFileList: (user, diskUrl, page, order_name, order_type, callback) => {
     console.log("获取网盘文件夹内文件..");
-    let key = config.skydiskApiKey;
+    let key = config.Api.skydisk.staticKey;
     let currentDate = getDate();
     let md5Key = md5.hex("" + key + currentDate).toUpperCase();
     let data = new config.Api.skydisk.fileListModel()

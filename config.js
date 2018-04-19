@@ -1,5 +1,3 @@
-const gulp = require('./gulpfile')
-
 module.exports = {
   db_config: {
     databaseName: "tesla",
@@ -19,16 +17,10 @@ module.exports = {
     }
   },
   teslaVersion: "0.3.0",
-  skydiskApiKey: "A91E2F",
+  //dev or production
+  MODE:"dev",
   projectName: "/weare",
-  static: "/weare/tesla",
-  img: "/weare/img",
-  imgDir: "../../../tmp/",
-  TxDir: "userTx/",
-  skydiskServer: "http://pan.tes-sys.com/skydisk-ms/",
-  newDirApi: "api/dirNewCreate.html",
-  uploadApi: "api/fileUpload.html",
-  getFileListApi: "api/dirList.html",
+  staticUrl: "/weare/tesla",
   callbackModel: function (flag, message, data) {
     return {
       flag: false,
@@ -79,10 +71,12 @@ module.exports = {
   },
   sourceDir: {
     sourceDir: "sourceDir",
-    sourceUrl: __dirname + '/',
-    userImg: "userTx"
+    sourceUrl: __dirname + '/sourceDir/',
+    userTxUrl: "userTx",
+    userTxDir: __dirname + '/userTx/',
+    imgUrl:'img',
+    imgDir:__dirname + '/tmp/'
   },
-  uploadCallbackUrl: "http://localhost:3000/weare/getUploadFile",
   system_key: "tesla_key",
   systemCode: 'tesla'
 }

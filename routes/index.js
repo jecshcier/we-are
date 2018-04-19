@@ -9,16 +9,14 @@ const fs = require('fs-extra')
 const gm = require('gm')
 const moment = require('moment');
 const ejsUrl = config.projectName
-const staticUrl = config.static
-const txUrl = ejsUrl + '/' + config.sourceDir.userImg
+const staticUrl = config.staticUrl
+const txUrl = ejsUrl + '/' + config.sourceDir.userTxUrl
 const request = require('request')
-const sourcePath = path.resolve(__dirname, '../' + config.sourceDir.sourceDir)
-const userImg = path.resolve(__dirname, '../' + config.sourceDir.userImg)
+const sourcePath = path.normalize(config.sourceDir.sourceDir)
+const userTxDir = path.normalize(config.sourceDir.userTxDir)
 const crypto = require('crypto')
 const queryString = require('querystring')
 const postReq = require('./assets/lib/request_fun').postReq
-
-
 let system_key = crypto.createHash('sha1').update(config.system_key).digest('hex')
 
 //创建文件缓存目录
@@ -31,7 +29,7 @@ fs.ensureDir(sourcePath, (err) => {
   }
 })
 //创建头像缓存目录
-fs.ensureDir(userImg, (err) => {
+fs.ensureDir(userTxDir, (err) => {
   if (err) {
     console.log(err)
     setInterval(() => {
@@ -105,8 +103,8 @@ router.get('/chat', function (req, res, next) {
 
 /*登录页面*/
 router.get('/login/:userId/:token/:systemCode', function (req, res, next) {
-  console.log()
   console.log(req.params)
+  let info = new config.callbackModel()
   let userId = req.params.userId
   let token = req.params.token
   let systemcode = req.params.systemCode
@@ -122,14 +120,16 @@ router.get('/login/:userId/:token/:systemCode', function (req, res, next) {
     if (err) {
       info.message = err
       console.log(err)
-      res.send(err)
+      res.send(info)
+      return
     } else {
       if (body) {
         try {
           body = JSON.parse(body)
         } catch (e) {
           console.log("服务器响应不正确")
-          res.send(body)
+          info.message = body
+          res.send(info)
           return
         }
         if (body.code === 0 && httpResponse.statusCode === 200) {
@@ -139,14 +139,16 @@ router.get('/login/:userId/:token/:systemCode', function (req, res, next) {
             if (err) {
               info.message = err
               console.log(err)
-              res.send(err)
+              res.send(info)
+              return
             } else {
               if (body && httpResponse.statusCode === 200) {
                 try {
                   body = JSON.parse(body)
                 } catch (e) {
                   console.log("服务器响应不正确")
-                  res.send(body)
+                  info.message = body
+                  res.send(info)
                   return
                 }
                 let userInfo = {
@@ -172,15 +174,18 @@ router.get('/login/:userId/:token/:systemCode', function (req, res, next) {
                   res.redirect('/weare/chat')
                 })
               } else {
-                res.send("服务器错误！\n" + body)
+                info.message = body
+                res.send(info)
               }
             }
           })
         } else {
-          res.send(body)
+          info.message = "服务器错误\n--->" + body
+          res.send(info)
         }
       } else {
-        res.send("服务器错误！\n" + body)
+        info.message = "服务器错误\n--->" + body
+        res.send(info)
       }
     }
   })
@@ -289,7 +294,7 @@ router.post('/saveUserTx', function (req, res, next) {
   console.log(userID)
   console.log(url)
   url = url.replace(staticUrl, '')
-  fs.copy('dist/' + url, config.TxDir + userID + '.jpg').then(() => {
+  fs.copy('dist/' + url, config.sourceDir.userTxDir + userID + '.jpg').then(() => {
     console.log("复制头像成功")
     res.send(true)
   }).catch((err) => {
@@ -329,6 +334,7 @@ router.post('/login', function (req, res) {
     systemCode: "tesla",
     verifyCode: ""
   }
+  //向用户管理系统发起登录请求
   request.post({
     url: config.Api.ums.url + '/user/login',
     body: userdata,
@@ -341,28 +347,62 @@ router.post('/login', function (req, res) {
       console.log(body)
       if (body) {
         if (!body.code) {
-          let userInfo = {
-            'userID': body.userInfo.userId,
-            'loginName': body.userInfo.loginName,
-            'nickName': body.userInfo.nickName,
-            'role_type': body.userInfo.powerId,
-            'identity': body.userInfo.roleType
+          console.log(body)
+          let token = body.token.token
+          let userKey = {
+            systemCode: config.systemCode,
+            userId: body.userInfo.userId,
+            token: token
           }
-          req.session.user = userInfo
-          req.session.user.sessionID = req.sessionID
-          postReq(config.Api.tesla_api.host + '/weare/api/updateUser', {
-            userID: userInfo.userID,
-            loginName: userInfo.loginName,
-            nickName: userInfo.nickName,
-            identity: userInfo.identity,
-            powerID: userInfo.role_type
-          }).then((result) => {
-            console.log(result)
-            result.message = "登录成功"
-            res.send(result)
-          }).catch((info) => {
-            console.log(info)
-            res.send(info)
+          //获取用户详细信息
+          request.post({
+            url: config.Api.ums.url + '/user/getUserInfo?' + queryString.stringify(userKey)
+          }, function optionalCallback(err, httpResponse, body) {
+            if (err) {
+              info.message = "用户管理系统的消息：\n--->" + err
+              console.log(err)
+              res.send(info)
+            } else {
+              if (body && httpResponse.statusCode === 200) {
+                try {
+                  body = JSON.parse(body)
+                } catch (e) {
+                  console.log("服务器响应不正确")
+                  info.message = "用户管理系统的消息：\n---->" + body
+                  console.log(err)
+                  res.send(info)
+                  return
+                }
+                console.log(body)
+                let userInfo = {
+                  'userID': body.userInfo.userId,
+                  'loginName': body.userInfo.loginName,
+                  'nickName': body.userInfo.nickName || body.userInfo.realName,
+                  'role_type': body.userInfo.powerId,
+                  'identity': body.userInfo.roleType
+                }
+                req.session.user = userInfo
+                req.session.user.sessionID = req.sessionID
+                //更新tesla本地用户数据
+                postReq(config.Api.tesla_api.host + '/weare/api/updateUser', {
+                  userID: userInfo.userID,
+                  loginName: userInfo.loginName,
+                  nickName: userInfo.nickName,
+                  identity: userInfo.identity,
+                  powerID: userInfo.role_type
+                }).then((result) => {
+                  console.log(result)
+                  result.message = "登录成功"
+                  res.send(result)
+                }).catch((info) => {
+                  console.log(info)
+                  res.send(info)
+                })
+              } else {
+                info.message = "用户管理系统的消息：\n --->" + body
+                res.send(info)
+              }
+            }
           })
         } else {
           info.message = "来自用户管理系统的消息：\n --->" + body.description
@@ -451,8 +491,8 @@ router.post('/uploadTx', function (req, res) {
   let userID = req.body.userID
   let base64data = req.body.data
   let content = new Buffer(base64data, 'base64')
-  let txPath = path.normalize(userImg + '/' + userID + '.jpg')
-  let txTempPath = path.normalize(sourcePath + '/imageTemp/' + userID + moment().format('x') +  '.jpg')
+  let txPath = path.normalize(userTxDir + '/' + userID + '.jpg')
+  let txTempPath = path.normalize(sourcePath + '/imageTemp/' + userID + moment().format('x') + '.jpg')
   fs.outputFile(txTempPath, content).then(() => {
     gm(txTempPath)
       .resize(null, 240, '!')

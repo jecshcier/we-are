@@ -12,6 +12,8 @@ const session = require('express-session')({
   resave: true,
   saveUninitialized: true
 });
+const CONFIG = require('./config')
+const gulp = CONFIG.MODE === "dev" ? require('./gulpfile'):null
 
 const routes = require('./routes/index');
 const users = require('./routes/users');
@@ -41,11 +43,10 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 app.use(session);
-app.use('/weare/tesla', express.static('dist'));
-app.use('/weare/userTx', express.static('userTx'));
-app.use('/weare/img', express.static('tmp'));
-app.use('/weare', routes);
-app.use('/users', users);
+app.use(CONFIG.staticUrl, express.static('dist'));
+app.use(CONFIG.projectName + '/' + CONFIG.sourceDir.userTxUrl, express.static('userTx'));
+app.use(CONFIG.projectName + '/' + CONFIG.sourceDir.imgUrl, express.static('tmp'));
+app.use(CONFIG.projectName, routes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
