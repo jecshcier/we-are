@@ -5,14 +5,17 @@
  ************************/
 
 $(function () {
-
+  
   setTimeout(function () {
     console.log('ok');
     // $(".activity").css('opacity', '0');
     $(".loginBg").css('opacity', '1');
   }, 0);
-
-
+  
+  $(".updateUserName").click(function (e) {
+  
+  })
+  
   $('#loginBtn').hover(function () {
     $('#loginBtn').css('background-color', '#1ECD97');
     $(".loginBtn svg path").css('stroke', '#fff');
@@ -52,6 +55,10 @@ function login(username, password) {
   })
     .done(function (data) {
       if (data.flag) {
+        if (data.flag === 1) {
+          inputUserName(data.data)
+          return
+        }
         console.log("success");
         location.href = "/weare/chat";
       }
@@ -80,10 +87,50 @@ function shake(_this) {
       });
     });
   });
-
-
+  
+  
 }
 
+function inputUserName(user) {
+  var token = user.token;
+  var userID = user.userID;
+  var key = user.key
+  $(".userName > button").attr('token', token)
+  $(".userName > button").attr('userid', userID)
+  $(".userName > button").attr('key', key)
+  $(".loginBg").css('opacity', '0')
+  $(".userName").show()
+}
+
+function updateUserName(_this) {
+  console.log(_this)
+  var token = $(_this).attr('token');
+  var userID = $(_this).attr('userid')
+  console.log(token)
+  $.ajax({
+    url: '/weare/login/updateUserInfo',
+    type: 'post',
+    dataType: 'json',
+    data: {
+      'userId': userID,
+      'nickName': $(".userName > div").eq(0).children('input').val(),
+      'realName': $(".userName > div").eq(1).children('input').val(),
+      'token': token
+    }
+  }).done(function (data) {
+    if (data.flag) {
+      alert("更新成功")
+      $(".loginBg").css('opacity', '1')
+      $(".userName").hide()
+    } else {
+      alert(data.message)
+    }
+    
+  }).fail(function () {
+    alert('用户管理系统未响应 或 用户管理系统坏了！')
+    shake($("#loginBtn"));
+  });
+}
 
 // 登录 tesla私有暂不使用
 // function login(username, password) {

@@ -17,7 +17,7 @@ const userTxDir = path.normalize(config.sourceDir.userTxDir)
 const crypto = require('crypto')
 const queryString = require('querystring')
 const postReq = require('./assets/lib/request_fun').postReq
-let system_key = crypto.createHash('sha1').update(config.system_key).digest('hex')
+const system_key = crypto.createHash('sha1').update(config.system_key).digest('hex')
 
 //创建文件缓存目录
 fs.ensureDir(sourcePath, (err) => {
@@ -373,7 +373,20 @@ router.post('/login', function (req, res) {
                   res.send(info)
                   return
                 }
-                console.log(body)
+                if (!body.userInfo.nickName) {
+                  if (!body.userInfo.realName) {
+                    info.flag = 1
+                    info.message = "未完善用户昵称、用户姓名"
+                    info.data = {
+                      userID: body.userInfo.userId,
+                      token: token,
+                      key:system_key
+                    }
+                    res.send(info)
+                    return
+                  }
+                }
+                
                 let userInfo = {
                   'userID': body.userInfo.userId,
                   'loginName': body.userInfo.loginName,
@@ -412,6 +425,49 @@ router.post('/login', function (req, res) {
         info.message = "用户管理系统出错！"
         res.send(info)
       }
+    }
+  })
+})
+
+//更新用户信息模块
+router.post('/login/updateUserInfo', function (req, res) {
+  let info = config.callbackModel()
+  let data = req.body
+  data.systemCode = config.systemCode
+  console.log(data)
+  console.log(data)
+  request.post({
+    url: config.Api.ums.url + '/update/updateUserInfo',
+    body: data,
+    json: true
+  }, function optionalCallback(err, httpResponse, body) {
+    if(err){
+      console.log(err)
+      info.message = err
+      res.send(info)
+      return
+    }
+    if(body){
+      console.log(httpResponse.statusCode)
+      if(httpResponse.statusCode === 200){
+        if (body.code === 0) {
+          info.flag = true
+          info.message = "更新用户数据成功"
+          res.send(info)
+        }
+        else{
+          info.message =JSON.stringify(body)
+          res.send(info)
+        }
+      }
+      else{
+        info.message = '用户管理系统错误\n -->' + httpResponse.statusCode
+        res.send(info)
+      }
+    }
+    else{
+      info.message = '用户管理系统错误\n -->' + httpResponse.statusCode
+      res.send(info)
     }
   })
 })

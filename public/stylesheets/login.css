@@ -72,6 +72,71 @@ body {
     font-size: 18px;
 }
 
-.activity,.loginBg{
+.activity, .loginBg {
     transition: opacity 2s;
+}
+
+.userName {
+    width: 460px;
+    height: 319px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    z-index:99;
+}
+
+.userName > div:first-of-type {
+    position: absolute;
+    left: 63px;
+    top: 118px;
+}
+
+.userName > div:nth-of-type(2) {
+    position: absolute;
+    left: 63px;
+    top: 190px;
+}
+
+.userName input {
+    width: 360px;
+    border: 0;
+    color: #000;
+    outline: 0;
+    font-size: 18px;
+    margin-left: 10px;
+    width: 280px;
+}
+
+.userName > button {
+    bottom: 32px;
+    width: 85px;
+    height: 40px;
+    background-color: #fff;
+    border-radius: 25px;
+    transition: background-color .5s;
+    cursor: pointer;
+    left: 0;
+    right: 0;
+    margin: auto;
+    position: absolute;
+    font-size: 18px;
+}
+
+.userName label {
+    color: #fff;
+    font-size: 18px;
+}
+
+.userName > p {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 170px;
+    color: #fff;
+    font-size: 16px;
 }
