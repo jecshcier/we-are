@@ -63,7 +63,14 @@ function login(username, password) {
         location.href = "/weare/chat";
       }
       else {
-        alert(data.message)
+        var mes = '';
+        try{
+          mes = JSON.stringify(data.message);
+        }catch(e){
+          console.log(e);
+          mes = data.message;
+        }
+        alert(mes);
         shake($("#loginBtn"));
       }
     })

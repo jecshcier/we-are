@@ -1,13 +1,12 @@
 const express = require('express')
 const router = express.Router()
 const md5 = require('./assets/lib/md5')
-const sql = require('./assets/sql/sql')
 const path = require('path')
 const config = require('../config')
 const skydiskApi = require('./assets/skydiskApi/useApi')
 const fs = require('fs-extra')
 const gm = require('gm')
-const moment = require('moment');
+const moment = require('moment')
 const ejsUrl = config.projectName
 const staticUrl = config.staticUrl
 const txUrl = ejsUrl + '/' + config.sourceDir.userTxUrl
@@ -104,7 +103,7 @@ router.get('/chat', function (req, res, next) {
 /*登录页面*/
 router.get('/login/:userId/:token/:systemCode', function (req, res, next) {
   console.log(req.params)
-  let info = new config.callbackModel()
+  let info = callbackModel()
   let userId = req.params.userId
   let token = req.params.token
   let systemcode = req.params.systemCode
@@ -160,7 +159,7 @@ router.get('/login/:userId/:token/:systemCode', function (req, res, next) {
                 }
                 req.session.user = userInfo
                 req.session.user.sessionID = req.sessionID
-                postReq(config.Api.tesla_api.host + '/weare/api/updateUser', {
+                postReq(config.Api.tesla_api.host + 'api/updateUser', {
                   userID: userInfo.userID,
                   loginName: userInfo.loginName,
                   nickName: userInfo.nickName,
@@ -196,7 +195,7 @@ router.post('/init', function (req, res, next) {
   console.log(req.session.user)
   var user = {}
   user['userInfo'] = req.session.user
-  postReq(config.Api.tesla_api.host + '/weare/api/getUserGroups', {
+  postReq(config.Api.tesla_api.host + 'getUserGroups', {
     userID: user.userInfo.userID
   }).then((result) => {
     user['projectTeam'] = result.data
@@ -209,8 +208,8 @@ router.post('/init', function (req, res, next) {
 })
 //传出所有项目组list
 router.get('/getWholeProjectTeam', function (req, res, next) {
-  console.log(config.Api.tesla_api.host + '/weare/api/getWholeProjectTeam')
-  postReq(config.Api.tesla_api.host + '/weare/api/getWholeProjectTeam', {}).then((result) => {
+  console.log(config.Api.tesla_api.host + 'getWholeProjectTeam')
+  postReq(config.Api.tesla_api.host + 'getWholeProjectTeam', {}).then((result) => {
     res.send(result)
   }).catch((info) => {
     console.log(info)
@@ -226,7 +225,7 @@ router.post('/getUserGroups', function (req, res, next) {
 })
 //传出项目组内所有用户
 router.post('/getProjectUsers', function (req, res, next) {
-  postReq(config.Api.tesla_api.host + '/weare/api/getUsersInGroup', {
+  postReq(config.Api.tesla_api.host + 'getUsersInGroup', {
     groupID: req.body.groupID
   }).then((result) => {
     res.send(result)
@@ -237,7 +236,7 @@ router.post('/getProjectUsers', function (req, res, next) {
 })
 //将用户移除某个项目组
 router.post('/deleteUserInGroup', function (req, res, next) {
-  postReq(config.Api.tesla_api.host + '/weare/api/deleteUserInGroup', {
+  postReq(config.Api.tesla_api.host + 'deleteUserInGroup', {
     userID: req.body['user[userID]'],
     groupID: req.body['group[groupID]']
   }).then((result) => {
@@ -249,7 +248,7 @@ router.post('/deleteUserInGroup', function (req, res, next) {
 })
 //将用户加入某个项目组
 router.post('/createGroupWithUser', function (req, res, next) {
-  postReq(config.Api.tesla_api.host + '/weare/api/addUserInGroup', {
+  postReq(config.Api.tesla_api.host + 'addUserInGroup', {
     data: JSON.stringify({
       userID: req.body['user[userID]'],
       userName: req.body['user[userName]'],
@@ -269,7 +268,7 @@ router.post('/createGroup', function (req, res, next) {
   var groupID = md5.hex(req.body.groupName + '' + getCurrentTime(0))
   skydiskApi.newDir(user, req.body.groupName, function (data) {
     if (data.ok) {
-      postReq(config.Api.tesla_api.host + '/weare/api/createGroup', {
+      postReq(config.Api.tesla_api.host + 'createGroup', {
         userID: req.body.userID,
         groupID: groupID,
         groupName: req.body.groupName
@@ -305,7 +304,7 @@ router.post('/saveUserTx', function (req, res, next) {
 
 //获取某项目组聊天记录
 router.post('/getGroupMessages', function (req, res, next) {
-  postReq(config.Api.tesla_api.host + '/weare/api/getGroupMessages', {
+  postReq(config.Api.tesla_api.host + 'getGroupMessages', {
     groupID: req.body.groupID,
     page: req.body.page,
     messNum: req.body.messNum
@@ -380,7 +379,7 @@ router.post('/login', function (req, res) {
                     info.data = {
                       userID: body.userInfo.userId,
                       token: token,
-                      key:system_key
+                      key: system_key
                     }
                     res.send(info)
                     return
@@ -394,16 +393,16 @@ router.post('/login', function (req, res) {
                   'role_type': body.userInfo.powerId,
                   'identity': body.userInfo.roleType
                 }
-                req.session.user = userInfo
-                req.session.user.sessionID = req.sessionID
                 //更新tesla本地用户数据
-                postReq(config.Api.tesla_api.host + '/weare/api/updateUser', {
+                postReq(config.Api.tesla_api.host + 'updateUser', {
                   userID: userInfo.userID,
                   loginName: userInfo.loginName,
                   nickName: userInfo.nickName,
                   identity: userInfo.identity,
                   powerID: userInfo.role_type
                 }).then((result) => {
+                  req.session.user = userInfo
+                  req.session.user.sessionID = req.sessionID
                   console.log(result)
                   result.message = "登录成功"
                   res.send(result)
@@ -431,7 +430,7 @@ router.post('/login', function (req, res) {
 
 //更新用户信息模块
 router.post('/login/updateUserInfo', function (req, res) {
-  let info = config.callbackModel()
+  let info = callbackModel()
   let data = req.body
   data.systemCode = config.systemCode
   console.log(data)
@@ -441,31 +440,31 @@ router.post('/login/updateUserInfo', function (req, res) {
     body: data,
     json: true
   }, function optionalCallback(err, httpResponse, body) {
-    if(err){
+    if (err) {
       console.log(err)
       info.message = err
       res.send(info)
       return
     }
-    if(body){
+    if (body) {
       console.log(httpResponse.statusCode)
-      if(httpResponse.statusCode === 200){
+      if (httpResponse.statusCode === 200) {
         if (body.code === 0) {
           info.flag = true
           info.message = "更新用户数据成功"
           res.send(info)
         }
-        else{
-          info.message =JSON.stringify(body)
+        else {
+          info.message = JSON.stringify(body)
           res.send(info)
         }
       }
-      else{
+      else {
         info.message = '用户管理系统错误\n -->' + httpResponse.statusCode
         res.send(info)
       }
     }
-    else{
+    else {
       info.message = '用户管理系统错误\n -->' + httpResponse.statusCode
       res.send(info)
     }
@@ -492,7 +491,7 @@ router.post('/uploadFile', function (req, res) {
 })
 /*获取所有用户*/
 router.get('/getWholeUser', function (req, res) {
-  postReq(config.Api.tesla_api.host + '/weare/api/getWholeUser', {}).then((result) => {
+  postReq(config.Api.tesla_api.host + 'getWholeUser', {}).then((result) => {
     res.send(result)
   }).catch((info) => {
     console.log(info)
@@ -519,31 +518,20 @@ router.post('/getYunFile', function (req, res) {
   })
 })
 /*获取用户日报*/
-router.post('/getUserDaily', function (req, res) {
-  if (!req.session.user) {
-    res.redirect('/weare')
-    return false
-  }
-  let type = req.body.type
-  console.log(type)
-  let info = new config.callbackModel()
-  // sql.getUserDaily(type).then(() => {
-  // })
-  sql.getUserDaily(type).then((data) => {
-    info.flag = true
-    info.message = data.message
-    info.data = data.data
-    info.latestTime = data.latestTime
-    res.send(info)
-  }, (info) => {
-    res.send(info)
-  })
-})
+// router.post('/getUserDaily', function (req, res) {
+//   if (!req.session.user) {
+//     res.redirect('/weare')
+//     return false
+//   }
+//   let type = req.body.type
+//   console.log(type)
+//   let info = callbackModel()
+// })
 /*
 上传头像功能
  */
 router.post('/uploadTx', function (req, res) {
-  let info = new config.callbackModel()
+  let info = callbackModel()
   let userID = req.body.userID
   let base64data = req.body.data
   let content = new Buffer(base64data, 'base64')
@@ -592,6 +580,14 @@ function getCurrentTime(type) {
 
 function sup(n) {
   return (n < 10) ? '0' + n : n
+}
+
+function callbackModel(flag, message, data) {
+  return {
+    flag: false,
+    message: '',
+    data: null
+  }
 }
 
 module.exports = router

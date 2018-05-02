@@ -18,7 +18,7 @@ module.exports = {
     let md5Key = md5.hex("" + key + currentDate).toUpperCase();
     console.log(md5Key);
     console.log(diskRoot + '/' + dirName)
-    let data = new config.Api.skydisk.newDirModel()
+    let data = {}
     data.d = md5Key
     data.url = diskRoot
     data.diskName = dirName
@@ -77,7 +77,7 @@ module.exports = {
     let key = config.Api.skydisk.staticKey;
     let currentDate = getDate();
     let md5Key = md5.hex("" + key + currentDate).toUpperCase();
-    let data = new config.Api.skydisk.fileListModel()
+    let data = {}
     data.d = md5Key
     data.url = diskRoot + '/' + diskUrl
     data.role_type = user.role_type + ''
@@ -134,7 +134,7 @@ module.exports = {
           dirUrl = val
         }
       });
-
+      
       busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
         let fileSize = 0;
         let hash = crypto.createHash('md5');
@@ -146,28 +146,28 @@ module.exports = {
         file.on('end', function () {
           console.log('File [' + fieldname + '] Finished');
         });
-
+        
         file.on('close', function () {
           console.log('File [' + fieldname + '] closed');
         });
         console.log(filename)
         console.log(mimetype)
-
+        
         let fileNamePrefix = '/' + Date.now() + '-'
         let storeFileName = fileNamePrefix + filename
         let filepath = path.normalize(sourcePath + storeFileName)
         let writerStream = fs.createWriteStream(filepath)
-
+        
         writerStream.on('error', (err) => {
           info.message = err
           writerStream.end(err);
           res.send(info)
         })
-
+        
         writerStream.on('finish', () => {
           let key = config.Api.skydisk.staticKey
           let md5Key = md5.hex("" + key + getCurrentTime(2)).toUpperCase()
-          let uploadData = new config.Api.skydisk.uploadModel()
+          let uploadData = {}
           uploadData.d = md5Key
           uploadData.url = diskRoot + '/' + dirUrl
           uploadData.role_type = req.session.user.role_type
@@ -188,7 +188,7 @@ module.exports = {
           info.flag = true
           info.message = "上传成功"
           res.send(info)
-
+          
           fs.ensureDir(md5Path).then(() => {
             return fs.rename(filepath, newFilePath)
           }, (err) => {
@@ -251,21 +251,21 @@ module.exports = {
                   result.userData = messData
                   io.sockets.emit('end_store', result)
                 }
-
+                
               }
             }).on('drain', (data) => {
               let progress = 100 * rUpload.req.connection._bytesDispatched / fileSize;
               console.log(progress)
             })
           }, (err) => {
-
+          
           })
         });
-
+        
         file.pipe(writerStream)
-
+        
       });
-
+      
       busboy.on('finish', function () {
         console.log('Done parsing form!');
       });

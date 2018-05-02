@@ -1,4 +1,3 @@
-const sql = require('../sql/sql');
 const fs = require('fs-extra');
 const path = require('path');
 const config = require('../../../config');
@@ -245,7 +244,7 @@ function sup(n) {
 
 function saveMessages(userdata) {
   let currentTime = getCurrentTime(0)
-  postReq(config.Api.tesla_api.host + '/weare/api/saveMessages', {
+  postReq(config.Api.tesla_api.host + 'saveMessages', {
     userData:JSON.stringify(userdata)
   }).then((result) => {
     // res.send(result)
@@ -256,7 +255,7 @@ function saveMessages(userdata) {
 }
 
 function saveUserUpdateTime(userID) {
-  postReq(config.Api.tesla_api.host + '/weare/api/saveUserUpdateTime', {
+  postReq(config.Api.tesla_api.host + 'saveUserUpdateTime', {
     userID:userID
   }).then((result) => {
     // res.send(result)
