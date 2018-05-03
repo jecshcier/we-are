@@ -1,22 +1,21 @@
-const md5 = require('../lib/md5');
+const md5 = require('../lib/md5')
 const path = require('path')
-const http = require('http');
-const request = require('request');
-const querystring = require('querystring');
-const config = require('../../../config');
+const request = require('request')
+const querystring = require('querystring')
+const config = require('../../../config')
 const fs = require('fs-extra')
-const crypto = require('crypto');
-const Busboy = require('busboy');
+const crypto = require('crypto')
+const Busboy = require('busboy')
 const diskRoot = '/tesla'
 
 
 module.exports = {
   newDir: (user, dirName, callback) => {
-    console.log("开始新建文件夹...");
-    let key = config.Api.skydisk.staticKey;
-    let currentDate = getDate();
-    let md5Key = md5.hex("" + key + currentDate).toUpperCase();
-    console.log(md5Key);
+    console.log("开始新建文件夹...")
+    let key = config.Api.skydisk.staticKey
+    let currentDate = getDate()
+    let md5Key = md5.hex("" + key + currentDate).toUpperCase()
+    console.log(md5Key)
     console.log(diskRoot + '/' + dirName)
     let data = {}
     data.d = md5Key
@@ -26,7 +25,7 @@ module.exports = {
     data.createUser = user.userID
     data.pubFlag = '2'
     console.log(data)
-    let stringify = querystring.stringify(data);
+    let stringify = querystring.stringify(data)
     console.log(config.Api.skydisk.url + config.Api.skydisk.newDirUrl + '?' + stringify)
     request.post({
       url: config.Api.skydisk.url + config.Api.skydisk.newDirUrl,
@@ -34,8 +33,8 @@ module.exports = {
       json: true
     }, function optionalCallback(err, httpResponse, body) {
       if (err) {
-        console.error('upload failed:', err);
-        callback(false);
+        console.error('upload failed:', err)
+        callback(false)
       } else {
         console.log(body)
         if (body) {
@@ -43,40 +42,20 @@ module.exports = {
             callback(body)
           }
           else {
-            callback(false);
+            callback(false)
           }
         }
         else {
-          callback(false);
+          callback(false)
         }
       }
-    });
-    // request.get({
-    //     url: config.Api.skydisk.url + config.Api.skydisk.newDirUrl + '?' + stringify
-    // }, function optionalCallback(err, httpResponse, body) {
-    //     if (err) {
-    //         console.error('upload failed:', err);
-    //         callback(false);
-    //     } else {
-    //         try {
-    //             testJson = JSON.parse(body)
-    //         } catch (e) {
-    //             console.log(e)
-    //             testJson = null
-    //             console.log(testJson)
-    //             callback(false);
-    //             return false
-    //         }
-    //         console.log(testJson)
-    //         callback(testJson);
-    //     }
-    // });
+    })
   },
   getFileList: (user, diskUrl, page, order_name, order_type, callback) => {
-    console.log("获取网盘文件夹内文件..");
-    let key = config.Api.skydisk.staticKey;
-    let currentDate = getDate();
-    let md5Key = md5.hex("" + key + currentDate).toUpperCase();
+    console.log("获取网盘文件夹内文件..")
+    let key = config.Api.skydisk.staticKey
+    let currentDate = getDate()
+    let md5Key = md5.hex("" + key + currentDate).toUpperCase()
     let data = {}
     data.d = md5Key
     data.url = diskRoot + '/' + diskUrl
@@ -94,8 +73,8 @@ module.exports = {
       json: true
     }, function optionalCallback(err, httpResponse, body) {
       if (err) {
-        console.error('upload failed:', err);
-        callback(false);
+        console.error('upload failed:', err)
+        callback(false)
       } else {
         console.log(body)
         console.log(body)
@@ -104,14 +83,14 @@ module.exports = {
             callback(body)
           }
           else {
-            callback(false);
+            callback(false)
           }
         }
         else {
-          callback(false);
+          callback(false)
         }
       }
-    });
+    })
   },
   uploadFiles: (res, req, sourcePath) => {
     return new Promise((resolve, reject) => {
@@ -122,34 +101,34 @@ module.exports = {
       }
       resolve(info)
       io = req.app.get('socket')
-      let busboy = new Busboy({headers: req.headers});
+      let busboy = new Busboy({headers: req.headers})
       let messData = null
-      let dirUrl;
+      let dirUrl
       busboy.on('field', function (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
-        console.log('Field [' + fieldname + ']: value: ');
+        console.log('Field [' + fieldname + ']: value: ')
         if (fieldname === 'userData') {
           messData = val
         }
         if (fieldname === "dirUrl") {
           dirUrl = val
         }
-      });
+      })
       
       busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
-        let fileSize = 0;
-        let hash = crypto.createHash('md5');
+        let fileSize = 0
+        let hash = crypto.createHash('md5')
         file.on('data', function (data) {
-          // console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
+          // console.log('File [' + fieldname + '] got ' + data.length + ' bytes')
           fileSize += data.length
           hash.update(data)
-        });
+        })
         file.on('end', function () {
-          console.log('File [' + fieldname + '] Finished');
-        });
+          console.log('File [' + fieldname + '] Finished')
+        })
         
         file.on('close', function () {
-          console.log('File [' + fieldname + '] closed');
-        });
+          console.log('File [' + fieldname + '] closed')
+        })
         console.log(filename)
         console.log(mimetype)
         
@@ -160,7 +139,7 @@ module.exports = {
         
         writerStream.on('error', (err) => {
           info.message = err
-          writerStream.end(err);
+          writerStream.end(err)
           res.send(info)
         })
         
