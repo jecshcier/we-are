@@ -1,120 +1,133 @@
-var ctx = document.querySelector('canvas').getContext('2d')
-ctx.canvas.width = window.innerWidth
-ctx.canvas.height = window.innerHeight
+/* ---- particles.js config ---- */
 
-var sparks = []
-var fireworks = []
-var i = 20; while(i--) {
-  fireworks.push(
-    new Firework(Math.random()*window.innerWidth, window.innerHeight*Math.random())
-  )
-}
+particlesJS("particles-js", {
+  "particles": {
+    "number": {
+      "value": 150,
+      "density": {
+        "enable": true,
+        "value_area": 800
+      }
+    },
+    "color": {
+      "value": "#ffffff"
+    },
+    "shape": {
+      "type": "circle",
+      "stroke": {
+        "width": 0,
+        "color": "#000000"
+      },
+      "polygon": {
+        "nb_sides": 5
+      },
+      "image": {
+        "src": "img/github.svg",
+        "width": 100,
+        "height": 100
+      }
+    },
+    "opacity": {
+      "value": .8,
+      "random": true,
+      "anim": {
+        "enable": false,
+        "speed": 1,
+        "opacity_min": 0.1,
+        "sync": false
+      }
+    },
+    "size": {
+      "value": 3,
+      "random": true,
+      "anim": {
+        "enable": false,
+        "speed": 40,
+        "size_min": 0.1,
+        "sync": false
+      }
+    },
+    "line_linked": {
+      "enable": true,
+      "distance": 150,
+      "color": "#ffffff",
+      "opacity": 0.4,
+      "width": 1
+    },
+    "move": {
+      "enable": true,
+      "speed": 2,
+      "direction": "none",
+      "random": true,
+      "straight": false,
+      "out_mode": "out",
+      "bounce": false,
+      "attract": {
+        "enable": false,
+        "rotateX": 600,
+        "rotateY": 1200
+      }
+    }
+  },
+  "interactivity": {
+    "detect_on": "canvas",
+    "events": {
+      "onhover": {
+        "enable": true,
+        "mode": "grab"
+      },
+      "onclick": {
+        "enable": true,
+        "mode": "push"
+      },
+      "resize": true
+    },
+    "modes": {
+      "grab": {
+        "distance": 140,
+        "line_linked": {
+          "opacity": 1
+        }
+      },
+      "bubble": {
+        "distance": 400,
+        "size": 40,
+        "duration": 2,
+        "opacity": 8,
+        "speed": 3
+      },
+      "repulse": {
+        "distance": 200,
+        "duration": 0.4
+      },
+      "push": {
+        "particles_nb": 4
+      },
+      "remove": {
+        "particles_nb": 2
+      }
+    }
+  },
+  "retina_detect": true
+});
 
-render()
-function render() {
-  setTimeout(render, 1000/60)
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-  for(var firework of fireworks) {
-    if(firework.dead) continue
-    firework.move()
-    firework.draw()
+
+/* ---- stats.js config ---- */
+
+var count_particles, stats, update;
+stats = new Stats;
+stats.setMode(0);
+stats.domElement.style.position = 'absolute';
+stats.domElement.style.left = '0px';
+stats.domElement.style.top = '0px';
+document.body.appendChild(stats.domElement);
+count_particles = document.querySelector('.js-count-particles');
+update = function() {
+  stats.begin();
+  stats.end();
+  if (window.pJSDom[0].pJS.particles && window.pJSDom[0].pJS.particles.array) {
+    count_particles.innerText = window.pJSDom[0].pJS.particles.array.length;
   }
-  for(var spark of sparks) {
-    if(spark.dead) continue
-    spark.move()
-    spark.draw()
-  }
-
-  if(Math.random() < 0.05) {
-    fireworks.push(new Firework())
-  }
-}
-
-function Spark(x, y, color) {
-  this.x = x
-  this.y = y
-  this.dir = Math.random() * (Math.PI*2)
-  this.dead = false
-  this.color = color
-  this.speed = Math.random() * 3 + 3;
-  this.walker = new Walker({ radius: 20, speed: 0.25 })
-  this.gravity = 0.25
-  this.dur = this.speed / 0.1
-  this.move = function() {
-    this.dur--
-    if(this.dur < 0) this.dead = true
-
-    if(this.speed < 0) return
-    if(this.speed > 0) this.speed -= 0.1
-    var walk = this.walker.step()
-    this.x += Math.cos(this.dir + walk) * this.speed
-    this.y += Math.sin(this.dir + walk) * this.speed
-    this.y += this.gravity
-    this.gravity += 0.05
-
-  }
-  this.draw = function() {
-    drawCircle(this.x, this.y, 3, this.color)
-  }
-}
-
-function Firework(x, y) {
-  this.xmove = new Walker({radius: 10, speed: 0.5})
-  this.x = x || Math.random() * ctx.canvas.width
-  this.y = y || ctx.canvas.height
-  this.height = Math.random()*ctx.canvas.height/2
-  this.dead = false
-  this.color = randomColor()
-
-  this.move = function() {
-    this.x += this.xmove.step()
-    if(this.y > this.height) this.y -= 1;
-    else this.burst()
-
-  }
-  this.draw = function() {
-    drawCircle(this.x, this.y, 1, this.color)
-  }
-  this.burst = function() {
-    this.dead = true
-    var i = 100; while(i--) sparks.push(new Spark(this.x, this.y, this.color))
-  }
-}
-
-function drawCircle(x, y, radius, color) {
-  color = color || '#FFF'
-  ctx.fillStyle = color
-  ctx.fillRect(x-radius/2, y-radius/2, radius, radius)
-}
-
-function randomColor(){
-  return ['#6ae5ab','#ea9999','#36b89b','#00ffff','#ff00ff'][Math.floor(Math.random() * 5)];
-}
-
-function Walker(options){
-  this.step = function(){
-    this.direction = Math.sign(this.target) * this.speed
-    this.value += this.direction
-    this.target
-      ? this.target -= this.direction
-      : (this.value)
-      ? (this.wander)
-        ? this.target = this.newTarget()
-        : this.target = -this.value
-      : this.target = this.newTarget()
-    return this.direction
-  }
-
-  this.newTarget = function() {
-    return Math.round(Math.random()*(this.radius*2)-this.radius)
-  }
-
-  this.start = 0
-  this.value = 0
-  this.radius = options.radius
-  this.target = this.newTarget()
-  this.direction = Math.sign(this.target)
-  this.wander = options.wander
-  this.speed = options.speed || 1
-}
+  requestAnimationFrame(update);
+};
+requestAnimationFrame(update);
