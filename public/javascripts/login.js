@@ -5,17 +5,18 @@
  ************************/
 
 $(function () {
-  
+
   setTimeout(function () {
     console.log('ok');
     // $(".activity").css('opacity', '0');
     $(".loginBg").css('opacity', '1');
+    reloadUserName();
   }, 0);
-  
+
   $(".updateUserName").click(function (e) {
-  
+
   })
-  
+
   $('#loginBtn').hover(function () {
     $('#loginBtn').css('background-color', '#1ECD97');
     $(".loginBtn svg path").css('stroke', '#fff');
@@ -42,8 +43,21 @@ $(document).keydown(function (event) {
   }
 });
 
+// 缓存上次登录的用户名
+function holdUserName(username) {
+  localStorage.setItem('lastUserName', username);
+}
+
+// 重新载入上次登录的用户名
+function reloadUserName() {
+  var username = localStorage.getItem('lastUserName');
+  $('.loginBg input').eq(0).focus().val(username);
+}
+
 // 登录 skydisk
 function login(username, password) {
+  holdUserName(username);
+
   $.ajax({
     url: '/weare/login',
     type: 'post',
@@ -94,8 +108,8 @@ function shake(_this) {
       });
     });
   });
-  
-  
+
+
 }
 
 function inputUserName(user) {
@@ -132,7 +146,7 @@ function updateUserName(_this) {
     } else {
       alert(data.message)
     }
-    
+
   }).fail(function () {
     alert('用户管理系统未响应 或 用户管理系统坏了！')
     shake($("#loginBtn"));
