@@ -1337,6 +1337,70 @@ pre {
     border: 0;
 }
 
+/* 图片预览器： 内部缩略图 */
+.pswp__caption{
+  min-height: 0;
+}
+.pswp__caption__center{
+  display: none;
+}
+.pswp--zoomed-in .pswp__innerthumbs,
+.pswp__ui--idle .pswp__innerthumbs,
+.pswp__ui--hidden .pswp__innerthumbs {
+  height: 0;
+  margin-bottom: 0;
+  padding: 0;
+  opacity: 0;
+}
+.pswp__innerthumbs {
+  display: flex;
+  justify-content: center;
+  width: 82vw;
+  height: 7vw;
+  margin: 0 auto .5vw;
+  padding: .5vw;
+  overflow-x: auto;
+  transition: all 333ms cubic-bezier(0.4, 0, 0.22, 1);
+}
+.pswp__innerthumbs.scrolling {
+  justify-content: flex-start;
+  padding-top: .25vw;
+}
+.pswp__innerthumbs__item {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 8vw;
+  height: 6vw;
+  margin: 0 .5vw;
+  padding: .25vw 0;
+  border: 1px solid rgba(255, 255, 255, .5);
+  cursor: pointer;
+}
+.pswp__innerthumbs__item img {
+  max-width: 100%;
+  max-height: 100%;
+}
+.pswp__innerthumbs__item:hover,
+.pswp__innerthumbs__item.active {
+  border-color: #fff;
+  outline: 1px solid #fff;
+  background: rgba(255, 255, 255, .25);
+}
+.pswp__innerthumbs::-webkit-scrollbar {
+  width: 0;
+  height: .5vw;
+}
+.pswp__innerthumbs::-webkit-scrollbar-thumb {
+  border-radius: 5vw;
+  background: rgba(255, 255, 255, .4);
+}
+.pswp__innerthumbs::-webkit-scrollbar-track {
+  border-radius: 5vw;
+  background: rgba(255, 255, 255, .2);
+}
+
 /*统计视图*/
 .statistics {
     align-items: center;

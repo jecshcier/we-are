@@ -277,7 +277,7 @@ function sendMessages(type, user, updateTime, dom, addFlag) {
       dom.append(myMess);
     }
   }
-  
+
 }
 
 // 群组气泡
@@ -603,13 +603,13 @@ function preloadImageForPhotoSwipe($this, imgPath) {
   console.log("preloadImg:" + imgPath);
   // 加载状态
   $this.before('<i class="img-loading fa fa-spinner fa-spin"></i>');
-  
+
   var img = new Image();
-  
+
   img.addEventListener("load", function () {
     // 显示图片
-    showPhotoSwipeImgs(imgPath, this.width, this.height);
-    
+    showPhotoSwipeImg(imgPath, this.width, this.height);
+
     $this.siblings(".img-loading").remove();
   }, false);
   // 图片加载失败
@@ -617,7 +617,7 @@ function preloadImageForPhotoSwipe($this, imgPath) {
     alert("图片加载失败！");
     $this.siblings(".img-loading").remove();
   }, false);
-  
+
   img.src = imgPath;
 }
 
@@ -629,19 +629,19 @@ function showVideoReader(videoSrc) {
   var $modal = $("#videoModal");
   var videoPlayer = document.getElementById("videoPlayer");
   videoPlayer.src = videoSrc;
-  
+
   // var videoPlayer = videojs('videoPlayer');
-  
+
   // videoPlayer.ready(function() {
   //     videoPlayer.src(videoSrc);
   //     videoPlayer.play();
   // });
-  
+
   // 显示播放器
   $modal.fadeIn(function () {
     $modal.css("display", "flex");
   });
-  
+
   // 绑定关闭事件
   $modal.find(".modal-close").off("click").on("click", function () {
     videoPlayer.pause();
@@ -656,17 +656,17 @@ function showVideoReader(videoSrc) {
 function showPdfReader(pdfSrc) {
   var $modal = $("#pdfReaderModal");
   var $reader = $("#pdfReader");
-  
+
   // 仅当文件未加载时，执行加载
   if ($reader.attr("data") !== pdfSrc) {
     $reader.attr("data", pdfSrc);
   }
-  
+
   // 显示阅读器
   $modal.fadeIn(function () {
     $modal.css("display", "flex");
   });
-  
+
   // 绑定关闭事件
   $modal.find(".modal-close").off("click").on("click", function () {
     $modal.fadeOut();
@@ -850,7 +850,7 @@ function getProjectUsersApi(groupID, callback) {
     }
   }).fail(function () {
     alert("服务器连接失败")
-  
+
   }).always(function () {
   });
 }
