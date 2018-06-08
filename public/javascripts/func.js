@@ -403,38 +403,6 @@ function imgOnfail(_this) {
   }
 }
 
-// 获取上传后的文件信息
-function getUploadFileInfo(flag, info, fileid, filename, filesize, fileextname, fileurl) {
-  flag = parseInt(flag);
-  if (!flag) {
-    alert("上传失败！ -->" + info);
-    globalNotification("文件传输失败！", "red");
-    autoScroll($(".showClass"));
-  } else {
-    globalNotification("文件传输完成！", "green");
-    autoScroll($(".showClass"));
-    console.log("上传成功！正在生成链接------->");
-    var _this = $('.showMess[projectID="' + userData.projectTeam.groupID + '"]');
-    filesize = getFileSize(filesize);
-    var text = '<i class="ico ico-' + fileextname + '">' + fileextname + '</i><div class="fileinfo"><p>' + filename + '</p><p>' + filesize + '<a href="' + fileurl + '"  target="_blank">下载</a></p></div>'
-    userData['messageType'] = 'file';
-    userData['message'] = text;
-    userData['fileCheck'] = true;
-    userData['fileName'] = filename;
-    userData['messageID'] = userData.userID + new Date().getTime();
-    sendMessages(0, userData, 0, _this, 0);
-    socket.emit("sendMessage", userData);
-    delete userData['fileCheck'];
-    delete userData['fileName'];
-    autoScroll($(".showClass"));
-    console.log("文件id：" + fileid);
-    console.log("文件名称：" + filename);
-    console.log("文件大小：" + filesize);
-    console.log("文件类型：" + fileextname);
-    console.log("下载地址：" + fileurl);
-  }
-}
-
 // 文件上传
 function uploading() {
   globalNotification("文件上传中……请耐心等候", "#ccc");
@@ -983,6 +951,43 @@ function uploadTx(base64){
   }).always(function () {
     console.log("complete");
   });
+}
+
+function uploadFiles(files){
+  var form = new FormData();
+  for(var i=0;i<files.length;files++){
+    form.append("file" + i,files[i]);
+  }
+  var xhr = new XMLHttpRequest();
+  // 文件对象
+  // XMLHttpRequest 对象
+  xhr.open("post", '/weare/uploadFiles_rm', true); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
+  xhr.onload = function(e) {
+    console.log(e.target.responseText)
+    // uploading = false;
+    // var data = JSON.parse(e.target.responseText);
+    // d1.close().remove();
+    // if (data.flag) {
+    //   showlog(data.message + '\n' + '下载地址为' + data.data.fileUrl)
+    // } else {
+    //   showlog('上传失败，原因是：' + data.message)
+    // }
+  }; //请求完成
+  xhr.onerror = function(e) {
+    // d1.close().remove();
+    // showlog('上传失败！')
+  }; //请求失败
+  xhr.upload.onprogress = function(evt) {
+    // uploading = true;
+    var progress = Math.round(evt.loaded / evt.total * 100);
+    // $(".uploadBtn>i").css('width', progress + 'px');
+    // $(".uploadBtn>span").html(progress + '%')
+    console.log(progress + '%')
+  }; //【上传进度调用方法实现】
+  xhr.upload.onloadstart = function() { //上传开始执行方法
+    console.log("开始上传")
+  };
+  xhr.send(form); //开始上传，发送form数据
 }
 
 /*yunDisk接口部分 --end*/

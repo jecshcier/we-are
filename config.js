@@ -17,6 +17,9 @@ module.exports = {
     },
     tesla_api: {
       host: 'http://127.0.0.1:3030/weare/api/',
+    },
+    rms:{
+      url:"http://es.tes-sys.com/rm"
     }
   },
   sourceDir: {

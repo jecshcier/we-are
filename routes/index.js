@@ -16,6 +16,8 @@ const userTxDir = path.normalize(config.sourceDir.userTxDir)
 const crypto = require('crypto')
 const queryString = require('querystring')
 const postReq = require('./assets/lib/request_fun').postReq
+const postReqCommon = require('./assets/lib/request_fun').postReqCommon
+const postProxy = require('./assets/lib/request_fun').postProxy
 const system_key = crypto.createHash('sha1').update(config.system_key).digest('hex')
 
 //创建文件缓存目录
@@ -560,6 +562,21 @@ router.post('/uploadTx', function (req, res) {
   })
 })
 
+router.post('/uploadFiles_rm', function (req, res) {
+  let info = callbackModel()
+  let uploadFileUrl = config.Api.rms.url + '/uploadFile/' + config.systemCode + '/'
+  let sha1Key
+  postReqCommon(config.Api.rms.url + '/getSha1Key',{
+    "systemCode":config.systemCode
+  }).then((result)=>{
+    sha1Key = result.data["key"]
+    uploadFileUrl += sha1Key
+    console.log(uploadFileUrl)
+    postProxy(uploadFileUrl,req,res)
+  }).catch((info)=>{
+    res.send(info)
+  })
+})
 
 function getCurrentTime(type) {
   var myDate = new Date()

@@ -47,6 +47,48 @@ const postReq = (url, data) =>{
   })
 }
 
+const postReqCommon = (url, data) =>{
+  let info = {
+    flag: false,
+    message: '',
+    data: null
+  }
+  return new Promise((resolve, reject) => {
+    request.post({
+      url: url,
+      body: data,
+      json: true
+    }, function optionalCallback(err, httpResponse, body) {
+      if (err) {
+        info.message = err
+        console.log("错误")
+        reject(info)
+      } else {
+        if (body) {
+          if (typeof body !== 'object') {
+            info.message = '404'
+            reject(info)
+            return
+          }
+          info.flag = true
+          info.message = "请求成功"
+          info.data = body
+          resolve(info)
+        } else {
+          info.message = '500'
+          reject(info)
+        }
+      }
+    })
+  })
+}
+
+const postProxy = (url,req,res) => {
+  req.pipe(request(url)).pipe(res);
+}
+
 module.exports = {
-  postReq:postReq
+  postReq:postReq,
+  postReqCommon:postReqCommon,
+  postProxy:postProxy
 }

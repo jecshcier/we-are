@@ -557,6 +557,7 @@ $(function () {
   //上传文件事件监听
   $("#addFiles").change(function (event) {
     var files = this.files;
+    uploadFiles(files)
     if (files.length > 1) {
       helpMess({
         content: "<span style='color:red'>暂不支持多文件上传。。</span>",
