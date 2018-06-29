@@ -277,7 +277,7 @@ function sendMessages(type, user, updateTime, dom, addFlag) {
       dom.append(myMess);
     }
   }
-
+  
 }
 
 // 群组气泡
@@ -345,7 +345,7 @@ function changeTx(url) {
       url: url
     }
   }).done(function () {
-    socket.emit("reloadTx",userData);
+    socket.emit("reloadTx", userData);
     alert("头像修改成功");
   }).fail(function () {
     alert("头像更改错误！");
@@ -571,13 +571,13 @@ function preloadImageForPhotoSwipe($this, imgPath) {
   console.log("preloadImg:" + imgPath);
   // 加载状态
   $this.before('<i class="img-loading fa fa-spinner fa-spin"></i>');
-
+  
   var img = new Image();
-
+  
   img.addEventListener("load", function () {
     // 显示图片
     showPhotoSwipeImg(imgPath, this.width, this.height);
-
+    
     $this.siblings(".img-loading").remove();
   }, false);
   // 图片加载失败
@@ -585,7 +585,7 @@ function preloadImageForPhotoSwipe($this, imgPath) {
     alert("图片加载失败！");
     $this.siblings(".img-loading").remove();
   }, false);
-
+  
   img.src = imgPath;
 }
 
@@ -597,19 +597,19 @@ function showVideoReader(videoSrc) {
   var $modal = $("#videoModal");
   var videoPlayer = document.getElementById("videoPlayer");
   videoPlayer.src = videoSrc;
-
+  
   // var videoPlayer = videojs('videoPlayer');
-
+  
   // videoPlayer.ready(function() {
   //     videoPlayer.src(videoSrc);
   //     videoPlayer.play();
   // });
-
+  
   // 显示播放器
   $modal.fadeIn(function () {
     $modal.css("display", "flex");
   });
-
+  
   // 绑定关闭事件
   $modal.find(".modal-close").off("click").on("click", function () {
     videoPlayer.pause();
@@ -624,17 +624,17 @@ function showVideoReader(videoSrc) {
 function showPdfReader(pdfSrc) {
   var $modal = $("#pdfReaderModal");
   var $reader = $("#pdfReader");
-
+  
   // 仅当文件未加载时，执行加载
   if ($reader.attr("data") !== pdfSrc) {
     $reader.attr("data", pdfSrc);
   }
-
+  
   // 显示阅读器
   $modal.fadeIn(function () {
     $modal.css("display", "flex");
   });
-
+  
   // 绑定关闭事件
   $modal.find(".modal-close").off("click").on("click", function () {
     $modal.fadeOut();
@@ -694,7 +694,7 @@ function addUserToGroupApi(group, user, callback) {
       'user': user
     }
   }).done(function (result) {
-    if(result.flag){
+    if (result.flag) {
       if (callback) {
         callback();
       }
@@ -702,7 +702,7 @@ function addUserToGroupApi(group, user, callback) {
     else {
       alert(result.message)
     }
-
+    
   }).fail(function () {
     console.log("error");
   })
@@ -761,12 +761,12 @@ function getGroupMessagesApi(groupID, page, callback) {
       'messNum': 20
     }
   }).done(function (result) {
-    if(result.flag){
+    if (result.flag) {
       if (callback) {
         callback(result.data);
       }
     }
-    else{
+    else {
       alert(result.message)
     }
   }).fail(function () {
@@ -785,12 +785,12 @@ function deleteUserInGroupApi(group, user, callback) {
       'user': user
     }
   }).done(function (result) {
-    if(result.flag){
+    if (result.flag) {
       if (callback) {
         callback();
       }
     }
-    else{
+    else {
       alert(result.message)
     }
   }).fail(function () {
@@ -818,7 +818,7 @@ function getProjectUsersApi(groupID, callback) {
     }
   }).fail(function () {
     alert("服务器连接失败")
-
+    
   }).always(function () {
   });
 }
@@ -929,21 +929,21 @@ function getYunFileApi(diskUrl, page, order_name, order_type, callback) {
   });
 }
 
-function uploadTx(base64){
+function uploadTx(base64) {
   $.ajax({
     url: 'uploadTx',
     type: 'post',
     dataType: 'json',
     data: {
       userID: userData.userID,
-      data:base64
+      data: base64
     }
   }).done(function (result) {
     if (result.flag) {
-      socket.emit("reloadTx",userData);
+      socket.emit("reloadTx", userData);
       alert('头像上传成功！')
     }
-    else{
+    else {
       alert("头像上传失败 ---->" + result.message)
     }
   }).fail(function () {
@@ -953,41 +953,52 @@ function uploadTx(base64){
   });
 }
 
-function uploadFiles(files){
+function uploadFiles(files,callback) {
   var form = new FormData();
-  for(var i=0;i<files.length;files++){
-    form.append("file" + i,files[i]);
-  }
   var xhr = new XMLHttpRequest();
+  $.each(files, function (index, el) {
+    console.log(el)
+    form.append("files", el);
+  })
   // 文件对象
   // XMLHttpRequest 对象
   xhr.open("post", '/weare/uploadFiles_rm', true); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
-  xhr.onload = function(e) {
-    console.log(e.target.responseText)
-    // uploading = false;
-    // var data = JSON.parse(e.target.responseText);
-    // d1.close().remove();
-    // if (data.flag) {
-    //   showlog(data.message + '\n' + '下载地址为' + data.data.fileUrl)
-    // } else {
-    //   showlog('上传失败，原因是：' + data.message)
-    // }
+  xhr.onload = function (e) {
+    var result = e.target.responseText
+    try{
+      result = JSON.parse(result)
+    }catch(e){
+      result = {
+        err:e
+      }
+    }
+    callback(result)
   }; //请求完成
-  xhr.onerror = function(e) {
-    // d1.close().remove();
-    // showlog('上传失败！')
+  xhr.onerror = function (e) {
+    var result = {
+      err:e
+    }
+    callback(result)
   }; //请求失败
-  xhr.upload.onprogress = function(evt) {
+  xhr.upload.onprogress = function (evt) {
     // uploading = true;
     var progress = Math.round(evt.loaded / evt.total * 100);
     // $(".uploadBtn>i").css('width', progress + 'px');
     // $(".uploadBtn>span").html(progress + '%')
     console.log(progress + '%')
   }; //【上传进度调用方法实现】
-  xhr.upload.onloadstart = function() { //上传开始执行方法
+  xhr.upload.onloadstart = function () { //上传开始执行方法
     console.log("开始上传")
   };
   xhr.send(form); //开始上传，发送form数据
+}
+
+function imgOnError(_this){
+  _this.src = '';
+  setTimeout(function(){
+    _this.src = $(_this).attr("url") + '?' + parseInt(Math.random() * 100000000)
+  },1500);
+  
 }
 
 /*yunDisk接口部分 --end*/

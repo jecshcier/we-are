@@ -178,6 +178,7 @@ function connectionTimer(socket, io) {
   return socket;
 }
 
+
 function logOut(socket, io) {
   // 处理异常登陆
   // if (reconnectUser.length) {

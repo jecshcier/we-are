@@ -83,12 +83,12 @@ const postReqCommon = (url, data) =>{
   })
 }
 
-const postProxy = (url,req,res) => {
+const sendProxyRequest = (url,req,res) => {
   req.pipe(request(url)).pipe(res);
 }
 
 module.exports = {
   postReq:postReq,
   postReqCommon:postReqCommon,
-  postProxy:postProxy
+  sendProxyRequest:sendProxyRequest
 }

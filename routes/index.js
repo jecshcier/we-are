@@ -17,7 +17,7 @@ const crypto = require('crypto')
 const queryString = require('querystring')
 const postReq = require('./assets/lib/request_fun').postReq
 const postReqCommon = require('./assets/lib/request_fun').postReqCommon
-const postProxy = require('./assets/lib/request_fun').postProxy
+const sendProxyRequest = require('./assets/lib/request_fun').sendProxyRequest
 const system_key = crypto.createHash('sha1').update(config.system_key).digest('hex')
 
 //创建文件缓存目录
@@ -195,7 +195,7 @@ router.get('/login/:userId/:token/:systemCode', function (req, res, next) {
 //初始化用户数据（传出用户id、姓名、group等信息）
 router.post('/init', function (req, res, next) {
   console.log(req.session.user)
-  var user = {}
+  let user = {}
   user['userInfo'] = req.session.user
   postReq(config.Api.tesla_api.host + 'getUserGroups', {
     userID: user.userInfo.userID
@@ -267,7 +267,7 @@ router.post('/createGroupWithUser', function (req, res, next) {
 //创建某个项目组
 router.post('/createGroup', function (req, res, next) {
   let user = req.session.user
-  var groupID = md5.hex(req.body.groupName + '' + getCurrentTime(0))
+  let groupID = md5.hex(req.body.groupName + '' + getCurrentTime(0))
   skydiskApi.newDir(user, req.body.groupName, function (data) {
     if (data.ok) {
       postReq(config.Api.tesla_api.host + 'createGroup', {
@@ -290,8 +290,8 @@ router.post('/createGroup', function (req, res, next) {
 })
 /*更改用户头像*/
 router.post('/saveUserTx', function (req, res, next) {
-  var userID = req.body.userID
-  var url = req.body.url
+  let userID = req.body.userID
+  let url = req.body.url
   console.log(userID)
   console.log(url)
   url = url.replace(staticUrl, '')
@@ -480,11 +480,6 @@ router.post('/logout', function (req, res) {
 })
 /*上传文件*/
 router.post('/uploadFile', function (req, res) {
-  if (!req.session.user) {
-    res.redirect('/weare')
-    return false
-  }
-  console.log('ok')
   skydiskApi.uploadFiles(res, req, sourcePath).then((data) => {
     console.log(data)
   }, (err) => {
@@ -563,7 +558,6 @@ router.post('/uploadTx', function (req, res) {
 })
 
 router.post('/uploadFiles_rm', function (req, res) {
-  let info = callbackModel()
   let uploadFileUrl = config.Api.rms.url + '/uploadFile/' + config.systemCode + '/'
   let sha1Key
   postReqCommon(config.Api.rms.url + '/getSha1Key',{
@@ -572,16 +566,17 @@ router.post('/uploadFiles_rm', function (req, res) {
     sha1Key = result.data["key"]
     uploadFileUrl += sha1Key
     console.log(uploadFileUrl)
-    postProxy(uploadFileUrl,req,res)
+    // 发送代理请求
+    sendProxyRequest(uploadFileUrl,req,res)
   }).catch((info)=>{
     res.send(info)
   })
 })
 
 function getCurrentTime(type) {
-  var myDate = new Date()
-  var date = myDate.getFullYear() + "-" + sup(parseInt(myDate.getMonth() + 1)) + "-" + sup(myDate.getDate())
-  var time = sup(myDate.getHours()) + ":" + sup(myDate.getMinutes()) + ":" + sup(myDate.getSeconds())
+  let myDate = new Date()
+  let date = myDate.getFullYear() + "-" + sup(parseInt(myDate.getMonth() + 1)) + "-" + sup(myDate.getDate())
+  let time = sup(myDate.getHours()) + ":" + sup(myDate.getMinutes()) + ":" + sup(myDate.getSeconds())
   switch (type) {
     case 0:
       return date + " " + time

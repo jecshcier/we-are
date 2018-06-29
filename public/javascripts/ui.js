@@ -42,7 +42,7 @@ $(function () {
       }
       $(".myTxDiv > img")[0].src = e.target.result
     }
-
+    
   })
   //头像
   $(".defaultTx").click(function (event) {
@@ -53,10 +53,10 @@ $(function () {
   $("#saveTx").click(function (event) {
     var reg = new RegExp(/data:image/);
     var url = $(".myTxDiv > img").attr('src');
-    if (!reg.test(url)){
+    if (!reg.test(url)) {
       changeTx(url);
     }
-    else{
+    else {
       var base64Buffer = $(".myTxDiv > img")[0].src.replace(/^data:image\/\w+;base64,/, "");
       uploadTx(base64Buffer)
     }
@@ -478,18 +478,18 @@ $(function () {
   // 图片点击放大
   $(".showArea").on('click', '.messContent > img', function (e) {
     e.preventDefault();
-
+    
     gatherAllImageFormChat(e.target);
   });
-
+  
   // 获取当前窗口中的所有聊天图片
   function gatherAllImageFormChat(target) {
     var imgArr = [];
     var index = 0;
-    $(target).closest('.showClass').find('.messContent').find('img').each(function(i, item) {
+    $(target).closest('.showClass').find('.messContent').find('img').each(function (i, item) {
       // 记录当前图片所在的序号
       (item === target) && (index = i);
-
+      
       imgArr.push({
         title: '图片：' + i,
         src: item.currentSrc,
@@ -499,7 +499,7 @@ $(function () {
     });
     showPhotoSwipeImgsArr(imgArr, index);
   }
-
+  
   /***************
    *  上传图片按钮监听事件 *
    ***************/
@@ -508,6 +508,16 @@ $(function () {
     console.log(images);
     var fileCheck = true;
     $.each(images, function (index, val) {
+      if (index > 9) {
+        fileCheck = false;
+        helpMess({
+          content: "最多上传10张图片",
+          okValue: '确 定',
+          ok: function () {
+          }
+        })
+        return false;
+      }
       var pos = val.name.replace(/.+\./, "").toLowerCase();
       if ($.inArray(pos, imgArr) == -1) {
         fileCheck = false;
@@ -521,9 +531,10 @@ $(function () {
       }
     });
     if (fileCheck) {
+      // $('#addImg').val('');
+      var tempClass = getRandomID(userData.userID);
       $.each(images, function (index, val) {
         var objUrl = getObjectURL(val);
-        var tempClass = getRandomID(userData.userID);
         var textAreaVal = '<img class="' + tempClass + '" src="' + objUrl + '"><article class="' + tempClass + 'imgLoading loading" style="width:100%;height:100%;position:absolute;top:0;left:0;background-color:#fff;"></article>';
         var _this = $('.showMess[projectID="' + userData.projectTeam.groupID + '"]');
         userData['messageType'] = 'img'
@@ -534,30 +545,31 @@ $(function () {
           $(this).removeClass(tempClass);
           $('.showArea').scrollTop(_this.height());
         }
-        var reader = new FileReader();
-        userData['message'] = '<img src="{imgUrl}" class="messImg" onerror="imgOnfail(this)">';
-        reader.onload = function (evt) {
-          socket.emit('sendImage', {
-            'name': val.name,
-            'segment': evt.target.result,
-            'size': val.size,
-            'user': userData,
-            'userflag': tempClass + 'imgLoading'
-          });
-        };
-        reader.readAsDataURL(val);
-        if (index === images.length - 1) {
-          console.log("ok");
-          $('#addImg').val('');
-        }
+        
       });
+      uploadFiles(images, function (result) {
+        var userDataTemp = JSON.parse(JSON.stringify(userData));
+        console.log(result);
+        var uploadImgArr = result.files;
+        for (var i = 0; i < uploadImgArr.length; i++) {
+          console.log("ok")
+          console.log(uploadImgArr[i])
+          var imgDownloadUrl = uploadImgArr[i].fileUrl;
+          var imgPreviewUrl = uploadImgArr[i].filePreviewUrl;
+          var textAreaVal = '<img src="' + imgPreviewUrl + '" url="' + imgPreviewUrl + '" onerror="imgOnError(this)"><a href="' + imgDownloadUrl + '">下载原图</a>';
+          userDataTemp['messageType'] = 'img'
+          userDataTemp['message'] = textAreaVal;
+          socket.emit("sendMessage", userDataTemp);
+        }
+        $("." + tempClass + 'imgLoading').remove()
+      })
+      
     }
   });
-
+  
   //上传文件事件监听
   $("#addFiles").change(function (event) {
     var files = this.files;
-    uploadFiles(files)
     if (files.length > 1) {
       helpMess({
         content: "<span style='color:red'>暂不支持多文件上传。。</span>",
@@ -580,14 +592,14 @@ $(function () {
     userData['fileName'] = filename;
     userData['messageID'] = messageID
     sendMessages(0, userData, 0, _this, 0);
-
+    
     var $contentDiv = $("#" + messageID)
     $("#" + messageID + " .messContent").append('<div class="' + messageID + '" style="position:absolute;width:100%;height:100%;justify-content: center;align-items: center;left: 0;top:0;font-size: 25px;" ><div style="position:absolute;width:100%;height:100%;background-color: rgba(251, 126, 116,.5);left: 0;top: 0;"></div><span style="position: absolute;">0%</span></div>')
     var $mask = $("div." + messageID)
     var $span = $("div." + messageID + ">span")
     var $div = $("div." + messageID + ">div")
     autoScroll($(".showClass"));
-
+    
     var form = new FormData(); // FormData 对象
     $.each(files, function (index, el) {
       console.log(el)
@@ -599,8 +611,8 @@ $(function () {
     delete userData['fileName'];
     // 文件对象
     console.log(form)
-
-
+    
+    
     var url = "/weare/uploadFile"; // 接收上传文件的后台地址
     var xhr = new XMLHttpRequest();
     xhr.open("post", url, true); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
@@ -652,8 +664,8 @@ $(function () {
     console.log("上传")
     xhr.send(form);
   })
-
-
+  
+  
   // 文件页码切换
   $(".filePage").delegate('.pageNum', 'click', function (event) {
     $(this).addClass('pageHit').siblings().removeClass('pageHit');
@@ -703,12 +715,12 @@ $(function () {
       heightResizeCheck = false;
     }
   });
-
+  
   $("#textArea").click(function (event) {
     editor.focus();
   });
-
-
+  
+  
   var canPreviewType = ["png", "jpg", "gif", "bmp", "jpeg", "pdf", "mp4", "webm", "ogg"];
   var previewByPhotoSwipe = ["png", "jpg", "gif", "bmp", "jpeg"];
   var previewByVideo = ["mp4", "webm", "ogg"];
@@ -731,18 +743,18 @@ $(function () {
     if ($.inArray(type, previewByPhotoSwipe) >= 0) {
       preloadImageForPhotoSwipe($this, dldUrl);
     }
-
+    
     // 预览视频
     if ($.inArray(type, previewByVideo) >= 0) {
       showVideoReader(dldUrl);
     }
-
+    
     // 预览PDF
     if (type === "pdf") {
       showPdfReader(dldUrl + "." + type);
     }
   });
-
+  
   // 全局广播消息提示
   // $('.set.broadcast').click(function(event) {
   // 	helpMess(false,
