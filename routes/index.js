@@ -546,13 +546,13 @@ router.post('/uploadTx', function (req, res) {
         }
         else {
           console.log(err)
-          info.message = "头像储存似乎出现了问题2。。"
+          info.message = "头像储存似乎出现了问题"
           res.send(info)
         }
       })
   }).catch((e) => {
     console.log(e)
-    info.message = "头像储存似乎出现了问题。。"
+    info.message = "头像储存似乎出现了问题"
     res.send(info)
   })
 })
@@ -560,17 +560,21 @@ router.post('/uploadTx', function (req, res) {
 router.post('/uploadFiles_rm', function (req, res) {
   let uploadFileUrl = config.Api.rms.url + '/uploadFile/' + config.systemCode + '/'
   let sha1Key
-  postReqCommon(config.Api.rms.url + '/getSha1Key',{
-    "systemCode":config.systemCode
-  }).then((result)=>{
+  postReqCommon(config.Api.rms.url + '/getSha1Key', {
+    "systemCode": config.systemCode
+  }).then((result) => {
     sha1Key = result.data["key"]
     uploadFileUrl += sha1Key
     console.log(uploadFileUrl)
     // 发送代理请求
-    sendProxyRequest(uploadFileUrl,req,res)
-  }).catch((info)=>{
+    sendProxyRequest(uploadFileUrl, req, res)
+  }).catch((info) => {
     res.send(info)
   })
+})
+
+router.get('/logs', (req, res) => {
+  res.sendFile(path.normalize(__dirname + '/../update.log'))
 })
 
 function getCurrentTime(type) {
@@ -594,7 +598,7 @@ function sup(n) {
   return (n < 10) ? '0' + n : n
 }
 
-function callbackModel(flag, message, data) {
+function callbackModel() {
   return {
     flag: false,
     message: '',

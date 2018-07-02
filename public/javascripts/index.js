@@ -106,6 +106,7 @@ $(function () {
         }
         window.URL = window.URL || window.webkitURL;
         var blobUrl = window.URL.createObjectURL(blob);
+        console.log(blobUrl)
         var reader = new FileReader();
         helpMess({
           content: '<div style="width:300px;height:200px;overflow:hidden;position:relative;"><img src="' + blobUrl + '" style="width:100%;position:absolute;top:0;left:0;right:0;bottom:0;margin:auto;"></div>',
@@ -114,7 +115,7 @@ $(function () {
             var tempClass = getRandomID(userData.userID);
             var textAreaVal = '<img class="' + tempClass + '" src="' + blobUrl + '"><article class="' + tempClass + 'imgLoading loading" style="width:100%;height:100%;position:absolute;top:0;left:0;background-color:#fff;"></article>';
             var _this = $('.showMess[projectID="' + userData.projectTeam.groupID + '"]');
-            userData['messageType'] = 'img'
+            userData['messageType'] = 'img';
             userData['message'] = textAreaVal;
             sendMessages(0, userData, 0, _this, 0);
             $('.' + tempClass + 'imgLoading').mLoading(1);
@@ -125,6 +126,7 @@ $(function () {
             userData['message'] = '<img src="{imgUrl}" class="messImg" onerror="imgOnfail(this)">';
             reader.onload = function (evt) {
               console.log('test');
+              console.log(evt.target.result.split(','))
               socket.emit('sendImage', {
                 'name': getRandomID(userData.userID) + '.png',
                 'segment': evt.target.result,
@@ -175,9 +177,10 @@ $(function () {
       }
     });
     if (fileCheck) {
+      // $('#addImg').val('');
+      var tempClass = getRandomID(userData.userID);
       $.each(files, function (index, val) {
         var objUrl = getObjectURL(val);
-        var tempClass = getRandomID(userData.userID);
         var textAreaVal = '<img class="' + tempClass + '" src="' + objUrl + '"><article class="' + tempClass + 'imgLoading loading" style="width:100%;height:100%;position:absolute;top:0;left:0;background-color:#fff;"></article>';
         var _this = $('.showMess[projectID="' + userData.projectTeam.groupID + '"]');
         userData['messageType'] = 'img'
@@ -188,23 +191,34 @@ $(function () {
           $(this).removeClass(tempClass);
           $('.showArea').scrollTop(_this.height());
         }
-        var reader = new FileReader();
-        userData['message'] = '<img src="{imgUrl}" class="messImg" onerror="imgOnfail(this)">';
-        reader.onload = function (evt) {
-          socket.emit('sendImage', {
-            'name': val.name,
-            'segment': evt.target.result,
-            'size': val.size,
-            'user': userData,
-            'userflag': tempClass + 'imgLoading'
-          });
-        };
-        reader.readAsDataURL(val);
-        if (index == files.length - 1) {
-          console.log("ok");
-          $('#addImg').val('');
-        }
+      
       });
+      uploadFiles(files, function (result) {
+        var userDataTemp = JSON.parse(JSON.stringify(userData));
+        console.log(result);
+        var uploadImgArr = result.files;
+        for (var i = 0; i < uploadImgArr.length; i++) {
+          var pos = uploadImgArr[i].name.replace(/.+\./, "").toLowerCase();
+          console.log("ok")
+          console.log(uploadImgArr[i])
+          var imgDownloadUrl = uploadImgArr[i].fileUrl;
+          var imgPreviewUrl = uploadImgArr[i].filePreviewUrl;
+          var textAreaVal;
+          if(previewImgArr.indexOf(pos) !== -1){
+            console.log("有缩略图")
+            textAreaVal = '<img src="' + imgPreviewUrl + '" url="' + imgPreviewUrl + '" onerror="imgOnError(this)"><a href="' + imgDownloadUrl + '">下载原图</a>';
+          }
+          else{
+            console.log("无缩略图")
+            textAreaVal = '<img src="' + imgPreviewUrl + '" url="' + imgDownloadUrl + '" onerror="imgOnError(this)"><a href="' + imgDownloadUrl + '">下载原图</a>';
+          }
+          userDataTemp['messageType'] = 'img'
+          userDataTemp['message'] = textAreaVal;
+          socket.emit("sendMessage", userDataTemp);
+        }
+        $("." + tempClass + 'imgLoading').remove()
+      })
+    
     }
   })
   changeLoaderString('主界面监听器加载完成……');

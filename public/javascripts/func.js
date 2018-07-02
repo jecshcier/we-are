@@ -10,6 +10,7 @@ var userData = {};
 var userTeam = {};
 var localOnlineUsers = new Object();
 var imgArr = ['jpg', 'jpeg', 'png', 'bmp', 'gif'];
+var previewImgArr = ['jpg', 'jpeg', 'png']
 var codeType = ['javascript', 'java', 'html', 'css'];
 var codeMirrorMode = {
   "javascript": "javascript",
@@ -994,10 +995,29 @@ function uploadFiles(files,callback) {
 }
 
 function imgOnError(_this){
-  _this.src = '';
-  setTimeout(function(){
-    _this.src = $(_this).attr("url") + '?' + parseInt(Math.random() * 100000000)
-  },1500);
+  console.log("图片加载失败！");
+  _this.src = staticUrl + '/images/img_err.png';
+  var count = parseInt($(_this).attr('count'));
+  console.log(count)
+  if(!count){
+    count = 1
+    $(_this).attr('count',count);
+    setTimeout(function(){
+      _this.src = $(_this).attr("url") + '?' + parseInt(Math.random() * 100000000)
+    },1500);
+  }
+  else if(count < 3){
+    count ++;
+    $(_this).attr('count',count);
+    setTimeout(function(){
+      _this.src = $(_this).attr("url") + '?' + parseInt(Math.random() * 100000000)
+    },1500);
+  }
+  else{
+    _this.src = staticUrl + '/images/img_err.png';
+    return
+  }
+
   
 }
 

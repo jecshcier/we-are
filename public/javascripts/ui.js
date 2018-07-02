@@ -552,11 +552,20 @@ $(function () {
         console.log(result);
         var uploadImgArr = result.files;
         for (var i = 0; i < uploadImgArr.length; i++) {
+          var pos = uploadImgArr[i].name.replace(/.+\./, "").toLowerCase();
           console.log("ok")
           console.log(uploadImgArr[i])
           var imgDownloadUrl = uploadImgArr[i].fileUrl;
           var imgPreviewUrl = uploadImgArr[i].filePreviewUrl;
-          var textAreaVal = '<img src="' + imgPreviewUrl + '" url="' + imgPreviewUrl + '" onerror="imgOnError(this)"><a href="' + imgDownloadUrl + '">下载原图</a>';
+          var textAreaVal;
+          if(previewImgArr.indexOf(pos) !== -1){
+            console.log("有缩略图")
+            textAreaVal = '<img src="' + imgPreviewUrl + '" url="' + imgPreviewUrl + '" onerror="imgOnError(this)"><a href="' + imgDownloadUrl + '">下载原图</a>';
+          }
+          else{
+            console.log("无缩略图")
+            textAreaVal = '<img src="' + imgPreviewUrl + '" url="' + imgDownloadUrl + '" onerror="imgOnError(this)"><a href="' + imgDownloadUrl + '">下载原图</a>';
+          }
           userDataTemp['messageType'] = 'img'
           userDataTemp['message'] = textAreaVal;
           socket.emit("sendMessage", userDataTemp);
