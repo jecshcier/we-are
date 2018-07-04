@@ -533,10 +533,13 @@ $(function () {
     if (fileCheck) {
       // $('#addImg').val('');
       var tempClass = getRandomID(userData.userID);
+      var messageIDArr = []
       $.each(images, function (index, val) {
         var objUrl = getObjectURL(val);
         var textAreaVal = '<img class="' + tempClass + '" src="' + objUrl + '"><article class="' + tempClass + 'imgLoading loading" style="width:100%;height:100%;position:absolute;top:0;left:0;background-color:#fff;"></article>';
         var _this = $('.showMess[projectID="' + userData.projectTeam.groupID + '"]');
+        userData['messageID'] = randMessageID(userData.userID) + index
+        messageIDArr.push(userData['messageID'])
         userData['messageType'] = 'img'
         userData['message'] = textAreaVal;
         sendMessages(0, userData, 0, _this, 0);
@@ -566,6 +569,7 @@ $(function () {
             console.log("无缩略图")
             textAreaVal = '<img src="' + imgPreviewUrl + '" url="' + imgDownloadUrl + '" onerror="imgOnError(this)"><a href="' + imgDownloadUrl + '">下载原图</a>';
           }
+          userDataTemp['messageID'] = messageIDArr[i];
           userDataTemp['messageType'] = 'img'
           userDataTemp['message'] = textAreaVal;
           socket.emit("sendMessage", userDataTemp);
@@ -592,7 +596,7 @@ $(function () {
     var fileextname = pos[pos.length - 1]
     var filename = files[0].name
     var filesize = getFileSize(files[0].size)
-    var messageID = userData.userID + new Date().getTime();
+    var messageID = randMessageID(userData.userID);
     var text = '<i class="ico ico-' + fileextname + '">' + fileextname + '</i><div class="fileinfo"><p>' + filename + '</p><p>' + filesize + '<a tar="' + messageID + '" href="{downloadUrl}"  target="_blank">下载</a></p></div>'
     var _this = $('.showMess[projectID="' + userData.projectTeam.groupID + '"]');
     userData['messageType'] = 'file';

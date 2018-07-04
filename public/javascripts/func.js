@@ -994,6 +994,8 @@ function uploadFiles(files,callback) {
   xhr.send(form); //开始上传，发送form数据
 }
 
+
+//网络图片加载失败
 function imgOnError(_this){
   console.log("图片加载失败！");
   _this.src = staticUrl + '/images/img_err.png';
@@ -1017,8 +1019,10 @@ function imgOnError(_this){
     _this.src = staticUrl + '/images/img_err.png';
     return
   }
-
-  
+}
+//生成messageID
+function randMessageID(userID){
+  return userData.userID + new Date().getTime();
 }
 
 /*yunDisk接口部分 --end*/

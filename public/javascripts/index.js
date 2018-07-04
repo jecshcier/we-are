@@ -52,7 +52,7 @@ $(function () {
           textAreaVal = textAreaVal.replace('####', urlArr[i])
         }
         userData['message'] = textAreaVal;
-        userData['messageID'] = userData.userID + new Date().getTime();
+        userData['messageID'] = randMessageID(userData.userID);
         sendMessages(0, userData, 0, _this, 0);
         enablecodeMirrorMode()
         $('.showArea').scrollTop($('.showClass').height());
@@ -115,6 +115,7 @@ $(function () {
             var tempClass = getRandomID(userData.userID);
             var textAreaVal = '<img class="' + tempClass + '" src="' + blobUrl + '"><article class="' + tempClass + 'imgLoading loading" style="width:100%;height:100%;position:absolute;top:0;left:0;background-color:#fff;"></article>';
             var _this = $('.showMess[projectID="' + userData.projectTeam.groupID + '"]');
+            userData['messageID'] = randMessageID(userData.userID);
             userData['messageType'] = 'img';
             userData['message'] = textAreaVal;
             sendMessages(0, userData, 0, _this, 0);
@@ -183,6 +184,7 @@ $(function () {
         var objUrl = getObjectURL(val);
         var textAreaVal = '<img class="' + tempClass + '" src="' + objUrl + '"><article class="' + tempClass + 'imgLoading loading" style="width:100%;height:100%;position:absolute;top:0;left:0;background-color:#fff;"></article>';
         var _this = $('.showMess[projectID="' + userData.projectTeam.groupID + '"]');
+        userData['messageID'] = randMessageID(userData.userID) + index;
         userData['messageType'] = 'img'
         userData['message'] = textAreaVal;
         sendMessages(0, userData, 0, _this, 0);
