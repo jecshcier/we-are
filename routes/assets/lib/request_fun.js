@@ -4,7 +4,7 @@ const request = require('request')
 
 let system_key = crypto.createHash('sha1').update(config.system_key).digest('hex')
 
-const postReq = (url, data) =>{
+const postReq = (url, data) => {
   let info = {
     flag: false,
     message: '',
@@ -47,7 +47,7 @@ const postReq = (url, data) =>{
   })
 }
 
-const postReqCommon = (url, data) =>{
+const postReqCommon = (url, data) => {
   let info = {
     flag: false,
     message: '',
@@ -83,12 +83,12 @@ const postReqCommon = (url, data) =>{
   })
 }
 
-const sendProxyRequest = (url,req,res) => {
+const sendProxyRequest = (url, req, res) => {
   req.pipe(request(url)).pipe(res);
 }
 
 module.exports = {
-  postReq:postReq,
-  postReqCommon:postReqCommon,
-  sendProxyRequest:sendProxyRequest
+  postReq: postReq,
+  postReqCommon: postReqCommon,
+  sendProxyRequest: sendProxyRequest
 }

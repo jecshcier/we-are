@@ -18,6 +18,7 @@ const queryString = require('querystring')
 const postReq = require('./assets/lib/request_fun').postReq
 const postReqCommon = require('./assets/lib/request_fun').postReqCommon
 const sendProxyRequest = require('./assets/lib/request_fun').sendProxyRequest
+const sendPostProxy = require('./assets/lib/request_fun').sendPostProxy
 const system_key = crypto.createHash('sha1').update(config.system_key).digest('hex')
 
 //创建文件缓存目录
@@ -568,6 +569,28 @@ router.post('/uploadFiles_rm', function (req, res) {
     console.log(uploadFileUrl)
     // 发送代理请求
     sendProxyRequest(uploadFileUrl, req, res)
+  }).catch((info) => {
+    res.send(info)
+  })
+})
+
+router.post('/uploadFiles_rm_base64', function (req, res) {
+  console.log(req.body)
+  let uploadFileUrl = config.Api.rms.url + '/uploadFile_base64/' + config.systemCode + '/'
+  let sha1Key
+  postReqCommon(config.Api.rms.url + '/getSha1Key', {
+    "systemCode": config.systemCode
+  }).then((result) => {
+    sha1Key = result.data["key"]
+    uploadFileUrl += sha1Key
+    console.log(uploadFileUrl)
+    // 发送代理请求
+    return postReqCommon(uploadFileUrl, {
+      "extName": req.body.extName,
+      "data": req.body.data
+    })
+  }).then((result) => {
+    res.send(result.data)
   }).catch((info) => {
     res.send(info)
   })

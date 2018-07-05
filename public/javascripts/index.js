@@ -7,7 +7,7 @@ $(function () {
   /***********
    * 用户数据初始化 *
    ***********/
-  if(typeof app !== 'undefined'){
+  if (typeof app !== 'undefined') {
     app.send('webviewEvent', {
       shelfView: webview.shelfView,
       bookView: webview.bookView,
@@ -125,15 +125,14 @@ $(function () {
             }
             userData['message'] = '<img src="{imgUrl}" class="messImg" onerror="imgOnfail(this)">';
             reader.onload = function (evt) {
-              console.log('test');
-              console.log(evt.target.result.split(','))
-              socket.emit('sendImage', {
-                'name': getRandomID(userData.userID) + '.png',
-                'segment': evt.target.result,
-                'size': blob.size,
-                'user': userData,
-                'userflag': tempClass + 'imgLoading'
-              });
+              uploadFiles_base64(evt.target.result, function (result) {
+                var userDataTemp = JSON.parse(JSON.stringify(userData));
+                var textAreaVal = '<img src="' + result.fileUrl + '" url="' + result.fileUrl + '" onerror="imgOnError(this)">';
+                userDataTemp['messageType'] = 'img'
+                userDataTemp['message'] = textAreaVal;
+                socket.emit("sendMessage", userDataTemp);
+                $("." + tempClass + 'imgLoading').remove()
+              })
             };
             reader.readAsDataURL(blob);
           },
@@ -191,7 +190,7 @@ $(function () {
           $(this).removeClass(tempClass);
           $('.showArea').scrollTop(_this.height());
         }
-      
+        
       });
       uploadFiles(files, function (result) {
         var userDataTemp = JSON.parse(JSON.stringify(userData));
@@ -204,11 +203,11 @@ $(function () {
           var imgDownloadUrl = uploadImgArr[i].fileUrl;
           var imgPreviewUrl = uploadImgArr[i].filePreviewUrl;
           var textAreaVal;
-          if(previewImgArr.indexOf(pos) !== -1){
+          if (previewImgArr.indexOf(pos) !== -1) {
             console.log("有缩略图")
             textAreaVal = '<img src="' + imgPreviewUrl + '" url="' + imgPreviewUrl + '" onerror="imgOnError(this)"><a href="' + imgDownloadUrl + '">下载原图</a>';
           }
-          else{
+          else {
             console.log("无缩略图")
             textAreaVal = '<img src="' + imgPreviewUrl + '" url="' + imgDownloadUrl + '" onerror="imgOnError(this)"><a href="' + imgDownloadUrl + '">下载原图</a>';
           }
@@ -218,11 +217,11 @@ $(function () {
         }
         $("." + tempClass + 'imgLoading').remove()
       })
-    
+      
     }
   })
   changeLoaderString('主界面监听器加载完成……');
-
+  
   /*****************
    * 以下是暂时被废弃的监听事件 *
    *****************/

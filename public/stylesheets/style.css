@@ -1414,3 +1414,7 @@ pre {
     font-size: 16px;
 }
 
+.userView > div{
+    width: 100%;
+}
+

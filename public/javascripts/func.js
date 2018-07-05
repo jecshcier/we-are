@@ -954,7 +954,26 @@ function uploadTx(base64) {
   });
 }
 
-function uploadFiles(files,callback) {
+function uploadFiles_base64(data, callback) {
+  var dataArr = data.split(',');
+  var type = dataArr[0].replace(/data:image\//, '').replace(/;base64/, '');
+  var base64 = dataArr[1];
+  $.ajax({
+    url: 'uploadFiles_rm_base64',
+    type: 'post',
+    dataType: 'json',
+    data: {
+      extName: type,
+      data: base64
+    }
+  }).done(function (result) {
+    callback(result)
+  }).fail(function () {
+    alert("服务器连接失败")
+  })
+}
+
+function uploadFiles(files, callback) {
   var form = new FormData();
   var xhr = new XMLHttpRequest();
   $.each(files, function (index, el) {
@@ -966,18 +985,18 @@ function uploadFiles(files,callback) {
   xhr.open("post", '/weare/uploadFiles_rm', true); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
   xhr.onload = function (e) {
     var result = e.target.responseText
-    try{
+    try {
       result = JSON.parse(result)
-    }catch(e){
+    } catch (e) {
       result = {
-        err:e
+        err: e
       }
     }
     callback(result)
   }; //请求完成
   xhr.onerror = function (e) {
     var result = {
-      err:e
+      err: e
     }
     callback(result)
   }; //请求失败
@@ -994,30 +1013,30 @@ function uploadFiles(files,callback) {
   xhr.send(form); //开始上传，发送form数据
 }
 
-function imgOnError(_this){
+function imgOnError(_this) {
   console.log("图片加载失败！");
   _this.src = staticUrl + '/images/img_err.png';
   var count = parseInt($(_this).attr('count'));
   console.log(count)
-  if(!count){
+  if (!count) {
     count = 1
-    $(_this).attr('count',count);
-    setTimeout(function(){
+    $(_this).attr('count', count);
+    setTimeout(function () {
       _this.src = $(_this).attr("url") + '?' + parseInt(Math.random() * 100000000)
-    },1500);
+    }, 1500);
   }
-  else if(count < 3){
-    count ++;
-    $(_this).attr('count',count);
-    setTimeout(function(){
+  else if (count < 3) {
+    count++;
+    $(_this).attr('count', count);
+    setTimeout(function () {
       _this.src = $(_this).attr("url") + '?' + parseInt(Math.random() * 100000000)
-    },1500);
+    }, 1500);
   }
-  else{
+  else {
     _this.src = staticUrl + '/images/img_err.png';
     return
   }
-
+  
   
 }
 
