@@ -1036,9 +1036,12 @@ function imgOnError(_this) {
     _this.src = staticUrl + '/images/img_err.png';
     return
   }
-  
-  
 }
+
+function randMessageID(userID){
+  return userData.userID + new Date().getTime();
+}
+
 
 /*yunDisk接口部分 --end*/
 /************************
