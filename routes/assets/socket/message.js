@@ -90,7 +90,7 @@ let socketlisten = function (io) {
       console.log("ok");
       io.sockets.emit('startInviteUser', user);
     });
-  
+
     socket.on('reloadTx', function (user) {
       user.TxUrl = txUrl + '/' + user.userID + '.jpg'
       // 刷新用户操作时间
@@ -103,62 +103,14 @@ let socketlisten = function (io) {
       io.sockets.emit('startLeaveUser', user);
     });
     socket.on('sendMessage', function (userData) {
-      console.log(userData);
+      console.log(userData)
       // 刷新用户操作时间
-      // clearTimeout(socket.timer);
-      // socket = connectionTimer(socket, io);
-      io.sockets.emit('newMessage', userData);
-      saveMessages(userData);
-      console.log(userData);
-    });
-    socket.on('sendImage', function (data) {
-      // clearTimeout(socket.timer);
-      // socket = connectionTimer(socket, io);
-      if (data.name) {
-        let pos = "." + data.name.replace(/.+\./, "");
-        let user = data.user;
-        let groupID = user['projectTeam'].groupID;
-        let userID = user['userID'];
-        let time1 = md5.hex(getCurrentTime(1) + data.name);
-        let time2 = getCurrentTime(2);
-        let relaPath = '/' + userID + '/' + time2 + '/' + time1 + pos;
-        let filePath = path.resolve(__dirname, config.sourceDir.imgDir + '/' + userID + '/' + time2 + '/' + time1 + pos);
-        // 解码
-        let base64Data = data.segment.replace(/^data:image\/\w+;base64,/, "");
-        let dataBuffer = new Buffer(base64Data, 'base64');
-        console.log(relaPath);
-        // console.log(filePath);
-        // 创建文件
-        fs.ensureFile(filePath, function (err) {
-          if (err) {
-            console.log(err);
-            io.sockets.emit('sendImage', {
-              isOK: false
-            });
-          }
-          // 写入文件
-          fs.outputFile(filePath, dataBuffer, function (err) {
-            if (err) {
-              console.log(err);
-              io.sockets.emit('sendImage', {
-                isOK: false
-              });
-            } else {
-              let truePath = config.sourceDir.imgUrl + relaPath
-              user['message'] = user['message'].replace(/{imgUrl}/, truePath).replace(/"/g, "'");
-              user['message'] += '<br><a href="' + truePath + '" target="_blank" download="' + time1 + pos + '">下载图片</a>'
-              saveMessages(user);
-              io.sockets.emit('sendImage', {
-                data: data,
-                imgUrl: truePath,
-                isOK: true,
-                user: user,
-                imgName: time1 + pos
-              });
-            }
-          })
-        });
+      if (userData.messageType === 'img') {
+        io.sockets.emit('sendImage', userData)
+      } else {
+        io.sockets.emit('newMessage', userData)
       }
+      saveMessages(userData);
     });
 
     socket.on('disconnect', function () {
@@ -181,15 +133,6 @@ function connectionTimer(socket, io) {
 
 function logOut(socket, io) {
   // 处理异常登陆
-  // if (reconnectUser.length) {
-  //     for (let i = 0; i < reconnectUser.length; i++) {
-  //         if (reconnectUser[i].ID = socket.ID) {
-  //             reconnectUser.splice(i, 1);
-  //             console.log(reconnectUser)
-  //             return false;
-  //         }
-  //     }
-  // }
   let userTemp = {
     username: '',
     userID: ''
@@ -246,7 +189,7 @@ function sup(n) {
 function saveMessages(userdata) {
   let currentTime = getCurrentTime(0)
   postReq(config.Api.tesla_api.host + 'saveMessages', {
-    userData:JSON.stringify(userdata)
+    userData: JSON.stringify(userdata)
   }).then((result) => {
     // res.send(result)
   }).catch((info) => {
@@ -257,7 +200,7 @@ function saveMessages(userdata) {
 
 function saveUserUpdateTime(userID) {
   postReq(config.Api.tesla_api.host + 'saveUserUpdateTime', {
-    userID:userID
+    userID: userID
   }).then((result) => {
     // res.send(result)
   }).catch((info) => {

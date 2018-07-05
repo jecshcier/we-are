@@ -68,33 +68,22 @@ function addSocketListener() {
     }
   });
   socket.on('sendImage', function (data) {
-    var user = data.user;
+    console.log(data)
+    var user = data;
     var userID = user['userID'];
     var userName = user['userName'];
-    var messageID = data.user['messageID'];
+    var messageID = user['messageID'];
     var groupID = user['projectTeam'].groupID;
-    var groupName = user['projectTeam'].groupName;
-    var tempClass = getRandomID(userID);
-    var imgName = data.imgName;
-    var textAreaVal = "<img class='messImg " + tempClass + "' src='" + data.imgUrl + "' onerror='imgOnfail(this)'><br><a href='" + data.imgUrl + "' target='_blank' download='" + imgName + "'>下载图片</a>";
     var _this = $('.showMess[projectID="' + groupID + '"]');
     console.log("有用户上传图片");
-    if (data.isOK) {
-      newMessNotification(_this, groupID, function () {
-        if (userID == userData['userID']) {
-          $("." + data.data['userflag']).remove();
-          $("#" + messageID + "> .messMyself > .textLoading").remove();
-        } else {
-          if (_this.length) {
-            notify(userName, '发送了一张图片', user['projectTeam'], userID);
-            user.message = textAreaVal;
-            console.log(_this);
-            sendMessages(1, user, 0, _this, 0);
-            autoScroll(_this, tempClass);
-          }
-        }
-      })
-    }
+    newMessNotification(_this, groupID, function () {
+      if (userID !== userData['userID'] && _this.length) {
+        notify(userName, '发送了一张图片', user['projectTeam'], userID);
+      }
+      else{
+        $("#" + messageID + "> .messMyself > .textLoading").remove()
+      }
+    })
   });
   socket.on('userIsLogout', function (data, onlineUsers) {
     var _this = $("li[userID=" + data.userID + "]");
@@ -154,7 +143,7 @@ function addSocketListener() {
         enablecodeMirrorMode()
       });
     }
-    else if(currentGroupID === userData.projectTeam.groupID){
+    else if (currentGroupID === userData.projectTeam.groupID) {
       getProjectUsers(currentGroupID);
     }
   })
@@ -178,7 +167,7 @@ function addSocketListener() {
         }
       });
     }
-    else if(currentGroupID === userData.projectTeam.groupID){
+    else if (currentGroupID === userData.projectTeam.groupID) {
       getProjectUsers(currentGroupID);
     }
   })
@@ -202,12 +191,12 @@ function addSocketListener() {
       $("div." + user.messageID).html(info.message)
     }
   })
-  
+
   socket.on('reloadTx', function (userData) {
     var _this = $(".userTx[userid=" + userData.userID + "]");
     _this.attr('src', userData.TxUrl + '?' + new Date().getTime());
   });
-  
+
   socket.on('connect', function (data) {
     removeLoader();
   });

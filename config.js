@@ -19,7 +19,7 @@ module.exports = {
       host: 'http://127.0.0.1:3030/weare/api/',
     },
     rms:{
-      url:"http://es.tes-sys.com/rm"
+      url:"http://127.0.0.1:3033/rm"
     }
   },
   sourceDir: {
