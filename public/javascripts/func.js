@@ -534,7 +534,7 @@ function checkTeslaVersion() {
   if (currentVersion !== teslaVersion) {
     helpMess({
       title: 'tesla又更新啦！',
-      content: $(".updateLog article").eq(0).html() + '<br><p style="color:red">更多日志请在 更新日志标签中查看</p>',
+      content: '<p>可以在统计-更新日志中查看</p>',
       okValue: '确定',
       ok: function () {
       }
