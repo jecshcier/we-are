@@ -42,7 +42,7 @@ $(function () {
       }
       $(".myTxDiv > img")[0].src = e.target.result
     }
-    
+
   })
   //头像
   $(".defaultTx").click(function (event) {
@@ -478,28 +478,67 @@ $(function () {
   // 图片点击放大
   $(".showArea").on('click', '.messContent > img', function (e) {
     e.preventDefault();
-    
-    gatherAllImageFormChat(e.target);
+
+    gatherAllImageFromChat(e.target);
   });
-  
+
   // 获取当前窗口中的所有聊天图片
-  function gatherAllImageFormChat(target) {
+  function gatherAllImageFromChat(target) {
     var imgArr = [];
     var index = 0;
-    $(target).closest('.showClass').find('.messContent').find('img').each(function (i, item) {
+    $(target).closest('.showClass').find('.messContent').find('img').each(function(i, item) {
+      var realPath = $(item).siblings('a').attr('href');
+
       // 记录当前图片所在的序号
       (item === target) && (index = i);
-      
+
       imgArr.push({
         title: '图片：' + i,
-        src: item.currentSrc,
-        w: item.naturalWidth || 1024,
-        h: item.naturalHeight || 768
+        msrc: item.currentSrc,
+        src: realPath
       });
     });
-    showPhotoSwipeImgsArr(imgArr, index);
+
+    // 循环遍历所有图片，获取图片尺寸
+    var pr = [];
+    imgArr.forEach(function (item, i) {
+      var p = preloadImgForPromise(item.src || item.msrc)
+        .then(function(img) {
+          imgArr[i].w = img.width;
+          imgArr[i].h = img.height;
+        })
+        .catch(function(err){
+          imgArr[i].w = 1024;
+          imgArr[i].h = 768;
+          console.log('图片大小获取失败，采用默认大小')
+        });
+      pr.push(p);
+    });
+
+    // 图片全部加载完
+    Promise.all(pr)
+      .then(function(){
+        console.log('图片组所有图片大小获取，处理完成：',index,imgArr);
+        showPhotoSwipeImgsArr(imgArr, index);
+      }).catch(function(error) {
+        console.error('图片组所有图片大小获取，处理失败');
+      });
   }
-  
+
+  // 根据图片地址预加载图片
+  function preloadImgForPromise(src) {
+    return new Promise(function(resolve, reject) {
+      var img = new Image();
+      img.addEventListener("load", function () {
+        resolve(img);
+      }, false);
+      img.addEventListener("error", function () {
+        reject();
+      }, false);
+      img.src = src;
+    });
+  }
+
   /***************
    *  上传图片按钮监听事件 *
    ***************/
@@ -548,7 +587,7 @@ $(function () {
           $(this).removeClass(tempClass);
           $('.showArea').scrollTop(_this.height());
         }
-        
+
       });
       uploadFiles(images, function (result) {
         var userDataTemp = JSON.parse(JSON.stringify(userData));
@@ -576,10 +615,10 @@ $(function () {
         }
         $("." + tempClass + 'imgLoading').remove()
       })
-      
+
     }
   });
-  
+
   //上传文件事件监听
   $("#addFiles").change(function (event) {
     var files = this.files;
@@ -605,14 +644,14 @@ $(function () {
     userData['fileName'] = filename;
     userData['messageID'] = messageID
     sendMessages(0, userData, 0, _this, 0);
-    
+
     var $contentDiv = $("#" + messageID)
     $("#" + messageID + " .messContent").append('<div class="' + messageID + '" style="position:absolute;width:100%;height:100%;justify-content: center;align-items: center;left: 0;top:0;font-size: 25px;" ><div style="position:absolute;width:100%;height:100%;background-color: rgba(251, 126, 116,.5);left: 0;top: 0;"></div><span style="position: absolute;">0%</span></div>')
     var $mask = $("div." + messageID)
     var $span = $("div." + messageID + ">span")
     var $div = $("div." + messageID + ">div")
     autoScroll($(".showClass"));
-    
+
     var form = new FormData(); // FormData 对象
     $.each(files, function (index, el) {
       console.log(el)
@@ -624,8 +663,8 @@ $(function () {
     delete userData['fileName'];
     // 文件对象
     console.log(form)
-    
-    
+
+
     var url = "/weare/uploadFile"; // 接收上传文件的后台地址
     var xhr = new XMLHttpRequest();
     xhr.open("post", url, true); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
@@ -677,8 +716,8 @@ $(function () {
     console.log("上传")
     xhr.send(form);
   })
-  
-  
+
+
   // 文件页码切换
   $(".filePage").delegate('.pageNum', 'click', function (event) {
     $(this).addClass('pageHit').siblings().removeClass('pageHit');
@@ -728,12 +767,12 @@ $(function () {
       heightResizeCheck = false;
     }
   });
-  
+
   $("#textArea").click(function (event) {
     editor.focus();
   });
-  
-  
+
+
   var canPreviewType = ["png", "jpg", "gif", "bmp", "jpeg", "pdf", "mp4", "webm", "ogg"];
   var previewByPhotoSwipe = ["png", "jpg", "gif", "bmp", "jpeg"];
   var previewByVideo = ["mp4", "webm", "ogg"];
@@ -756,18 +795,18 @@ $(function () {
     if ($.inArray(type, previewByPhotoSwipe) >= 0) {
       preloadImageForPhotoSwipe($this, dldUrl);
     }
-    
+
     // 预览视频
     if ($.inArray(type, previewByVideo) >= 0) {
       showVideoReader(dldUrl);
     }
-    
+
     // 预览PDF
     if (type === "pdf") {
       showPdfReader(dldUrl + "." + type);
     }
   });
-  
+
   // 全局广播消息提示
   // $('.set.broadcast').click(function(event) {
   // 	helpMess(false,

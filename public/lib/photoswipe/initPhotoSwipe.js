@@ -251,8 +251,6 @@ var initInnerThumbnails = function(index, items, gallery) {
     itemsLength = items.length,
     thumbsStr = '';
 
-  (itemsLength > 9) && $innerThumbs.addClass('scrolling');
-
   for (var i = 0; i < itemsLength; i++) {
     var active = '';
     (i === index) && (active = ' active');
@@ -260,6 +258,10 @@ var initInnerThumbnails = function(index, items, gallery) {
   }
 
   innerThumbs.innerHTML = thumbsStr;
+  if (itemsLength > 9) {
+    $innerThumbs.addClass('scrolling')
+      .find('.active')[0].scrollIntoView();
+  }
 
   $innerThumbs.off('click', '.pswp__innerthumbs__item')
     .on('click', '.pswp__innerthumbs__item', function(e) {
